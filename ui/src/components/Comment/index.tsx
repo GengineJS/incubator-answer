@@ -434,6 +434,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
                 username={item.username}
                 createdAt={item.created_at}
                 voteCount={item.vote_count}
+                mode={mode}
                 aiReplied={item.ai_replied}
                 isAI={item.is_ai}
                 isVote={item.is_vote}
@@ -474,36 +475,36 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
               setVisibleComment(!visibleComment);
             }
           }}>
-          {t('btn_add_comment')}
+          {mode !== 'question'
+            ? t('btn_add_comment')
+            : t('btn_add_subject_comment')}
         </Button>
-        {
-          /* mode !== 'question' &&
-           */ !isObjectAI &&
-            (!aiCommented ? (
-              <Button
-                variant="link"
-                className="p-0 btn-no-border"
-                size="sm"
-                onClick={() => {
-                  if (tryNormalLogged(true)) {
-                    handleSendReply({
-                      value: 'AIReply',
-                      type: 'comment',
-                      isAI: true,
-                    });
-                  }
-                }}>
-                {t('btn_ai_add_comment')}
-              </Button>
-            ) : (
-              <div className="lh-1 m-0">
-                <Badge bg="secondary" pill>
-                  <Icon name="check-circle-fill  me-1" />
-                  {t('btn_dis_ai_reply')}
-                </Badge>
-              </div>
-            ))
-        }
+        {mode !== 'question' &&
+          !isObjectAI &&
+          (!aiCommented ? (
+            <Button
+              variant="link"
+              className="p-0 btn-no-border"
+              size="sm"
+              onClick={() => {
+                if (tryNormalLogged(true)) {
+                  handleSendReply({
+                    value: 'AIReply',
+                    type: 'comment',
+                    isAI: true,
+                  });
+                }
+              }}>
+              {t('btn_ai_add_comment')}
+            </Button>
+          ) : (
+            <div className="lh-1 m-0">
+              <Badge bg="secondary" pill>
+                <Icon name="check-circle-fill  me-1" />
+                {t('btn_dis_ai_reply')}
+              </Badge>
+            </div>
+          ))}
         {data &&
           (pageIndex || 1) < Math.ceil((data?.count || 0) / pageSize) && (
             <Button

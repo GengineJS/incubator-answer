@@ -44,6 +44,7 @@ const initUser: UserInfoRes = {
   language: 'Default',
   color_scheme: 'default',
   is_admin: false,
+  score: 0,
   have_password: true,
   role_id: 1,
 };

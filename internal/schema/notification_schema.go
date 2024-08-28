@@ -20,16 +20,17 @@
 package schema
 
 const (
-	NotificationTypeInbox        = 1
-	NotificationTypeAchievement  = 2
-	NotificationNotRead          = 1
-	NotificationRead             = 2
-	NotificationStatusNormal     = 1
-	NotificationStatusDelete     = 10
-	NotificationInboxTypeAll     = 0
-	NotificationInboxTypePosts   = 1
-	NotificationInboxTypeVotes   = 2
-	NotificationInboxTypeInvites = 3
+	NotificationTypeInbox         = 1
+	NotificationTypeAchievement   = 2
+	NotificationNotRead           = 1
+	NotificationRead              = 2
+	NotificationStatusNormal      = 1
+	NotificationStatusDelete      = 10
+	NotificationInboxTypeAll      = 0
+	NotificationInboxTypePosts    = 1
+	NotificationInboxTypeVotes    = 2
+	NotificationInboxTypeInvites  = 3
+	NotificationInboxTypeIntegral = 4
 )
 
 var NotificationType = map[string]int{
@@ -38,10 +39,11 @@ var NotificationType = map[string]int{
 }
 
 var NotificationInboxType = map[string]int{
-	"all":     NotificationInboxTypeAll,
-	"posts":   NotificationInboxTypePosts,
-	"invites": NotificationInboxTypeInvites,
-	"votes":   NotificationInboxTypeVotes,
+	"all":       NotificationInboxTypeAll,
+	"posts":     NotificationInboxTypePosts,
+	"invites":   NotificationInboxTypeInvites,
+	"votes":     NotificationInboxTypeVotes,
+	"integrals": NotificationInboxTypeIntegral,
 }
 
 type NotificationContent struct {
@@ -55,6 +57,8 @@ type NotificationContent struct {
 	Type               int            `json:"-"` //	1 inbox 2 achievement
 	IsRead             bool           `json:"is_read"`
 	UpdateTime         int64          `json:"update_time"`
+	// extra info
+	ExtraInfo map[string]string `json:"extras"`
 }
 
 type GetRedDot struct {
@@ -88,10 +92,11 @@ type NotificationMsg struct {
 }
 
 type ObjectInfo struct {
-	Title      string            `json:"title"`
-	ObjectID   string            `json:"object_id"`
-	ObjectMap  map[string]string `json:"object_map"`
-	ObjectType string            `json:"object_type"`
+	Title       string            `json:"title"`
+	ObjectID    string            `json:"object_id"`
+	ObjectMap   map[string]string `json:"object_map"`
+	ObjectType  string            `json:"object_type"`
+	ContentType string            `json:"content_type"`
 }
 
 type RedDot struct {

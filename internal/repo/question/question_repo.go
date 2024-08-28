@@ -284,6 +284,25 @@ func (qr *questionRepo) GetQuestionCount(ctx context.Context) (count int64, err 
 	return count, nil
 }
 
+func (qr *questionRepo) HandleQuestionBuy(ctx context.Context, buy *schema.HandleQuestionBuyReq) (err error) {
+	// session := qr.data.DB.Context(ctx).Table("question_buyer")
+	// 创建一个QuestionBuyer实例
+	questionBuyer := entity.QuestionBuyer{
+		QuestionID: buy.QuestionID, // 问题ID
+		UserID:     buy.UserBuyID,  // 用户ID
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}
+
+	// 插入数据
+	_, err = qr.data.DB.Insert(&questionBuyer)
+	if err != nil {
+		fmt.Println("Error insert data:", err)
+		return err
+	}
+	return
+}
+
 func (qr *questionRepo) GetUserQuestionCount(ctx context.Context, userID string, show int) (count int64, err error) {
 	session := qr.data.DB.Context(ctx)
 	session.Where(builder.Lt{"status": entity.QuestionStatusDeleted})
@@ -343,9 +362,18 @@ func (qr *questionRepo) SitemapQuestions(ctx context.Context, page, pageSize int
 	return questionIDList, nil
 }
 
+func (qr *questionRepo) GetBuyers(ctx context.Context, qid string) ([]entity.QuestionBuyer, error) {
+	buyers := make([]entity.QuestionBuyer, 0)
+	err := qr.data.DB.Where("question_id = ?", qid).Find(&buyers)
+	if err != nil {
+		return nil, err
+	}
+	return buyers, nil
+}
+
 // GetQuestionPage query question page
 func (qr *questionRepo) GetQuestionPage(ctx context.Context, currType entity.QuestionType, page, pageSize int,
-	tagIDs []string, userID, orderCond string, inDays int, showHidden, showPending bool) (
+	tagIDs []string, userID, orderCond string, orderType string, inDays int, showHidden, showPending bool) (
 	questionList []*entity.Question, total int64, err error) {
 	questionList = make([]*entity.Question, 0)
 	session := qr.data.DB.Context(ctx)
@@ -370,7 +398,10 @@ func (qr *questionRepo) GetQuestionPage(ctx context.Context, currType entity.Que
 	if inDays > 0 {
 		session.And("question.created_at > ?", time.Now().AddDate(0, 0, -inDays))
 	}
-	session.And("question.content_type = ?", uint8(currType))
+	contentTypeUint := uint8(currType)
+	if contentTypeUint > 0 {
+		session.And("question.content_type = ?", contentTypeUint)
+	}
 	switch orderCond {
 	case "newest":
 		session.OrderBy("question.pin desc,question.created_at DESC")
@@ -383,6 +414,13 @@ func (qr *questionRepo) GetQuestionPage(ctx context.Context, currType entity.Que
 	case "unanswered":
 		session.Where("question.last_answer_id = 0")
 		session.OrderBy("question.pin desc,question.created_at DESC")
+	}
+	switch orderType {
+	case schema.QuestionOrderTypeAll:
+	case schema.QuestionOrderTypeIntegral:
+		session.And("question.score > ?", 0)
+	case schema.QuestionOrderTypeNonIntegral:
+		session.And("question.score = ?", 0)
 	}
 
 	total, err = pager.Help(page, pageSize, &questionList, &entity.Question{}, session)

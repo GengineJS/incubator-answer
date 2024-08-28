@@ -69,6 +69,7 @@ var (
 		&entity.UserNotificationConfig{},
 		&entity.PluginUserConfig{},
 		&entity.Review{},
+		&entity.QuestionBuyer{},
 	}
 
 	roles = []*entity.Role{

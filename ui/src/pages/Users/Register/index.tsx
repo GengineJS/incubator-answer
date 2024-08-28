@@ -26,6 +26,8 @@ import { usePageTags } from '@/hooks';
 import { Unactivate, WelcomeTitle, PluginRender } from '@/components';
 import { guard } from '@/utils';
 import { loginSettingStore } from '@/stores';
+import { isAssetBunPageType } from '@/common/functions';
+import { assetBunSearch } from '@/common/constants';
 
 import SignUpForm from './components/SignUpForm';
 
@@ -39,7 +41,14 @@ const Index: React.FC = () => {
   usePageTags({
     title: t('sign_up', { keyPrefix: 'page_title' }),
   });
-
+  const isAssetBun = isAssetBunPageType();
+  const loginUrl = isAssetBun
+    ? `/users/login?${assetBunSearch}`
+    : '/users/login';
+  const toLinkSysUrl = isAssetBun
+    ? window.location.pathname
+    : `${window.location.pathname}?${assetBunSearch}`;
+  const i18nSysKey = isAssetBun ? 'login.info_answer' : 'login.info_assetbun';
   if (!guard.singUpAgent().ok) {
     return null;
   }
@@ -62,7 +71,21 @@ const Index: React.FC = () => {
           {showSignupForm ? <SignUpForm callback={onStep} /> : null}
           <div className="text-center mt-5">
             <Trans i18nKey="login.info_login" ns="translation">
-              Already have an account? <Link to="/users/login">Log in</Link>
+              Already have an account? <Link to={loginUrl}>Log in</Link>
+            </Trans>
+          </div>
+          <div className="text-center small mt-1">
+            <Trans i18nKey={i18nSysKey} ns="translation">
+              Need AI help?
+              <Link
+                to={toLinkSysUrl}
+                onClick={() => {
+                  const parsedUrl = new URL(window.location.pathname);
+                  const fullDomain = `${parsedUrl.protocol}//${parsedUrl.hostname}`;
+                  window.location.href = fullDomain + toLinkSysUrl;
+                }}>
+                Learn earn
+              </Link>
             </Trans>
           </div>
         </Col>

@@ -30,7 +30,11 @@ import debounce from 'lodash/debounce';
 import { usePageTags, usePromptWithUnload } from '@/hooks';
 import { Editor, EditorRef, TagSelector } from '@/components';
 import type * as Type from '@/common/interface';
-import { DRAFT_QUESTION_STORAGE_KEY } from '@/common/constants';
+import {
+  ContentType,
+  DRAFT_QUESTION_STORAGE_KEY,
+  hasPayType,
+} from '@/common/constants';
 import {
   saveQuestion,
   questionDetail,
@@ -51,14 +55,17 @@ import { useCaptchaPlugin } from '@/utils/pluginKit';
 import { getUrlQuestionType } from '@/common/functions';
 import {
   AskEditTitleTypeQuery,
+  AskIntegralTypeQuery,
   AskPostContentTypeQuery,
   AskTitleTypeQuery,
 } from '@/common/i18n';
+import { loggedUserInfoStore } from '@/stores';
 
 import SearchQuestion from './components/SearchQuestion';
 
 interface FormDataItem {
   title: Type.FormValue<string>;
+  integral: Type.FormValue<number>;
   tags: Type.FormValue<Type.Tag[]>;
   content: Type.FormValue<string>;
   answer_content: Type.FormValue<string>;
@@ -71,6 +78,11 @@ const Ask = () => {
   const initFormData = {
     title: {
       value: '',
+      isInvalid: false,
+      errorMsg: '',
+    },
+    integral: {
+      value: 0,
       isInvalid: false,
       errorMsg: '',
     },
@@ -157,7 +169,6 @@ const Ask = () => {
         resetForm();
       }
     }
-
     return () => {
       resetForm();
     };
@@ -210,14 +221,28 @@ const Ask = () => {
   usePromptWithUnload({
     when: blockState,
   });
-
+  const contentType = getUrlQuestionType();
   const { data: revisions = [] } = useQueryRevisions(qid);
-
+  const { score } = loggedUserInfoStore((state) => state.user);
+  const isPayType = hasPayType();
+  const [currIntegral, setCurrIntegral] = useState(
+    contentType === ContentType.QUESTION || contentType === ContentType.BOUNTY
+      ? score
+      : 1000,
+  );
+  // const [beginIntegral, setBeginIntergral] = useState(0);
+  let contentPlaceHolder = '';
+  if (contentType === ContentType.BOUNTY) {
+    // 项目需求模板
+    contentPlaceHolder = '请详细描述你的项目需求，项目周期及交付方式';
+  }
+  const [acceptedID, setAcceptedID] = useState('');
   useEffect(() => {
     if (!isEdit) {
       return;
     }
     questionDetail(qid).then((res) => {
+      setAcceptedID(res.accepted_answer_id);
       formData.title.value = res.title;
       formData.content.value = res.content;
       formData.tags.value = res.tags.map((item) => {
@@ -227,6 +252,14 @@ const Ask = () => {
           original_text: '',
         };
       });
+      formData.integral.value = res.score;
+      // setBeginIntergral(res.score);
+      if (
+        contentType === ContentType.QUESTION ||
+        contentType === ContentType.BOUNTY
+      ) {
+        setCurrIntegral(currIntegral + res.score);
+      }
       setImmData({ ...formData });
       setFormData({ ...formData });
     });
@@ -252,6 +285,17 @@ const Ask = () => {
     if (e.currentTarget.value.length === 0) {
       setSimilarQuestions([]);
     }
+  };
+  const handleIntegralChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const currInput = parseInt(e.currentTarget.value, 10);
+    setFormData({
+      ...formData,
+      integral: {
+        ...formData.integral,
+        value: Math.max(0, Math.min(currInput, currIntegral)),
+        errorMsg: '',
+      },
+    });
   };
   const handleContentChange = (value: string) => {
     setFormData({
@@ -303,9 +347,12 @@ const Ask = () => {
     modifyQuestion(ep)
       .then(async (res) => {
         await editCaptcha?.close();
-        navigate(pathFactory.questionLanding(qid, res?.url_title), {
-          state: { isReview: res?.wait_for_review },
-        });
+        navigate(
+          pathFactory.questionLanding(qid, res?.url_title, contentType),
+          {
+            state: { isReview: res?.wait_for_review },
+          },
+        );
       })
       .catch((err) => {
         if (err.isError) {
@@ -359,9 +406,15 @@ const Ask = () => {
     if (id) {
       await saveCaptcha?.close();
       if (checked) {
-        navigate(pathFactory.questionLanding(id, res?.question?.url_title));
+        navigate(
+          pathFactory.questionLanding(
+            id,
+            res?.question?.url_title,
+            contentType,
+          ),
+        );
       } else {
-        navigate(pathFactory.questionLanding(id, res?.url_title));
+        navigate(pathFactory.questionLanding(id, res?.url_title, contentType));
       }
     }
     removeDraft();
@@ -375,6 +428,7 @@ const Ask = () => {
       title: formData.title.value,
       content: formData.content.value,
       tags: formData.tags.value,
+      score: formData.integral.value,
       content_type: getUrlQuestionType(),
     };
 
@@ -413,7 +467,6 @@ const Ask = () => {
   usePageTags({
     title: pageTitle,
   });
-  const contentType = getUrlQuestionType();
   return (
     <div className="pt-4 mb-5">
       <h3 className="mb-4">
@@ -466,6 +519,7 @@ const Ask = () => {
               </Form.Control.Feedback>
               {bool && <SearchQuestion similarQuestions={similarQuestions} />}
             </Form.Group>
+
             <Form.Group controlId="content">
               <Form.Label>{t('form.fields.body.label')}</Form.Label>
               <Form.Control
@@ -486,6 +540,7 @@ const Ask = () => {
                 onBlur={() => {
                   setForceType('');
                 }}
+                editorPlaceholder={contentPlaceHolder}
                 ref={editorRef}
               />
               <Form.Control.Feedback type="invalid">
@@ -507,6 +562,32 @@ const Ask = () => {
               />
               <Form.Control.Feedback type="invalid">
                 {formData.tags.errorMsg}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="integral" className="mb-3">
+              <Form.Label>{t('form.fields.integral.label')}</Form.Label>
+              <Form.Control
+                type="number"
+                min={0}
+                max={currIntegral}
+                step={1}
+                value={formData.integral.value}
+                isInvalid={formData.integral.isInvalid}
+                onChange={handleIntegralChange}
+                disabled={!!acceptedID && acceptedID !== '0' && isPayType} //! !(acceptedID && isPayType && beginIntegral)
+              />
+              <Form.Text>
+                {t(`${AskIntegralTypeQuery[contentType]}`)}
+                <a
+                  href="https://cloud.assetbun.com/buy?tab=2"
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  {`${t(`recharge`)} `}
+                </a>
+                {isPayType ? t(`attention`) : ''}
+              </Form.Text>
+              <Form.Control.Feedback type="invalid">
+                {formData.integral.errorMsg}
               </Form.Control.Feedback>
             </Form.Group>
             {isEdit && (

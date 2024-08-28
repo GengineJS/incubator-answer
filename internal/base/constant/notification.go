@@ -22,6 +22,18 @@ package constant
 const (
 	// NotificationUpdateQuestion update question
 	NotificationUpdateQuestion = "notification.action.update_question"
+	// NotificationSubIntegral sub integral
+	NotificationSubIntegral = "notification.action.sub_integral"
+	// NotificationSubIntegral add integral
+	NotificationAddIntegral = "notification.action.add_integral"
+	// NotificationSubIntegral pay integral
+	NotificationPayIntegral = "notification.action.pay_integral"
+	// NotificationDeleteBackIntegral delete back integral
+	NotificationDeleteBackIntegral = "notification.action.delete_back_integral"
+	// NotificationUpdateSubIntegral update sub integral
+	NotificationUpdateSubIntegral = "notification.action.update_sub_integral"
+	// NotificationUpdateBackIntegral update back integral
+	NotificationUpdateBackIntegral = "notification.action.update_back_integral"
 	// NotificationAnswerTheQuestion answer the question
 	NotificationAnswerTheQuestion = "notification.action.answer_the_question"
 	// NotificationUpVotedTheQuestion up voted the question
@@ -91,5 +103,11 @@ var (
 		NotificationYourAnswerWasDeleted:   1,
 		NotificationYourCommentWasDeleted:  1,
 		NotificationInvitedYouToAnswer:     3,
+		NotificationAddIntegral:            4,
+		NotificationPayIntegral:            4,
+		NotificationSubIntegral:            4,
+		NotificationDeleteBackIntegral:     4,
+		NotificationUpdateSubIntegral:      4,
+		NotificationUpdateBackIntegral:     4,
 	}
 )

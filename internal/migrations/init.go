@@ -23,6 +23,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/apache/incubator-answer/internal/repo/assetbun"
 	"time"
 
 	"github.com/apache/incubator-answer/internal/base/data"
@@ -31,7 +32,6 @@ import (
 	"github.com/segmentfault/pacman/log"
 
 	"github.com/apache/incubator-answer/internal/entity"
-	"golang.org/x/crypto/bcrypt"
 	"xorm.io/xorm"
 )
 
@@ -62,13 +62,14 @@ func (m *Mentor) InitDB() error {
 	m.do("check table exist", m.checkTableExist)
 	m.do("sync table", m.syncTable)
 	m.do("init version table", m.initVersionTable)
-	m.do("init admin user", m.initAdminUser)
+	// m.do("init admin user", m.initAdminUser)
+	m.do("init all users from assetbun", m.initAllUserAndRole)
 	m.do("init config", m.initConfig)
 	m.do("init default privileges config", m.initDefaultRankPrivileges)
 	m.do("init role", m.initRole)
 	m.do("init power", m.initPower)
 	m.do("init role power rel", m.initRolePowerRel)
-	m.do("init admin user role rel", m.initAdminUserRoleRel)
+	// m.do("init admin user role rel", m.initAdminUserRoleRel)
 	m.do("init site info interface", m.initSiteInfoInterface)
 	m.do("init site info general config", m.initSiteInfoGeneralData)
 	m.do("init site info login config", m.initSiteInfoLoginConfig)
@@ -107,7 +108,7 @@ func (m *Mentor) initVersionTable() {
 }
 
 func (m *Mentor) initAdminUser() {
-	generateFromPassword, _ := bcrypt.GenerateFromPassword([]byte(m.userData.AdminPassword), bcrypt.DefaultCost)
+	generateFromPassword, _ := schema.SetPassword(m.userData.AdminPassword) // bcrypt.GenerateFromPassword([]byte(m.userData.AdminPassword), bcrypt.DefaultCost)
 	_, m.err = m.engine.Context(m.ctx).Insert(&entity.User{
 		ID:           "1",
 		Username:     m.userData.AdminName,
@@ -119,6 +120,11 @@ func (m *Mentor) initAdminUser() {
 		Rank:         1,
 		DisplayName:  m.userData.AdminName,
 	})
+}
+
+func (m *Mentor) initAllUserAndRole() {
+	// 同步assetbun与answer之间的用户数据表
+	assetbun.SyncUsers(m.ctx, m.engine)
 }
 
 func (m *Mentor) initConfig() {
@@ -221,7 +227,7 @@ func (m *Mentor) initSiteInfoSEOConfig() {
 func (m *Mentor) initSiteInfoUsersConfig() {
 	usersData := map[string]any{
 		"default_avatar":            "gravatar",
-		"gravatar_base_url":         "https://www.gravatar.com/avatar/",
+		"gravatar_base_url":         "https://cravatar.cn/avatar/",
 		"allow_update_display_name": true,
 		"allow_update_username":     true,
 		"allow_update_avatar":       true,

@@ -370,6 +370,8 @@ backend:
       desc:
         other: 该帖子将被删除。
   question:
+    score: 积分
+    all: 全部
     close:
       duplicate:
         name:
@@ -404,6 +406,18 @@ backend:
     action:
       update_question:
         other: 更新了问题
+      sub_integral:
+        other: "支付了{{.Integral}}积分在"
+      add_integral:
+        other: "获得了{{.Integral}}积分在"
+      pay_integral:
+        other: "支付了{{.Pay}}积分, 且您获得了{{.Integral}}积分在"
+      delete_back_integral:
+        other: "删除了帖子, 返还{{.Integral}}积分在"
+      update_sub_integral:
+        other: "更新了帖子的积分, 额外支付{{.Integral}}积分在"
+      update_back_integral:
+        other: "更新了帖子的积分, 返还{{.Integral}}积分在"
       answer_the_question:
         other: 回复了问题
       update_answer:
@@ -555,6 +569,7 @@ ui:
       posts: 帖子
       invites: 邀请
       votes: 投票
+      integrals: 积分
   suspended:
     title: 你的账号账号已被封禁
     until_time: "你的账号被封禁直到 {{ time }}。"
@@ -750,6 +765,7 @@ ui:
     hours: 小时
     days: 日
   comment:
+    btn_add_subject_comment: 添加主题描述
     btn_add_comment: 添加评论
     btn_ai_add_comment: 请AI回复
     reply_to: 回复
@@ -764,9 +780,9 @@ ui:
     btn_cancel: 取消
     show_more: "{{count}} 条剩余评论"
     tip_question: >-
-      使用评论提问更多信息或者提出改进意见。避免在评论里回复问题。
+      对主题有新的疑问或提供更多关于该主题的信息，AI与参与者回复该主题时才能更精准。应避免在评论里回复主题。
     tip_answer: >-
-      使用评论对回复者进行回复，或者通知回复者你已更新了问题的内容。如果要补充或者完善问题的内容，请在原问题中更改。
+      使用评论对参与者进行回复，如果要补充或者完善问题的内容，请在原问题或主题描述区域中更改。也可以使用AI回复参与者的问题。
     tip_vote: 它给帖子添加了一些有用的内容
   edit_answer:
     title: 编辑回复
@@ -801,24 +817,31 @@ ui:
   ask:
     title: 新增问题
     article_title: 新增文章
-    bounty_title: 新增悬赏任务
+    bounty_title: 新增项目需求
+    answer_integral: 用积分让更多人协助(1积分≈0.1元,可提现)。
+    article_integral: 让要查看该文章的人为你支付积分(1积分≈0.1元,可提现)，以便查看完整文章。
+    bounty_integral: 用积分让更多人协助(1积分≈0.1元,可提现)。
+    attention: (被采纳者获得积分,采纳后积分不可修改)
+    recharge: 去充值
     edit_title: 编辑问题
     edit_article_title: 编辑文章
     edit_assetbun_title: 编辑云盘资源描述
-    edit_bounty_title: 编辑悬赏任务
+    edit_bounty_title: 编辑项目需求
     default_reason: 编辑问题
     default_article_reason: 编辑文章
-    default_bounty_reason: 编辑悬赏任务
+    default_bounty_reason: 编辑项目需求
     default_first_reason: 新增问题
     default_first_article_reason: 新增文章
-    default_first_bounty_reason: 新增悬赏任务
+    default_first_bounty_reason: 新增项目需求
     similar_questions: 相似问题
     similar_articles: 相似文章
-    similar_bounties: 相似悬赏任务
+    similar_bounties: 相似项目需求
     form:
       fields:
         revision:
           label: 修订版本
+        integral:
+          label: 积分
         title:
           label: 标题
           placeholder: 请详细描述你的问题，想象你在问一个人
@@ -830,7 +853,7 @@ ui:
         assetbun_title:
           placeholder: 请详细描述你的资产包子云盘资源
         bounty_title:
-          placeholder: 请详细描述你的悬赏任务，想象你在广发英雄帖
+          placeholder: 请详细描述你的项目需求，想象你在广发英雄帖
         body:
           label: 内容
           msg:
@@ -850,7 +873,7 @@ ui:
     btn_post_question: 提交问题
     btn_post_article: 提交文章
     btn_post_assetbun: 提交资源描述
-    btn_post_bounty: 提交悬赏任务
+    btn_post_bounty: 提交项目需求
     btn_save_edits: 保存更改
     answer_question: 回复自己的问题
     post_question&answer: 提交问题和回复
@@ -866,7 +889,7 @@ ui:
       question: 问题
       article: 文章
       assetbun: 云盘资源
-      bounty: 悬赏任务
+      bounty: 项目需求
       tag: 标签
       user: 用户
       profile: 用户主页
@@ -906,6 +929,8 @@ ui:
     login_to_continue: 登录以继续
     info_sign: 没有账户？<1>注册</1>
     info_login: 已经有账户？<1>登录</1>
+    info_assetbun: 或有资源需要存储? <1>资产包子云盘</1>
+    info_answer: 或有疑问需要AI帮忙? <1>点识成金</1>
     agreements: 登录即表示您同意<1>隐私政策</1>和<3>服务条款</3>。
     forgot_pass: 忘记密码?
     name:
@@ -1066,15 +1091,19 @@ ui:
   related_question:
     title: 相关问题
     answers: 个回复
+    integral: 积分
   related_article:
     title: 相关文章
     answers: 个回复
+    integral: 积分
   related_assetbun:
     title: 相关资源
     answers: 个回复
+    integral: 积分
   related_bounty:
-    title: 相关悬赏任务
+    title: 相关项目需求
     answers: 个回复
+    integral: 积分
   invite_to_answer:
     title: 受邀人
     desc: 邀请你认为可能知道答案的人。
@@ -1083,9 +1112,16 @@ ui:
     search: 搜索人员
   question_detail:
     action: 操作
+    best_answer: 最佳答案
+    accept_title: 是否采纳回复
+    warn_accept: 采纳该回复会把当前积分给到该用户，并且后续无法取消采纳，是否采纳该回复?
+    not_accept: 花费积分的帖子对回复采纳后无法进行取消采纳的操作
+    accept: 采纳
+    integral: 积分
     ai_reply: 请AI回复该主题
     ai_reply_him: 请AI回复他
     ai_commented: 此评论为AI回复
+    ok: 确定
     Asked: 提交于
     asked: 提交于
     update: 修改于
@@ -1148,11 +1184,15 @@ ui:
       confirm_btn: 置顶
   delete:
     title: 删除
+    question_score: >-
+      我们不建议 <strong>删除有回复的帖子</strong>。因为这样做会使得后来的读者无法从该帖子中获得帮助。</p><p>如果删除过多有回复的帖子，你的账号将会被禁止提问。你确定要删除吗？<strong>(删除后积分将返还至您的账户)</strong>
     question: >-
       我们不建议 <strong>删除有回复的帖子</strong>。因为这样做会使得后来的读者无法从该帖子中获得帮助。</p><p>如果删除过多有回复的帖子，你的账号将会被禁止提问。你确定要删除吗？
     answer_accepted: >-
       <p>我们不建议<strong>删除被采纳的回复</strong>。因为这样做会使得后来的读者无法从该帖子中获得帮助。</p>如果删除过多被采纳的回复，你的账号将会被禁止回复任何提问。你确定要删除吗？
     other: 你确定要删除？
+    other_score: 你确定要删除？<strong>(删除后积分将返还至您的账户)</strong>
+    answer_other: 你确定要删除？
     tip_answer_deleted: 该回复已被删除
     undelete_title: 撤销删除本帖
     undelete_desc: 你确定你要撤销删除吗？
@@ -1257,22 +1297,34 @@ ui:
     follow_tag_tip: 关注标签来筛选你的问题列表。
     hot_questions: 热门问题
     all_questions: 全部问题
+    score_payment: 积分付款解锁内容
+    is_score_payment: 该帖子需要积分付款才可解锁，是否解锁?(如积分不足会自动跳转至积分充值界面)
+    unlock: 解锁
+    qustions: 问题
+    articles: 文章
+    assetbuns: 网盘资源
+    bounties: 项目需求
+    aipics: AI图集
     all_articles: 全部文章
     hot_articles: 热门文章
     all_assetbuns: 全部云盘资源
     hot_assetbuns: 热门资源
-    all_bounties: 全部悬赏任务
-    hot_bounties: 热门悬赏任务
+    all_bounties: 全部项目需求
+    hot_bounties: 热门项目需求
     all_aipics: 全部AI图集
     hot_aipics: 热门AI图集
     x_questions: "{{ count }} 个问题"
     x_answers: "{{ count }} 个回复"
+    x_integral: "{{ count }} 个积分"
     questions: 问题
     answers: 回复
     newest: 最新
     active: 活跃
     frequent: 浏览量
     score: 评分
+    integral: 积分
+    non-integral: 非积分
+    all: 全部
     unanswered: 未回复
     modified: 更新于
     answered: 回复于
@@ -1287,7 +1339,7 @@ ui:
     questions: 问题
     articles: 文章
     assetbuns: 资源
-    bounties: 悬赏
+    bounties: 项目
     question: 问题
     bookmarks: 收藏
     reputation: 声望
@@ -1295,6 +1347,7 @@ ui:
     votes: 得票
     newest: 最新
     score: 评分
+    integral: 积分
     edit_profile: 编辑资料
     visited_x_days: "已访问 {{ count }} 天"
     viewed: 浏览次数
@@ -1316,6 +1369,9 @@ ui:
     x_votes: 得票
     x_answers: 个回复
     x_questions: 个问题
+    x_integral: 个积分
+    User: 普通用户
+    Admin: 管理员
   install:
     title: 回复
     next: 下一步
@@ -1409,6 +1465,7 @@ ui:
   counts:
     views: 次浏览
     votes: 个点赞
+    score: 积分
     answers: 个回复
     accepted: 已被采纳
   page_error:

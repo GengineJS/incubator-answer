@@ -97,6 +97,7 @@ const Index: FC<Props> = ({ data }) => {
             votes: data.object?.vote_count,
             answers: data.object?.answer_count,
             views: 0,
+            score: data.object?.score,
           }}
         />
       </div>

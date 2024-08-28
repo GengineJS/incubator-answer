@@ -23,6 +23,8 @@ import { useTranslation } from 'react-i18next';
 import classnames from 'classnames';
 
 import { siteInfoStore } from '@/stores';
+import { isAssetBunPageType } from '@/common/functions';
+import { assetBunName } from '@/common/constants';
 
 interface Props {
   as?: React.ElementType;
@@ -32,9 +34,12 @@ interface Props {
 const Index: FC<Props> = ({ as: Component = 'h3', className = 'mb-5' }) => {
   const { t } = useTranslation();
   const { name: siteName } = siteInfoStore((_) => _.siteInfo);
+  const isAssetBun = isAssetBunPageType();
+  const site_name = isAssetBun ? assetBunName : siteName;
   return (
     <Component className={classnames('text-center', className)}>
-      {t('website_welcome', { site_name: siteName })}
+      {t('website_welcome', { site_name })}
+      {isAssetBun || <sup>AI</sup>}
     </Component>
   );
 };

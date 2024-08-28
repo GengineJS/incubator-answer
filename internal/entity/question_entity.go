@@ -58,6 +58,19 @@ var AdminQuestionSearchStatusIntToString = map[int]string{
 	QuestionStatusPending:   "pending",
 }
 
+// QuestionBuyer 定义了一个用户购买问题的关系模型
+type QuestionBuyer struct {
+	CreatedAt  time.Time `xorm:"created TIMESTAMP created_at"`
+	UpdatedAt  time.Time `xorm:"updated TIMESTAMP updated_at"`
+	QuestionID string    `xorm:"not null pk BIGINT(20) question_id"`
+	UserID     string    `xorm:"not null pk BIGINT(20) user_id"`
+}
+
+// TableName user role rel table name
+func (QuestionBuyer) TableName() string {
+	return "question_buyer"
+}
+
 // Question question
 type Question struct {
 	ID               string    `xorm:"not null pk BIGINT(20) id"`
@@ -80,6 +93,7 @@ type Question struct {
 	AnswerCount      int       `xorm:"not null default 0 INT(11) answer_count"`
 	CollectionCount  int       `xorm:"not null default 0 INT(11) collection_count"`
 	FollowCount      int       `xorm:"not null default 0 INT(11) follow_count"`
+	Score            int       `xorm:"not null default 0 INT(11) score"`
 	AcceptedAnswerID string    `xorm:"not null default 0 BIGINT(20) accepted_answer_id"`
 	LastAnswerID     string    `xorm:"not null default 0 BIGINT(20) last_answer_id"`
 	PostUpdateTime   time.Time `xorm:"post_update_time TIMESTAMP"`
@@ -87,6 +101,7 @@ type Question struct {
 	AIAnswerReplied  bool      `xorm:"not null default false BOOL ai_answer_replied"`
 	AICommentReplied bool      `xorm:"not null default false BOOL ai_comment_replied"`
 	IsAI             bool      `xorm:"not null default false BOOL is_ai"`
+	BuyerUserIds     []string  `xorm:"-"` // 添加这个字段来存储购买者的用户ID列表
 }
 
 // TableName question table name

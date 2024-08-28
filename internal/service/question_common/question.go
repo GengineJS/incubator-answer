@@ -51,11 +51,13 @@ import (
 // QuestionRepo question repository
 type QuestionRepo interface {
 	AddQuestion(ctx context.Context, question *entity.Question) (err error)
+	GetBuyers(ctx context.Context, qid string) ([]entity.QuestionBuyer, error)
 	RemoveQuestion(ctx context.Context, id string) (err error)
+	HandleQuestionBuy(ctx context.Context, buy *schema.HandleQuestionBuyReq) (err error)
 	UpdateQuestion(ctx context.Context, question *entity.Question, Cols []string) (err error)
 	GetQuestion(ctx context.Context, id string) (question *entity.Question, exist bool, err error)
 	GetQuestionList(ctx context.Context, question *entity.Question) (questions []*entity.Question, err error)
-	GetQuestionPage(ctx context.Context, currType entity.QuestionType, page, pageSize int, tagIDs []string, userID, orderCond string, inDays int, showHidden, showPending bool) (
+	GetQuestionPage(ctx context.Context, currType entity.QuestionType, page, pageSize int, tagIDs []string, userID, orderCond string, orderType string, inDays int, showHidden, showPending bool) (
 		questionList []*entity.Question, total int64, err error)
 	UpdateQuestionStatus(ctx context.Context, questionID string, status int) (err error)
 	UpdateQuestionStatusWithOutUpdateTime(ctx context.Context, question *entity.Question) (err error)
@@ -331,6 +333,12 @@ func (qs *QuestionCommon) Info(ctx context.Context, questionID string, loginUser
 	if len(collectedMap) > 0 {
 		resp.Collected = true
 	}
+	resp.Score = questionInfo.Score
+	buyers, _ := qs.questionRepo.GetBuyers(ctx, questionID)
+	resp.BuyerUserIds = make([]string, len(buyers))
+	for j, buyer := range buyers {
+		resp.BuyerUserIds[j] = buyer.UserID
+	}
 	return resp, nil
 }
 
@@ -341,6 +349,7 @@ func (qs *QuestionCommon) FormatQuestionsPage(
 	questionIDs := make([]string, 0)
 	userIDs := make([]string, 0)
 	for _, questionInfo := range questionList {
+		buyers, _ := qs.questionRepo.GetBuyers(ctx, questionInfo.ID)
 		t := &schema.QuestionPageResp{
 			ID:               questionInfo.ID,
 			CreatedAt:        questionInfo.CreatedAt.Unix(),
@@ -348,6 +357,7 @@ func (qs *QuestionCommon) FormatQuestionsPage(
 			UrlTitle:         htmltext.UrlTitle(questionInfo.Title),
 			Description:      htmltext.FetchExcerpt(questionInfo.ParsedText, "...", 240),
 			Status:           questionInfo.Status,
+			Score:            questionInfo.Score,
 			ViewCount:        questionInfo.ViewCount,
 			UniqueViewCount:  questionInfo.UniqueViewCount,
 			VoteCount:        questionInfo.VoteCount,
@@ -357,10 +367,14 @@ func (qs *QuestionCommon) FormatQuestionsPage(
 			AcceptedAnswerID: questionInfo.AcceptedAnswerID,
 			LastAnswerID:     questionInfo.LastAnswerID,
 			Pin:              questionInfo.Pin,
+			UserID:           questionInfo.UserID,
 			Show:             questionInfo.Show,
 			ContentType:      questionInfo.ContentType,
 		}
-
+		t.BuyerUserIds = make([]string, len(buyers))
+		for j, buyer := range buyers {
+			t.BuyerUserIds[j] = buyer.UserID
+		}
 		questionIDs = append(questionIDs, questionInfo.ID)
 		userIDs = append(userIDs, questionInfo.UserID)
 		haveEdited, haveAnswered := false, false
@@ -624,6 +638,7 @@ func (qs *QuestionCommon) ShowFormat(ctx context.Context, data *entity.Question)
 	info.UrlTitle = htmltext.UrlTitle(data.Title)
 	info.Content = data.OriginalText
 	info.HTML = data.ParsedText
+	info.Score = data.Score
 	info.ViewCount = data.ViewCount
 	info.UniqueViewCount = data.UniqueViewCount
 	info.VoteCount = data.VoteCount

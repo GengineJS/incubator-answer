@@ -22,6 +22,8 @@ package content
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/apache/incubator-answer/internal/service/assetbun"
+	"math"
 	"strings"
 	"time"
 
@@ -65,6 +67,7 @@ import (
 // QuestionService user service
 type QuestionService struct {
 	questionRepo                     questioncommon.QuestionRepo
+	assetbunRepo                     assetbun.AssetBunRepo
 	tagCommon                        *tagcommon.TagCommonService
 	questioncommon                   *questioncommon.QuestionCommon
 	userCommon                       *usercommon.UserCommon
@@ -86,6 +89,7 @@ type QuestionService struct {
 
 func NewQuestionService(
 	questionRepo questioncommon.QuestionRepo,
+	assetbunRepo assetbun.AssetBunRepo,
 	tagCommon *tagcommon.TagCommonService,
 	questioncommon *questioncommon.QuestionCommon,
 	userCommon *usercommon.UserCommon,
@@ -106,6 +110,7 @@ func NewQuestionService(
 ) *QuestionService {
 	return &QuestionService{
 		questionRepo:                     questionRepo,
+		assetbunRepo:                     assetbunRepo,
 		tagCommon:                        tagCommon,
 		questioncommon:                   questioncommon,
 		userCommon:                       userCommon,
@@ -203,6 +208,33 @@ func (qs *QuestionService) AddQuestionCheckTags(ctx context.Context, Tags []*ent
 	}
 	return []string{}, nil
 }
+
+func (qs *QuestionService) HandleQuestionBuy(ctx context.Context, buy *schema.HandleQuestionBuyReq) error {
+	// session := qs.data.DB.Context(ctx).Table("question_buyer")
+	userId := buy.UserBuyID
+	questionID := uid.DeShortID(buy.QuestionID)
+	question, exist, err := qs.questionRepo.GetQuestion(ctx, questionID)
+	if !exist {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	score := question.Score
+	err = qs.questionRepo.HandleQuestionBuy(ctx, buy)
+	if err == nil {
+		// 用户可能下载有折扣
+		downScore := qs.assetbunRepo.GetRealDownloadScore(ctx, userId, score)
+		qs.assetbunRepo.SubScore(ctx, userId, downScore)
+		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, userId, question.ID, userId, question.Title, constant.NotificationSubIntegral, 0, downScore)
+		// 平台服务费
+		realScore := qs.assetbunRepo.GetRealPublishScore(ctx, question.UserID, downScore)
+		qs.assetbunRepo.OffsetScore(ctx, question.UserID, realScore)
+		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, userId, question.ID, question.UserID, question.Title, constant.NotificationPayIntegral, downScore, realScore)
+	}
+	return err
+}
+
 func (qs *QuestionService) CheckAddQuestion(ctx context.Context, req *schema.QuestionAdd) (errorlist any, err error) {
 	if len(req.Tags) == 0 {
 		errorlist := make([]*validator.FormErrorField, 0)
@@ -309,6 +341,7 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 	question := &entity.Question{}
 	now := time.Now()
 	question.UserID = req.UserID
+	question.Score = req.Score
 	question.Title = req.Title
 	question.OriginalText = req.Content
 	question.ParsedText = req.HTML
@@ -323,6 +356,14 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 	question.Pin = entity.QuestionUnPin
 	question.Show = entity.QuestionShow
 	question.ContentType = int(req.ContentType)
+	isPayType := false
+	if req.ContentType != entity.TypeArticle && req.ContentType != entity.TypeAiPic {
+		err = qs.assetbunRepo.SubScore(ctx, req.UserID, req.Score)
+		isPayType = true
+		if err != nil {
+			return
+		}
+	}
 	//question.UpdatedAt = nil
 	err = qs.questionRepo.AddQuestion(ctx, question)
 	if err != nil {
@@ -369,7 +410,9 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 			log.Errorf("update user question count error %v", err)
 		}
 	}
-
+	if isPayType {
+		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, req.UserID, question.ID, req.UserID, question.Title, constant.NotificationSubIntegral, 0, req.Score)
+	}
 	qs.activityQueueService.Send(ctx, &schema.ActivityMsg{
 		UserID:           question.UserID,
 		ObjectID:         question.ID,
@@ -536,6 +579,8 @@ func (qs *QuestionService) RemoveQuestion(ctx context.Context, req *schema.Remov
 	// if err != nil {
 	// 	 log.Errorf("user DeleteQuestion rank rollback error %s", err.Error())
 	// }
+	qs.assetbunRepo.OffsetScore(ctx, questionInfo.UserID, questionInfo.Score)
+	qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, questionInfo.UserID, questionInfo.ID, questionInfo.UserID, questionInfo.Title, constant.NotificationDeleteBackIntegral, 0, questionInfo.Score)
 	qs.activityQueueService.Send(ctx, &schema.ActivityMsg{
 		UserID:           questionInfo.UserID,
 		TriggerUserID:    converter.StringToInt64(req.UserID),
@@ -812,7 +857,15 @@ func (qs *QuestionService) UpdateQuestion(ctx context.Context, req *schema.Quest
 	question.PostUpdateTime = now
 	question.UserID = dbinfo.UserID
 	question.LastEditUserID = req.UserID
-
+	// currScore := qs.assetbunRepo.GetScore(ctx, dbinfo.UserID)
+	offsetScore := dbinfo.Score - req.Score
+	qs.assetbunRepo.OffsetScore(ctx, dbinfo.UserID, offsetScore)
+	if offsetScore > 0 {
+		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, dbinfo.UserID, question.ID, dbinfo.UserID, question.Title, constant.NotificationUpdateBackIntegral, 0, offsetScore)
+	} else if offsetScore < 0 {
+		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, dbinfo.UserID, question.ID, dbinfo.UserID, question.Title, constant.NotificationUpdateSubIntegral, 0, int(math.Abs(float64(offsetScore))))
+	}
+	question.Score = req.Score
 	oldTags, tagerr := qs.tagCommon.GetObjectEntityTag(ctx, question.ID)
 	if tagerr != nil {
 		return questionInfo, tagerr
@@ -829,7 +882,7 @@ func (qs *QuestionService) UpdateQuestion(ctx context.Context, req *schema.Quest
 	}
 
 	isChange := qs.tagCommon.CheckTagsIsChange(ctx, tagNameList, oldtagNameList)
-
+	isChange = isChange || req.Score != dbinfo.Score
 	//If the content is the same, ignore it
 	if dbinfo.Title == req.Title && dbinfo.OriginalText == req.Content && !isChange {
 		return
@@ -902,7 +955,7 @@ func (qs *QuestionService) UpdateQuestion(ctx context.Context, req *schema.Quest
 		//Direct modification
 		revisionDTO.Status = entity.RevisionReviewPassStatus
 		//update question to db
-		saveerr := qs.questionRepo.UpdateQuestion(ctx, question, []string{"title", "original_text", "parsed_text", "updated_at", "post_update_time", "last_edit_user_id"})
+		saveerr := qs.questionRepo.UpdateQuestion(ctx, question, []string{"title", "score", "original_text", "parsed_text", "updated_at", "post_update_time", "last_edit_user_id"})
 		if saveerr != nil {
 			return questionInfo, saveerr
 		}
@@ -1104,6 +1157,7 @@ func (qs *QuestionService) PersonalAnswerPage(ctx context.Context, req *schema.P
 		info := &schema.UserAnswerInfo{}
 		_ = copier.Copy(info, item)
 		info.AnswerID = item.ID
+		info.Score = item.QuestionInfo.Score
 		info.QuestionID = item.QuestionID
 		if item.QuestionInfo.Status == entity.QuestionStatusDeleted {
 			info.QuestionInfo.Title = "Deleted question"
@@ -1332,7 +1386,7 @@ func (qs *QuestionService) GetQuestionPage(ctx context.Context, req *schema.Ques
 		req.UserIDBeSearched = userinfo.ID
 	}
 	questionList, total, err := qs.questionRepo.GetQuestionPage(ctx, req.ContentType, req.Page, req.PageSize,
-		tagIDs, req.UserIDBeSearched, req.OrderCond, req.InDays, showHidden, req.ShowPending)
+		tagIDs, req.UserIDBeSearched, req.OrderCond, req.OrderType, req.InDays, showHidden, req.ShowPending)
 	if err != nil {
 		return nil, 0, err
 	}

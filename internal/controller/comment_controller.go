@@ -20,8 +20,6 @@
 package controller
 
 import (
-	"fmt"
-	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/base/handler"
 	"github.com/apache/incubator-answer/internal/base/middleware"
 	"github.com/apache/incubator-answer/internal/base/reason"
@@ -32,15 +30,13 @@ import (
 	"github.com/apache/incubator-answer/internal/service/action"
 	"github.com/apache/incubator-answer/internal/service/comment"
 	"github.com/apache/incubator-answer/internal/service/content"
+	"github.com/apache/incubator-answer/internal/service/object_info"
 	"github.com/apache/incubator-answer/internal/service/permission"
 	"github.com/apache/incubator-answer/internal/service/rank"
 	"github.com/apache/incubator-answer/pkg/uid"
 	"github.com/gin-gonic/gin"
-	"github.com/russross/blackfriday/v2"
 	"github.com/segmentfault/pacman/errors"
-	"github.com/xinggaoya/qwen-sdk/qwen"
 	"net/http"
-	"regexp"
 )
 
 // CommentController comment controller
@@ -66,68 +62,19 @@ func NewCommentController(
 	}
 }
 
-func removePTags(input string) string {
-	// 使用正则表达式匹配<p>和</p>标签并替换为空字符串
-	re := regexp.MustCompile(`(?i)<p\b[^>]*>|</p>`)
-	return re.ReplaceAllString(input, "")
-}
-
-func (cc *CommentController) addAIMsg(ctx *gin.Context, messages []qwen.Messages, objId string) (msg []qwen.Messages) {
-	objInfo, _ := cc.commentService.GetCommentFromObject(ctx, objId)
-	if objInfo == nil {
-		return messages
-	}
-	role := qwen.ChatUser
-	if objInfo.IsAI {
-		role = qwen.ChatBot
-	}
-	if objInfo.ObjectType == constant.QuestionObjectType {
-		messages = append(messages, qwen.Messages{Role: role, Content: objInfo.Title})
-		messages = append(messages, qwen.Messages{Role: role, Content: removePTags(objInfo.Content)})
-	} else if objInfo.ObjectType == constant.AnswerObjectType {
-		messages = cc.addAIMsg(ctx, messages, objInfo.QuestionID)
-		messages = append(messages, qwen.Messages{Role: role, Content: removePTags(objInfo.Content)})
-	} else if objInfo.ObjectType == constant.CommentObjectType {
-		if len(objInfo.ReCommentID) != 0 {
-			messages = cc.addAIMsg(ctx, messages, objInfo.ReCommentID)
-		} else {
-			if len(objInfo.AnswerID) > 0 && objInfo.AnswerID != "0" {
-				messages = cc.addAIMsg(ctx, messages, objInfo.AnswerID)
-			} else {
-				messages = cc.addAIMsg(ctx, messages, objInfo.QuestionID)
-			}
-		}
-		messages = append(messages, qwen.Messages{Role: role, Content: removePTags(objInfo.Content)})
-	}
-	cc.commentService.UpdateAIReplied(ctx, objId)
-	return messages
-}
-
 func (cc *CommentController) AddAIComment(ctx *gin.Context, service *content.AIQWenService) {
+	cc.addComment(ctx, service)
+}
+
+func (cc *CommentController) addComment(ctx *gin.Context, service *content.AIQWenService) {
 	req := &schema.AddCommentReq{}
 	if handler.BindAndCheck(ctx, req) {
 		return
 	}
-	var messages []qwen.Messages
-	req.ObjectID = uid.DeShortID(req.ObjectID)
-	if len(req.ReplyCommentID) > 0 {
-		messages = cc.addAIMsg(ctx, messages, uid.DeShortID(req.ReplyCommentID))
-	} else {
-		messages = cc.addAIMsg(ctx, messages, uid.DeShortID(req.ObjectID))
+	if service != nil {
+		req.IsAI = true
+		req.OriginalText, req.ParsedText = service.GetAIReply(ctx, req.ObjectID, req.ReplyCommentID, object_info.AICommentType)
 	}
-
-	// 获取AI对消息的回复
-	aiResp, aiErr := service.Client.GetAIReply(messages)
-	if aiErr != nil {
-		fmt.Printf("获取AI回复失败：%v\n", aiErr)
-		return
-	}
-
-	// 打印收到的回复
-	fmt.Printf("收到的回复：%v\n", aiResp.Output.Text)
-	req.OriginalText = aiResp.Output.Text
-	html := blackfriday.Run([]byte(req.OriginalText))
-	req.ParsedText = string(html)
 	reject, rejectKey := cc.rateLimitMiddleware.DuplicateRequestRejection(ctx, req)
 	if reject {
 		return
@@ -138,7 +85,7 @@ func (cc *CommentController) AddAIComment(ctx *gin.Context, service *content.AIQ
 			cc.rateLimitMiddleware.DuplicateRequestClear(ctx, rejectKey)
 		}
 	}()
-
+	req.ObjectID = uid.DeShortID(req.ObjectID)
 	req.UserID = middleware.GetLoginUserIDFromContext(ctx)
 
 	canList, err := cc.rankService.CheckOperationPermissions(ctx, req.UserID, []string{
@@ -164,7 +111,7 @@ func (cc *CommentController) AddAIComment(ctx *gin.Context, service *content.AIQ
 			return
 		}
 	}
-	req.IsAI = true
+
 	req.CanAdd = canList[0]
 	req.CanEdit = canList[1]
 	req.CanDelete = canList[2]
@@ -191,60 +138,7 @@ func (cc *CommentController) AddAIComment(ctx *gin.Context, service *content.AIQ
 // @Success 200 {object} handler.RespBody{data=schema.GetCommentResp}
 // @Router /answer/api/v1/comment [post]
 func (cc *CommentController) AddComment(ctx *gin.Context) {
-	req := &schema.AddCommentReq{}
-	if handler.BindAndCheck(ctx, req) {
-		return
-	}
-	reject, rejectKey := cc.rateLimitMiddleware.DuplicateRequestRejection(ctx, req)
-	if reject {
-		return
-	}
-	defer func() {
-		// If status is not 200 means that the bad request has been returned, so the record should be cleared
-		if ctx.Writer.Status() != http.StatusOK {
-			cc.rateLimitMiddleware.DuplicateRequestClear(ctx, rejectKey)
-		}
-	}()
-	req.ObjectID = uid.DeShortID(req.ObjectID)
-	req.UserID = middleware.GetLoginUserIDFromContext(ctx)
-
-	canList, err := cc.rankService.CheckOperationPermissions(ctx, req.UserID, []string{
-		permission.CommentAdd,
-		permission.CommentEdit,
-		permission.CommentDelete,
-		permission.LinkUrlLimit,
-	})
-	if err != nil {
-		handler.HandleResponse(ctx, err, nil)
-		return
-	}
-	linkUrlLimitUser := canList[3]
-	isAdmin := middleware.GetUserIsAdminModerator(ctx)
-	if !isAdmin || !linkUrlLimitUser {
-		captchaPass := cc.actionService.ActionRecordVerifyCaptcha(ctx, entity.CaptchaActionComment, req.UserID, req.CaptchaID, req.CaptchaCode)
-		if !captchaPass {
-			errFields := append([]*validator.FormErrorField{}, &validator.FormErrorField{
-				ErrorField: "captcha_code",
-				ErrorMsg:   translator.Tr(handler.GetLang(ctx), reason.CaptchaVerificationFailed),
-			})
-			handler.HandleResponse(ctx, errors.BadRequest(reason.CaptchaVerificationFailed), errFields)
-			return
-		}
-	}
-
-	req.CanAdd = canList[0]
-	req.CanEdit = canList[1]
-	req.CanDelete = canList[2]
-	if !req.CanAdd {
-		handler.HandleResponse(ctx, errors.Forbidden(reason.RankFailToMeetTheCondition), nil)
-		return
-	}
-
-	resp, err := cc.commentService.AddComment(ctx, req)
-	if !isAdmin || !linkUrlLimitUser {
-		cc.actionService.ActionRecordAdd(ctx, entity.CaptchaActionComment, req.UserID)
-	}
-	handler.HandleResponse(ctx, err, resp)
+	cc.addComment(ctx, nil)
 }
 
 // RemoveComment remove comment

@@ -116,7 +116,7 @@ func NewCommentService(
 	}
 }
 
-func (cs *CommentService) UpdateAIReplied(ctx context.Context, objectID string) {
+func (cs *CommentService) UpdateAIReplied(ctx context.Context, objectID string, reType object_info.AIReplyType) {
 	objInfo, _ := cs.objectInfoService.GetInfo(ctx, objectID)
 	if objInfo.ObjectType == constant.CommentObjectType {
 		replyComment, _, _ := cs.commentCommonRepo.GetComment(ctx, objectID)
@@ -125,7 +125,7 @@ func (cs *CommentService) UpdateAIReplied(ctx context.Context, objectID string) 
 			cs.commentRepo.UpdateCommentAI(ctx, replyComment.ID, replyComment.IsAI, replyComment.AIReplied)
 		}
 	} else {
-		cs.objectInfoService.UpdateQuesOrAnswerAIReply(ctx, objectID, object_info.AICommentType)
+		cs.objectInfoService.UpdateQuesOrAnswerAIReply(ctx, objectID, reType)
 	}
 }
 

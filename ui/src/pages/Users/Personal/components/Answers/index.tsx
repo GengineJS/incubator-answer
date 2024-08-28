@@ -24,6 +24,9 @@ import { Link } from 'react-router-dom';
 
 import { FormatTime, Tag, Counts } from '@/components';
 import { pathFactory } from '@/router/pathFactory';
+import IntegralLink from '@/components/IntegralLink';
+import { isModerator } from '@/common/constants';
+import { loggedUserInfoStore } from '@/stores';
 
 interface Props {
   visible: boolean;
@@ -31,6 +34,7 @@ interface Props {
 }
 const Index: FC<Props> = ({ visible, data }) => {
   const { t } = useTranslation('translation', { keyPrefix: 'personal' });
+  const user = loggedUserInfoStore((state) => state.user);
   if (!visible || !data?.length) {
     return null;
   }
@@ -50,6 +54,15 @@ const Index: FC<Props> = ({ visible, data }) => {
                 })}
                 className="text-break">
                 {item.question_info?.title}
+                <IntegralLink
+                  score={item.score}
+                  t={t}
+                  contentType={item.content_type}
+                  isPay={
+                    isModerator(item, user) ||
+                    item.buyer_user_ids.indexOf(user.id) !== -1
+                  }
+                />
               </Link>
             </h6>
             <div className="d-flex align-items-center small text-secondary mb-2">
@@ -60,7 +73,12 @@ const Index: FC<Props> = ({ visible, data }) => {
               />
 
               <Counts
-                data={{ votes: item?.vote_count, views: 0, answers: 0 }}
+                data={{
+                  votes: item?.vote_count,
+                  views: 0,
+                  answers: 0,
+                  score: 0,
+                }}
                 showAnswers={false}
                 showViews={false}
                 showAccepted={item.accepted === 2}

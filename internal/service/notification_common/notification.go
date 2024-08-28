@@ -117,6 +117,7 @@ func (ns *NotificationCommon) AddNotification(ctx context.Context, msg *schema.N
 		},
 		NotificationAction: msg.NotificationAction,
 		Type:               msg.Type,
+		ExtraInfo:          msg.ExtraInfo,
 	}
 	var questionID string // just for notify all followers
 	objInfo, err := ns.objectInfoService.GetInfo(ctx, req.ObjectInfo.ObjectID)

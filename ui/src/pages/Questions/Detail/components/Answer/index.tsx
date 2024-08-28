@@ -31,17 +31,22 @@ import {
   FormatTime,
   htmlRender,
   ImgViewer,
+  Modal,
 } from '@/components';
 import { scrollToElementTop, bgFadeOut } from '@/utils';
 import { AnswerItem } from '@/common/interface';
 import { acceptanceAnswer } from '@/services';
 import { useRenderHtmlPlugin } from '@/utils/pluginKit';
+import { PayContentType } from '@/common/constants';
+import { getUrlQuestionType } from '@/common/functions';
 
 interface Props {
   data: AnswerItem;
   /** router answer id */
   aid?: string;
+  acceptedId?: string;
   canAccept: boolean;
+  score?: number;
   questionTitle: string;
   isLogged: boolean;
   callback: (type: string) => void;
@@ -49,19 +54,49 @@ interface Props {
 const Index: FC<Props> = ({
   aid,
   data,
+  acceptedId,
   isLogged,
+  score = 0,
   questionTitle = '',
   callback,
   canAccept = false,
 }) => {
+  const contentType = getUrlQuestionType();
+  const isPayType = PayContentType.indexOf(contentType) !== -1;
+  const isScoreContent = score && isPayType;
+  const hasAccepted = acceptedId !== '0' && isScoreContent;
+  if (hasAccepted) {
+    canAccept = data.accepted === 2;
+  }
   const { t } = useTranslation('translation', {
     keyPrefix: 'question_detail',
   });
+
   const [searchParams] = useSearchParams();
   const answerRef = useRef<HTMLDivElement>(null);
   useRenderHtmlPlugin(answerRef.current);
-
+  const isAccepted = data?.accepted === 2;
   const acceptAnswer = () => {
+    if (isScoreContent) {
+      Modal.confirm({
+        title: t('accept_title'),
+        content: isAccepted ? t('not_accept') : t('warn_accept'),
+        cancelBtnVariant: 'link',
+        confirmBtnVariant: 'danger',
+        confirmText: isAccepted ? t('ok') : t('accept'),
+        onConfirm: () => {
+          if (isAccepted) return;
+          acceptanceAnswer({
+            question_id: data.question_id,
+            answer_id: data.accepted === 2 ? '0' : data.id,
+            score: isScoreContent ? score : 0,
+          }).then(() => {
+            callback?.('');
+          });
+        },
+      });
+      return;
+    }
     acceptanceAnswer({
       question_id: data.question_id,
       answer_id: data.accepted === 2 ? '0' : data.id,
@@ -105,11 +140,11 @@ const Index: FC<Props> = ({
         </Alert>
       )}
 
-      {data?.accepted === 2 && (
+      {isAccepted && (
         <div className="mb-3 lh-1">
           <Badge bg="success" pill>
             <Icon name="check-circle-fill me-1" />
-            Best answer
+            {t('best_answer')}
           </Badge>
         </div>
       )}
@@ -159,6 +194,7 @@ const Index: FC<Props> = ({
           <Operate
             qid={data.question_id}
             aid={data.id}
+            score={score}
             memberActions={data?.member_actions}
             type="answer"
             isAccepted={data.accepted === 2}

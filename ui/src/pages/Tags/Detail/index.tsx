@@ -36,7 +36,10 @@ import {
   useQuerySynonymsTags,
   useQuestionList,
 } from '@/services';
-import QuestionList, { QUESTION_ORDER_KEYS } from '@/components/QuestionList';
+import QuestionList, {
+  QUESTION_ORDER_KEYS,
+  TYPE_ORDER_KEYS,
+} from '@/components/QuestionList';
 import HotQuestions from '@/components/HotQuestions';
 import { escapeRemove, guard, Storage, scrollToDocTop } from '@/utils';
 import { pathFactory } from '@/router/pathFactory';
@@ -55,11 +58,13 @@ const Index: FC = () => {
     Storage.set(QUESTIONS_ORDER_STORAGE_KEY, curOrder);
   }
   const curPage = Number(urlSearchParams.get('page')) || 1;
+  const curOrderType = urlSearchParams.get('order_type') || TYPE_ORDER_KEYS[0];
   const reqParams: Type.QueryQuestionsReq = {
     page_size: 20,
     page: curPage,
     order: curOrder as Type.QuestionOrderBy,
     tag: routeParams.tagName,
+    order_type: curOrderType,
   };
   const [tagInfo, setTagInfo] = useState<any>({});
   const [tagFollow, setTagFollow] = useState<Type.FollowParams>();

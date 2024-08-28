@@ -19,19 +19,24 @@
 
 import { FC } from 'react';
 import { Card, ListGroup, ListGroupItem } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { pathFactory } from '@/router/pathFactory';
 import { Icon } from '@/components';
 import { useHotQuestions } from '@/services';
 import { ContentTypeStrQuery } from '@/common/i18n';
 import { getUrlQuestionType } from '@/common/functions';
+import IntegralLink from '@/components/IntegralLink';
+import { isModerator } from '@/common/constants';
+import { loggedUserInfoStore } from '@/stores';
+import handleOpenPayScore from '@/components/Pay';
 
 const HotQuestions: FC = () => {
   const { t } = useTranslation('translation', { keyPrefix: 'question' });
   const { data: questionRes } = useHotQuestions();
+  const userInfo = loggedUserInfoStore((state) => state.user);
   const contentType = getUrlQuestionType();
+  const navigate = useNavigate();
   if (!questionRes?.list?.length) {
     return null;
   }
@@ -46,9 +51,24 @@ const HotQuestions: FC = () => {
             <ListGroupItem
               key={li.id}
               as={Link}
-              to={pathFactory.questionLanding(li.id, li.url_title, contentType)}
+              to="."
+              onClick={(event) => {
+                event.preventDefault();
+                handleOpenPayScore(t, navigate, userInfo, li);
+              }}
               action>
-              <div className="link-dark">{li.title}</div>
+              <div className="link-dark">
+                {li.title}
+                <IntegralLink
+                  score={li.score}
+                  t={t}
+                  contentType={contentType}
+                  isPay={
+                    isModerator(li, userInfo) ||
+                    li.buyer_user_ids.indexOf(userInfo.id) !== -1
+                  }
+                />
+              </div>
               {li.answer_count > 0 ? (
                 <div
                   className={`d-flex align-items-center small mt-1 ${

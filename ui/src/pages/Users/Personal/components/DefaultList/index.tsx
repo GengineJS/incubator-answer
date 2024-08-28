@@ -20,11 +20,14 @@
 import { FC, memo } from 'react';
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { FormatTime, Tag, BaseUserCard, Counts } from '@/components';
 import { pathFactory } from '@/router/pathFactory';
-import { QueryContentTypeFromStr } from '@/common/constants';
+import { isModerator, QueryContentTypeFromStr } from '@/common/constants';
+import IntegralLink from '@/components/IntegralLink';
+import { loggedUserInfoStore } from '@/stores';
+import handleOpenPayScore from '@/components/Pay';
 
 interface Props {
   visible: boolean;
@@ -34,6 +37,9 @@ interface Props {
 
 const Index: FC<Props> = ({ visible, tabName, data }) => {
   const { t } = useTranslation('translation', { keyPrefix: 'personal' });
+  const { t: qt } = useTranslation('translation', { keyPrefix: 'question' });
+  const userInfo = loggedUserInfoStore((state) => state.user);
+  const navigate = useNavigate();
   if (!visible) {
     return null;
   }
@@ -55,17 +61,36 @@ const Index: FC<Props> = ({ visible, tabName, data }) => {
             <h6 className="mb-2">
               <Link
                 className="text-break"
-                to={pathFactory.questionLanding(
-                  tabName === 'questions' ||
-                    tabName === 'articles' ||
-                    tabName === 'assetbuns' ||
-                    tabName === 'bounties'
-                    ? item.question_id
-                    : item.id,
-                  item.url_title,
-                  QueryContentTypeFromStr[tabName],
-                )}>
+                to="."
+                onClick={(event) => {
+                  event.preventDefault();
+                  handleOpenPayScore(
+                    qt,
+                    navigate,
+                    userInfo,
+                    item,
+                    pathFactory.questionLanding(
+                      tabName === 'questions' ||
+                        tabName === 'articles' ||
+                        tabName === 'assetbuns' ||
+                        tabName === 'bounties'
+                        ? item.question_id
+                        : item.id,
+                      item.url_title,
+                      QueryContentTypeFromStr[tabName],
+                    ),
+                  );
+                }}>
                 {item.title}
+                <IntegralLink
+                  score={item.score}
+                  t={t}
+                  contentType={item.content_type}
+                  isPay={
+                    isModerator(item, userInfo) ||
+                    item.buyer_user_ids.indexOf(userInfo.id) !== -1
+                  }
+                />
                 {(tabName === 'questions' ||
                   tabName === 'articles' ||
                   tabName === 'assetbuns' ||
@@ -97,6 +122,7 @@ const Index: FC<Props> = ({ visible, tabName, data }) => {
                   votes: item.vote_count,
                   answers: item.answer_count,
                   views: item.view_count,
+                  score: item.score,
                 }}
               />
             </div>

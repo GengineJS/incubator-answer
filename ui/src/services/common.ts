@@ -202,6 +202,10 @@ export const postAnswer = (params: Type.PostAnswerReq) => {
   return request.post('/answer/api/v1/answer', params);
 };
 
+export const postAIAnswer = (params: Type.PostAnswerReq) => {
+  return request.post('/answer/api/v1/ai/answer', params);
+};
+
 export const bookmark = (params: {
   group_id: string;
   object_id: string;
@@ -230,6 +234,7 @@ export const following = (params: {
 export const acceptanceAnswer = (params: {
   answer_id?: string;
   question_id: string;
+  score?: number;
 }) => {
   return request.post('/answer/api/v1/answer/acceptance', params);
 };
@@ -257,8 +262,16 @@ export const postReport = (
   return request.post('/answer/api/v1/report', params);
 };
 
+export const buyQuestion = (params: {
+  user_id: string;
+  question_id: string;
+}) => {
+  return request.post('/answer/api/v1/question/buy', params);
+};
+
 export const deleteQuestion = (params: {
   id: string;
+  score?: number;
   captcha_code?: string;
   captcha_id?: string;
 }) => {

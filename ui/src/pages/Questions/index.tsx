@@ -38,8 +38,11 @@ import { useQuestionList } from '@/services';
 import * as Type from '@/common/interface';
 import { userCenter, floppyNavigation, Storage } from '@/utils';
 import { QUESTIONS_ORDER_STORAGE_KEY } from '@/common/constants';
-import { QUESTION_ORDER_KEYS } from '@/components/QuestionList';
-import { getUrlQuestionType } from '@/common/functions';
+import {
+  QUESTION_ORDER_KEYS,
+  TYPE_ORDER_KEYS,
+} from '@/components/QuestionList';
+import { getUrlQuestionType, isAssetBunPageType } from '@/common/functions';
 
 const Questions: FC = () => {
   const { t } = useTranslation('translation', { keyPrefix: 'question' });
@@ -53,10 +56,12 @@ const Questions: FC = () => {
   if (curOrder !== storageOrder) {
     Storage.set(QUESTIONS_ORDER_STORAGE_KEY, curOrder);
   }
+  const curOrderType = urlSearchParams.get('order_type') || TYPE_ORDER_KEYS[0];
   const reqParams: Type.QueryQuestionsReq = {
     page_size: 20,
     page: curPage,
     order: curOrder as Type.QuestionOrderBy,
+    order_type: curOrderType,
   };
   reqParams.content_type = getUrlQuestionType();
   const { data: listData, isLoading: listLoading } = useQuestionList(reqParams);
@@ -69,7 +74,7 @@ const Questions: FC = () => {
     slogan = `${siteInfo.short_description}`;
   }
   const { login: loginSetting } = loginSettingStore();
-
+  const isAssetBun = isAssetBunPageType();
   usePageTags({ title: pageTitle, subtitle: slogan });
   return (
     <Row className="pt-4 mb-5">
@@ -90,6 +95,7 @@ const Questions: FC = () => {
                 {t2('website_welcome', {
                   site_name: siteInfo.name,
                 })}
+                {isAssetBun || <sup>AI</sup>}
               </h5>
               <p className="card-text">{siteInfo.description}</p>
               <Link

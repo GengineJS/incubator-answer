@@ -159,6 +159,17 @@ func (qc *QuestionController) OperationQuestion(ctx *gin.Context) {
 	handler.HandleResponse(ctx, err, nil)
 }
 
+// 触发购买问题路径处理逻辑
+// @Router  /answer/api/v1/question/buy [post]
+func (qc *QuestionController) HandleQuestionBuy(ctx *gin.Context) {
+	req := &schema.HandleQuestionBuyReq{}
+	if handler.BindAndCheck(ctx, req) {
+		return
+	}
+	err := qc.questionService.HandleQuestionBuy(ctx, req)
+	handler.HandleResponse(ctx, err, nil)
+}
+
 // CloseQuestion Close question
 // @Summary Close question
 // @Description Close question

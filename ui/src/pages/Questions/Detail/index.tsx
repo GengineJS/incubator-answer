@@ -95,7 +95,7 @@ const Index = () => {
       window.history.replaceState(null, '', newLocation.pathname);
     }
   }, [location.state]);
-
+  const answerList = answers?.list;
   const requestAnswers = async () => {
     const res = await getAnswers({
       order: order === 'updated' || order === 'created' ? order : 'default',
@@ -116,7 +116,6 @@ const Index = () => {
           }
           return null;
         }
-
         return v;
       });
 
@@ -258,11 +257,13 @@ const Index = () => {
         {!isLoading && answers.count > 0 && (
           <>
             <AnswerHead count={answers.count} order={order} />
-            {answers?.list?.map((item) => {
+            {answerList?.map((item) => {
               return (
                 <Answer
+                  acceptedId={question?.accepted_answer_id}
                   aid={aid}
                   key={item?.id}
+                  score={question?.score}
                   data={item}
                   questionTitle={question?.title || ''}
                   canAccept={isAuthor || isAdmin || isModerator}

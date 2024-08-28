@@ -135,15 +135,18 @@ func (s *SearchCondition) Convert2PluginSearchCond(page, pageSize int, order str
 }
 
 type SearchObject struct {
-	ID              string `json:"id"`
-	QuestionID      string `json:"question_id"`
-	Title           string `json:"title"`
-	UrlTitle        string `json:"url_title"`
-	Excerpt         string `json:"excerpt"`
-	CreatedAtParsed int64  `json:"created_at"`
-	VoteCount       int    `json:"vote_count"`
-	Accepted        bool   `json:"accepted"`
-	AnswerCount     int    `json:"answer_count"`
+	ID              string   `json:"id"`
+	QuestionID      string   `json:"question_id"`
+	Title           string   `json:"title"`
+	UrlTitle        string   `json:"url_title"`
+	Excerpt         string   `json:"excerpt"`
+	CreatedAtParsed int64    `json:"created_at"`
+	VoteCount       int      `json:"vote_count"`
+	Accepted        bool     `json:"accepted"`
+	AnswerCount     int      `json:"answer_count"`
+	ContentType     int      `json:"content_type"`
+	Score           int      `json:"score"`
+	BuyerUserIds    []string `json:"buyer_user_ids"`
 	// user info
 	UserInfo *SearchObjectUser `json:"user_info"`
 	// tags

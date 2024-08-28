@@ -21,6 +21,7 @@ package user
 
 import (
 	"context"
+	"github.com/apache/incubator-answer/internal/repo/assetbun"
 	"strings"
 	"time"
 
@@ -64,6 +65,7 @@ func (ur *userRepo) AddUser(ctx context.Context, user *entity.User) (err error) 
 		if err != nil {
 			return nil, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 		}
+		assetbun.SyncUserToAB(ctx, ur.data.DB, user)
 		return nil, nil
 	})
 	return
@@ -126,6 +128,7 @@ func (ur *userRepo) UpdateEmailStatus(ctx context.Context, userID string, emailS
 	if err != nil {
 		return err
 	}
+	assetbun.UpdateEmailStatus(ctx, ur.data.DB, userID, emailStatus)
 	return nil
 }
 
@@ -144,6 +147,7 @@ func (ur *userRepo) UpdatePass(ctx context.Context, userID, pass string) error {
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
+	assetbun.UpdatePassword(ctx, ur.data.DB, userID, pass)
 	return nil
 }
 
@@ -152,6 +156,7 @@ func (ur *userRepo) UpdateEmail(ctx context.Context, userID, email string) (err 
 	if err != nil {
 		err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
+	assetbun.UpdateEmail(ctx, ur.data.DB, userID, email)
 	return
 }
 

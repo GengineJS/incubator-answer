@@ -224,7 +224,11 @@ const Index = () => {
       <Row>
         <Col className="page-main flex-auto">
           <a
-            href={pathFactory.questionLanding(qid, data?.question.url_title)}
+            href={pathFactory.questionLanding(
+              qid,
+              data?.question.url_title,
+              data?.question.content_type,
+            )}
             target="_blank"
             rel="noreferrer">
             <h5 className="mb-3">{data?.question.title}</h5>

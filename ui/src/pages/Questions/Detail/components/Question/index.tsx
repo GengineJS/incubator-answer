@@ -37,7 +37,13 @@ import { useRenderHtmlPlugin } from '@/utils/pluginKit';
 import { formatCount, guard } from '@/utils';
 import { following } from '@/services';
 import { pathFactory } from '@/router/pathFactory';
-import { getUrlQuestionType } from '@/common/functions';
+import {
+  getUrlQuestionType,
+  needQuestionToLoginOrUp,
+} from '@/common/functions';
+import IntegralLink from '@/components/IntegralLink';
+import { isModerator } from '@/common/constants';
+import { loggedUserInfoStore } from '@/stores';
 
 interface Props {
   data: any;
@@ -51,11 +57,12 @@ const Index: FC<Props> = ({ data, initPage, hasAnswer, isLogged }) => {
     keyPrefix: 'question_detail',
   });
   const [searchParams] = useSearchParams();
+  // const navigate = useNavigate();
   const [followed, setFollowed] = useState(data?.is_followed);
   const ref = useRef<HTMLDivElement>(null);
   const contentType = getUrlQuestionType();
   useRenderHtmlPlugin(ref.current);
-
+  const userInfo = loggedUserInfoStore((state) => state.user);
   const handleFollow = (e) => {
     e.preventDefault();
     if (!guard.tryNormalLogged(true)) {
@@ -83,10 +90,10 @@ const Index: FC<Props> = ({ data, initPage, hasAnswer, isLogged }) => {
     htmlRender(ref.current);
   }, [ref.current]);
 
-  if (!data?.id) {
+  if (!data?.id || data?.id === '0') {
     return null;
   }
-
+  needQuestionToLoginOrUp(data, userInfo);
   return (
     <div>
       <h1 className="h3 mb-3 text-wrap text-break">
@@ -100,8 +107,21 @@ const Index: FC<Props> = ({ data, initPage, hasAnswer, isLogged }) => {
         <Link
           className="link-dark"
           reloadDocument
-          to={pathFactory.questionLanding(data.id, data.url_title)}>
+          to={pathFactory.questionLanding(
+            data.id,
+            data.url_title,
+            data.content_type,
+          )}>
           {data.title}
+          <IntegralLink
+            score={data.score}
+            t={t}
+            contentType={contentType}
+            isPay={
+              isModerator(data, userInfo) ||
+              (!!userInfo.id && data.buyer_user_ids.indexOf(userInfo.id) !== -1)
+            }
+          />
           {data.status === 2
             ? ` [${t('closed', { keyPrefix: 'question' })}]`
             : ''}
@@ -169,10 +189,11 @@ const Index: FC<Props> = ({ data, initPage, hasAnswer, isLogged }) => {
           <Operate
             qid={data?.id}
             type="question"
+            score={data.score}
             memberActions={data?.member_actions}
             title={data.title}
             hasAnswer={hasAnswer}
-            isAccepted={Boolean(data?.accepted_answer_id)}
+            isAccepted={Boolean(data?.accepted_answer_id !== '0')}
             callback={initPage}
           />
         </div>

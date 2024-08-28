@@ -23,6 +23,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/apache/incubator-answer/internal/service/assetbun"
 	"time"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
@@ -48,7 +49,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/segmentfault/pacman/errors"
 	"github.com/segmentfault/pacman/log"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // UserService user service
@@ -65,6 +65,7 @@ type UserService struct {
 	userNotificationConfigRepo    user_notification_config.UserNotificationConfigRepo
 	userNotificationConfigService *user_notification_config.UserNotificationConfigService
 	questionService               *questioncommon.QuestionCommon
+	assetbunRepo                  assetbun.AssetBunRepo
 }
 
 func NewUserService(userRepo usercommon.UserRepo,
@@ -79,6 +80,7 @@ func NewUserService(userRepo usercommon.UserRepo,
 	userNotificationConfigRepo user_notification_config.UserNotificationConfigRepo,
 	userNotificationConfigService *user_notification_config.UserNotificationConfigService,
 	questionService *questioncommon.QuestionCommon,
+	aseetbunRepo assetbun.AssetBunRepo,
 ) *UserService {
 	return &UserService{
 		userCommonService:             userCommonService,
@@ -93,7 +95,18 @@ func NewUserService(userRepo usercommon.UserRepo,
 		userNotificationConfigRepo:    userNotificationConfigRepo,
 		userNotificationConfigService: userNotificationConfigService,
 		questionService:               questionService,
+		assetbunRepo:                  aseetbunRepo,
 	}
+}
+
+func (us *UserService) GetUserScore(ctx context.Context, userID string) (score int) {
+	score, _ = us.assetbunRepo.GetScore(ctx, userID)
+	return score
+}
+
+func (us *UserService) GetGroupInfo(ctx context.Context, userID string) (group *assetbun.Groups) {
+	group, _ = us.assetbunRepo.GetVIPInfo(ctx, userID)
+	return group
 }
 
 // GetUserInfoByUserID get user info by user id
@@ -119,6 +132,8 @@ func (us *UserService) GetUserInfoByUserID(ctx context.Context, token, userID st
 	resp.Avatar = us.siteInfoService.FormatAvatar(ctx, userInfo.Avatar, userInfo.EMail, userInfo.Status)
 	resp.AccessToken = token
 	resp.HavePassword = len(userInfo.Pass) > 0
+	resp.Score, _ = us.assetbunRepo.GetScore(ctx, userID)
+	resp.GroupInfo, _ = us.assetbunRepo.GetVIPInfo(ctx, userID)
 	return resp, nil
 }
 
@@ -134,7 +149,8 @@ func (us *UserService) GetOtherUserInfoByUsername(ctx context.Context, req *sche
 	resp = &schema.GetOtherUserInfoByUsernameResp{}
 	resp.ConvertFromUserEntity(userInfo)
 	resp.Avatar = us.siteInfoService.FormatAvatar(ctx, userInfo.Avatar, userInfo.EMail, userInfo.Status).GetURL()
-
+	resp.Score, _ = us.assetbunRepo.GetScore(ctx, userInfo.ID)
+	resp.GroupInfo, _ = us.assetbunRepo.GetVIPInfo(ctx, userInfo.ID)
 	// Only the user himself and the administrator can see the hidden questions
 	questionCount, err := us.questionService.GetPersonalUserQuestionCount(ctx, req.UserID, userInfo.ID, req.IsAdmin)
 	if err != nil {
@@ -557,19 +573,24 @@ func (us *UserService) UserVerifyEmail(ctx context.Context, req *schema.UserVeri
 // verifyPassword
 // Compare whether the password is correct
 func (us *UserService) verifyPassword(ctx context.Context, loginPass, userPass string) bool {
-	if len(loginPass) == 0 && len(userPass) == 0 {
-		return true
-	}
-	err := bcrypt.CompareHashAndPassword([]byte(userPass), []byte(loginPass))
-	return err == nil
+	// 之前Answer的实现
+	//if len(loginPass) == 0 && len(userPass) == 0 {
+	//	return true
+	//}
+	//err := bcrypt.CompareHashAndPassword([]byte(userPass), []byte(loginPass))
+	//return err == nil
+	isPass, _ := schema.CheckPassword(loginPass, userPass)
+	return isPass
 }
 
 // encryptPassword
 // The password does irreversible encryption.
 func (us *UserService) encryptPassword(ctx context.Context, Pass string) (string, error) {
-	hashPwd, err := bcrypt.GenerateFromPassword([]byte(Pass), bcrypt.DefaultCost)
+	// 之前answer的实现
+	// hashPwd, err := bcrypt.GenerateFromPassword([]byte(Pass), bcrypt.DefaultCost)
 	// This encrypted string can be saved to the database and can be used as password matching verification
-	return string(hashPwd), err
+	// return string(hashPwd), err
+	return schema.SetPassword(Pass)
 }
 
 // UserChangeEmailSendCode user change email verification

@@ -234,6 +234,7 @@ func (a *AnswerAPIRouter) RegisterAnswerAPIRouter(r *gin.RouterGroup) {
 	r.GET("/personal/collection/page", a.questionController.PersonalCollectionPage)
 
 	// question
+	r.POST("/question/buy", a.questionController.HandleQuestionBuy)
 	r.POST("/question", a.questionController.AddQuestion)
 	r.POST("/question/answer", a.questionController.AddQuestionByAnswer)
 	r.PUT("/question", a.questionController.UpdateQuestion)
@@ -247,6 +248,7 @@ func (a *AnswerAPIRouter) RegisterAnswerAPIRouter(r *gin.RouterGroup) {
 
 	// AI
 	r.POST("/ai/comment", a.aiController.AddComment)
+	r.POST("/ai/answer", a.aiController.AddAnswer)
 
 	// answer
 	r.POST("/answer", a.answerController.Add)

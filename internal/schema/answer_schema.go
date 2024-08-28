@@ -52,6 +52,7 @@ type AnswerAddReq struct {
 	CanEdit     bool   `json:"-"`
 	CanDelete   bool   `json:"-"`
 	CanRecover  bool   `json:"-"`
+	IsAI        bool   `json:"-"`
 	CaptchaID   string `json:"captcha_id"`
 	CaptchaCode string `json:"captcha_code"`
 	IP          string `json:"-"`
@@ -141,6 +142,7 @@ type AdminAnswerInfo struct {
 type AcceptAnswerReq struct {
 	QuestionID string `validate:"required,gt=0,lte=30" json:"question_id"`
 	AnswerID   string `validate:"omitempty" json:"answer_id"`
+	Score      int    `validate:"omitempty" json:"score"`
 	UserID     string `json:"-"`
 }
 

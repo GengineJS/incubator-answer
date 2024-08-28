@@ -21,6 +21,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/apache/incubator-answer/internal/service/object_info"
 	"net/http"
 
 	"github.com/apache/incubator-answer/internal/base/handler"
@@ -180,20 +181,14 @@ func (ac *AnswerController) Get(ctx *gin.Context) {
 	})
 }
 
-// Add godoc
-// @Summary Insert Answer
-// @Description Insert Answer
-// @Tags api-answer
-// @Accept  json
-// @Produce  json
-// @Security ApiKeyAuth
-// @Param data body schema.AnswerAddReq  true "AnswerAddReq"
-// @Success 200 {string} string ""
-// @Router /answer/api/v1/answer [post]
-func (ac *AnswerController) Add(ctx *gin.Context) {
+func (ac *AnswerController) add(ctx *gin.Context, service *content.AIQWenService) {
 	req := &schema.AnswerAddReq{}
 	if handler.BindAndCheck(ctx, req) {
 		return
+	}
+	if service != nil {
+		req.IsAI = true
+		req.Content, req.HTML = service.GetAIReply(ctx, req.QuestionID, "", object_info.AIAnswerType)
 	}
 	reject, rejectKey := ac.rateLimitMiddleware.DuplicateRequestRejection(ctx, req)
 	if reject {
@@ -294,6 +289,24 @@ func (ac *AnswerController) Add(ctx *gin.Context) {
 		"info":     info,
 		"question": questionInfo,
 	})
+}
+
+func (ac *AnswerController) AddAI(ctx *gin.Context, service *content.AIQWenService) {
+	ac.add(ctx, service)
+}
+
+// Add godoc
+// @Summary Insert Answer
+// @Description Insert Answer
+// @Tags api-answer
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param data body schema.AnswerAddReq  true "AnswerAddReq"
+// @Success 200 {string} string ""
+// @Router /answer/api/v1/answer [post]
+func (ac *AnswerController) Add(ctx *gin.Context) {
+	ac.add(ctx, nil)
 }
 
 // Update godoc

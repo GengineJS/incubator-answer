@@ -33,10 +33,12 @@ import {
 } from '@/stores';
 import { RouteAlias } from '@/router/alias';
 import {
+  assetBunSearch,
   LOGGED_TOKEN_STORAGE_KEY,
   REDIRECT_PATH_STORAGE_KEY,
 } from '@/common/constants';
 import Storage from '@/utils/storage';
+import { isAssetBunPageType } from '@/common/functions';
 
 import { setupAppLanguage, setupAppTimeZone, setupAppTheme } from './localize';
 import { floppyNavigation, NavigateConfig } from './floppyNavigation';
@@ -277,7 +279,11 @@ export const allowNewRegistration = () => {
 export const singUpAgent = () => {
   const gr: TGuardResult = { ok: true };
   const signUpUrl = getSignUpUrl();
-  if (signUpUrl !== RouteAlias.signUp) {
+  let routeUrl = RouteAlias.signUp;
+  if (isAssetBunPageType()) {
+    routeUrl += `?${assetBunSearch}`;
+  }
+  if (signUpUrl !== routeUrl) {
     gr.ok = false;
     gr.redirect = signUpUrl;
   }

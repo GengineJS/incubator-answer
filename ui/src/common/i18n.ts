@@ -22,6 +22,13 @@ export const AskPostContentTypeQuery: string[] = [
   'btn_post_bounty',
 ];
 
+export const AskIntegralTypeQuery: string[] = [
+  'answer_integral',
+  'answer_integral',
+  'article_integral',
+  'assetbun_integral',
+  'bounty_integral',
+];
 export const ContentTypeStrQuery: string[] = [
   'questions',
   'questions',

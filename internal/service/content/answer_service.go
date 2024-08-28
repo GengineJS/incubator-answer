@@ -22,6 +22,7 @@ package content
 import (
 	"context"
 	"encoding/json"
+	"github.com/apache/incubator-answer/internal/service/assetbun"
 	"time"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
@@ -53,6 +54,7 @@ import (
 type AnswerService struct {
 	answerRepo                       answercommon.AnswerRepo
 	questionRepo                     questioncommon.QuestionRepo
+	assetbun                         assetbun.AssetBunRepo
 	questionCommon                   *questioncommon.QuestionCommon
 	answerActivityService            *activity.AnswerActivityService
 	userCommon                       *usercommon.UserCommon
@@ -72,6 +74,7 @@ type AnswerService struct {
 func NewAnswerService(
 	answerRepo answercommon.AnswerRepo,
 	questionRepo questioncommon.QuestionRepo,
+	assetbunRepo assetbun.AssetBunRepo,
 	questionCommon *questioncommon.QuestionCommon,
 	userCommon *usercommon.UserCommon,
 	collectionCommon *collectioncommon.CollectionCommon,
@@ -90,6 +93,7 @@ func NewAnswerService(
 	return &AnswerService{
 		answerRepo:                       answerRepo,
 		questionRepo:                     questionRepo,
+		assetbun:                         assetbunRepo,
 		userCommon:                       userCommon,
 		collectionCommon:                 collectionCommon,
 		questionCommon:                   questionCommon,
@@ -236,6 +240,7 @@ func (as *AnswerService) Insert(ctx context.Context, req *schema.AnswerAddReq) (
 	insertData.QuestionID = req.QuestionID
 	insertData.RevisionID = "0"
 	insertData.LastEditUserID = "0"
+	insertData.IsAI = req.IsAI
 	insertData.Status = entity.AnswerStatusPending
 	//insertData.UpdatedAt = now
 	if err = as.answerRepo.AddAnswer(ctx, insertData); err != nil {
@@ -435,7 +440,12 @@ func (as *AnswerService) AcceptAnswer(ctx context.Context, req *schema.AcceptAns
 		}
 		oldAnswerInfo.ID = uid.DeShortID(oldAnswerInfo.ID)
 	}
-
+	if req.Score > 0 {
+		acceptUID := acceptedAnswerInfo.UserID
+		realScore := as.assetbun.GetRealPublishScore(ctx, acceptUID, req.Score)
+		as.assetbun.OffsetScore(ctx, acceptUID, realScore)
+		as.assetbun.OperateScoreNotifySend(ctx, as.notificationQueueService, questionInfo.UserID, questionInfo.ID, acceptUID, questionInfo.Title, constant.NotificationPayIntegral, questionInfo.Score, realScore)
+	}
 	as.updateAnswerRank(ctx, req.UserID, questionInfo, acceptedAnswerInfo, oldAnswerInfo)
 	return nil
 }

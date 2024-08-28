@@ -29,6 +29,7 @@ interface Props {
     votes: number;
     answers: number;
     views: number;
+    score: number;
   };
   showVotes?: boolean;
   showAnswers?: boolean;

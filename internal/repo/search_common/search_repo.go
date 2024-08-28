@@ -22,6 +22,7 @@ package search_common
 import (
 	"context"
 	"fmt"
+	questioncommon "github.com/apache/incubator-answer/internal/service/question_common"
 	"strconv"
 	"strings"
 	"time"
@@ -50,6 +51,8 @@ var (
 	qFields = []string{
 		"`question`.`id`",
 		"`question`.`id` as `question_id`",
+		"`question`.`content_type` as `content_type`",
+		"`question`.`score` as `score`",
 		"`title`",
 		"`parsed_text`",
 		"`question`.`created_at` as `created_at`",
@@ -64,6 +67,8 @@ var (
 		"`answer`.`id` as `id`",
 		"`question_id`",
 		"`question`.`title` as `title`",
+		"`question`.`content_type` as `content_type`",
+		"`question`.`score` as `score`",
 		"`answer`.`parsed_text` as `parsed_text`",
 		"`answer`.`created_at` as `created_at`",
 		"`answer`.`user_id` as `user_id`",
@@ -77,10 +82,11 @@ var (
 
 // searchRepo tag repository
 type searchRepo struct {
-	data         *data.Data
-	userCommon   *usercommon.UserCommon
-	uniqueIDRepo unique.UniqueIDRepo
-	tagCommon    *tagcommon.TagCommonService
+	data           *data.Data
+	userCommon     *usercommon.UserCommon
+	questionCommon questioncommon.QuestionRepo
+	uniqueIDRepo   unique.UniqueIDRepo
+	tagCommon      *tagcommon.TagCommonService
 }
 
 // NewSearchRepo new repository
@@ -88,13 +94,15 @@ func NewSearchRepo(
 	data *data.Data,
 	uniqueIDRepo unique.UniqueIDRepo,
 	userCommon *usercommon.UserCommon,
+	questionCommon questioncommon.QuestionRepo,
 	tagCommon *tagcommon.TagCommonService,
 ) search_common.SearchRepo {
 	return &searchRepo{
-		data:         data,
-		uniqueIDRepo: uniqueIDRepo,
-		userCommon:   userCommon,
-		tagCommon:    tagCommon,
+		data:           data,
+		uniqueIDRepo:   uniqueIDRepo,
+		userCommon:     userCommon,
+		tagCommon:      tagCommon,
+		questionCommon: questionCommon,
 	}
 }
 
@@ -249,14 +257,13 @@ func (sr *searchRepo) SearchQuestions(ctx context.Context, words []string, tagID
 	)
 	if order == "relevance" {
 		if len(words) > 0 {
-			qfs, args = addRelevanceField([]string{"title", "original_text"}, words, qfs)
+			qfs, args = addRelevanceField([]string{"title", "original_text", "content_type", "score"}, words, qfs)
 		} else {
 			order = "newest"
 		}
 	}
 
 	b := builder.MySQL().Select(qfs...).From("question")
-
 	b.Where(builder.Lt{"`question`.`status`": entity.QuestionStatusDeleted}).And(builder.Eq{"`question`.`show`": entity.QuestionShow})
 	args = append(args, entity.QuestionStatusDeleted, entity.QuestionShow)
 
@@ -311,7 +318,8 @@ func (sr *searchRepo) SearchQuestions(ctx context.Context, words []string, tagID
 		b.And(builder.Gte{"answer_count": answers})
 		args = append(args, answers)
 	}
-
+	// b.Join("INNER", "question_buyer", "question.id = question_buyers.question_id")
+	// qfs = append(qfs, "`question_buyer.user_id`")
 	queryArgs := []interface{}{}
 	countArgs := []interface{}{}
 
@@ -499,15 +507,19 @@ func (sr *searchRepo) parseResult(ctx context.Context, res []map[string][]byte, 
 
 		var ID = string(r["id"])
 		var QuestionID = string(r["question_id"])
+		var ContentType, _ = strconv.Atoi(string(r["content_type"]))
+		var Score, _ = strconv.Atoi(string(r["score"]))
+		buyers, _ := sr.questionCommon.GetBuyers(ctx, QuestionID)
 		if handler.GetEnableShortID(ctx) {
 			ID = uid.EnShortID(ID)
 			QuestionID = uid.EnShortID(QuestionID)
 		}
-
 		object := &schema.SearchObject{
 			ID:              ID,
 			QuestionID:      QuestionID,
 			Title:           string(r["title"]),
+			ContentType:     ContentType,
+			Score:           Score,
 			UrlTitle:        htmltext.UrlTitle(string(r["title"])),
 			Excerpt:         htmltext.FetchMatchedExcerpt(string(r["parsed_text"]), words, "...", 100),
 			CreatedAtParsed: tp.Unix(),
@@ -519,7 +531,10 @@ func (sr *searchRepo) parseResult(ctx context.Context, res []map[string][]byte, 
 			Accepted:    string(r["accepted"]) == "2",
 			AnswerCount: converter.StringToInt(string(r["answer_count"])),
 		}
-
+		object.BuyerUserIds = make([]string, len(buyers))
+		for j, buyer := range buyers {
+			object.BuyerUserIds[j] = buyer.UserID
+		}
 		objectKey, err := obj.GetObjectTypeStrByObjectID(string(r["id"]))
 		if err != nil {
 			continue

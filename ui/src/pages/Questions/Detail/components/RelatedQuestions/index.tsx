@@ -19,14 +19,17 @@
 
 import { memo, FC } from 'react';
 import { Card, ListGroup } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Icon } from '@/components';
 import { useSimilarQuestion } from '@/services';
-import { pathFactory } from '@/router/pathFactory';
 import { RelatedContentQuery } from '@/common/i18n';
 import { getUrlQuestionType } from '@/common/functions';
+import IntegralLink from '@/components/IntegralLink';
+import handleOpenPayScore from '@/components/Pay';
+import { loggedUserInfoStore } from '@/stores';
+import { isModerator } from '@/common/constants';
 
 interface Props {
   id: string;
@@ -36,7 +39,9 @@ const Index: FC<Props> = ({ id }) => {
   const { t } = useTranslation('translation', {
     keyPrefix: RelatedContentQuery[contentType],
   });
-
+  const { t: qt } = useTranslation('translation', { keyPrefix: 'question' });
+  const navigate = useNavigate();
+  const user = loggedUserInfoStore((state) => state.user);
   const { data, isLoading } = useSimilarQuestion({
     question_id: id,
     page_size: 5,
@@ -57,12 +62,23 @@ const Index: FC<Props> = ({ id }) => {
               action
               key={item.id}
               as={Link}
-              to={pathFactory.questionLanding(
-                item.id,
-                item.url_title,
-                contentType,
-              )}>
-              <div className="link-dark">{item.title}</div>
+              onClick={(event) => {
+                event.preventDefault();
+                handleOpenPayScore(qt, navigate, user, item);
+              }}
+              to=".">
+              <div className="link-dark">
+                {item.title}
+                <IntegralLink
+                  score={item.score}
+                  t={t}
+                  contentType={item.content_type}
+                  isPay={
+                    isModerator(item, user) ||
+                    item.buyer_user_ids.indexOf(user.id) !== -1
+                  }
+                />
+              </div>
               {item.answer_count > 0 && (
                 <div
                   className={`mt-1 small me-2 ${

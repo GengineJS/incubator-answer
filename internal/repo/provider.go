@@ -24,6 +24,7 @@ import (
 	"github.com/apache/incubator-answer/internal/repo/activity"
 	"github.com/apache/incubator-answer/internal/repo/activity_common"
 	"github.com/apache/incubator-answer/internal/repo/answer"
+	"github.com/apache/incubator-answer/internal/repo/assetbun"
 	"github.com/apache/incubator-answer/internal/repo/auth"
 	"github.com/apache/incubator-answer/internal/repo/captcha"
 	"github.com/apache/incubator-answer/internal/repo/collection"
@@ -100,4 +101,5 @@ var ProviderSetRepo = wire.NewSet(
 	limit.NewRateLimitRepo,
 	plugin_config.NewPluginUserConfigRepo,
 	review.NewReviewRepo,
+	assetbun.NewAssetBunRepo,
 )

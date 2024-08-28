@@ -42,6 +42,7 @@ type RemoveQuestionReq struct {
 	ID          string `validate:"required" json:"id"`
 	UserID      string `json:"-" ` // user_id
 	IsAdmin     bool   `json:"-"`
+	Score       int    `json:"score"`
 	CaptchaID   string `json:"captcha_id"` // captcha_id
 	CaptchaCode string `json:"captcha_code"`
 }
@@ -88,6 +89,7 @@ type QuestionAdd struct {
 	CaptchaID   string `json:"captcha_id"` // captcha_id
 	CaptchaCode string `json:"captcha_code"`
 	IP          string `json:"-"`
+	Score       int    `json:"score"`
 	UserAgent   string `json:"-"`
 }
 
@@ -187,6 +189,7 @@ type QuestionUpdate struct {
 	QuestionPermission
 	CaptchaID   string `json:"captcha_id"` // captcha_id
 	CaptchaCode string `json:"captcha_code"`
+	Score       int    `json:"score"`
 }
 
 type QuestionRecoverReq struct {
@@ -244,8 +247,9 @@ type QuestionInfoResp struct {
 	Pin                  int            `json:"pin"`
 	Show                 int            `json:"show"`
 	Status               int            `json:"status"`
+	Score                int            `json:"score"`
 	Operation            *Operation     `json:"operation,omitempty"`
-	UserID               string         `json:"-"`
+	UserID               string         `json:"user_id"`
 	LastEditUserID       string         `json:"-"`
 	LastAnsweredUserID   string         `json:"-"`
 	UserInfo             *UserBasicInfo `json:"user_info"`
@@ -258,6 +262,7 @@ type QuestionInfoResp struct {
 	IsFollowed           bool           `json:"is_followed"`
 	AIAnswerReplied      bool           `json:"ai_answer_replied"`
 	AICommentReplied     bool           `json:"ai_comment_replied"`
+	BuyerUserIds         []string       `json:"buyer_user_ids"`
 	// MemberActions
 	MemberActions  []*PermissionMemberAction `json:"member_actions"`
 	ExtendsActions []*PermissionMemberAction `json:"extends_actions"`
@@ -323,6 +328,7 @@ type UserAnswerInfo struct {
 	VoteCount    int    `json:"vote_count"`
 	CreateTime   int    `json:"create_time"`
 	UpdateTime   int    `json:"update_time"`
+	Score        int    `json:"score"`
 	QuestionInfo struct {
 		Title    string        `json:"title"`
 		UrlTitle string        `json:"url_title"`
@@ -342,6 +348,14 @@ type UserQuestionInfo struct {
 	CreatedAt        int64         `json:"created_at"`
 	AcceptedAnswerID string        `json:"accepted_answer_id"`
 	Status           string        `json:"status"`
+	Score            int           `json:"score"`
+	ContentType      int           `json:"content_type"`
+	UserID           string        `json:"user_id"`
+	// operator information
+	Operator      *QuestionPageRespOperator `json:"operator"`
+	OperatedAt    int64                     `json:"operated_at"`
+	OperationType string                    `json:"operation_type"`
+	BuyerUserIds  []string                  `json:"buyer_user_ids"`
 }
 
 const (
@@ -350,6 +364,12 @@ const (
 	QuestionOrderCondFrequent   = "frequent"
 	QuestionOrderCondScore      = "score"
 	QuestionOrderCondUnanswered = "unanswered"
+)
+
+const (
+	QuestionOrderTypeAll         = "all"
+	QuestionOrderTypeIntegral    = "integral"
+	QuestionOrderTypeNonIntegral = "non-integral"
 )
 
 // QuestionPageReq query questions page
@@ -361,6 +381,7 @@ type QuestionPageReq struct {
 	Username    string              `validate:"omitempty,gt=0,lte=100" form:"username"`
 	InDays      int                 `validate:"omitempty,min=1" form:"in_days"`
 	ContentType entity.QuestionType `validate:"omitempty,min=1" form:"content_type"`
+	OrderType   string              `validate:"omitempty,oneof=all integral non-integral" form:"order_type"`
 
 	LoginUserID      string `json:"-"`
 	UserIDBeSearched string `json:"-"`
@@ -383,6 +404,7 @@ type QuestionPageResp struct {
 	Description string     `json:"description"`
 	Pin         int        `json:"pin"`  // 1: unpin, 2: pin
 	Show        int        `json:"show"` // 0: show, 1: hide
+	Score       int        `json:"score"`
 	Status      int        `json:"status"`
 	Tags        []*TagResp `json:"tags"`
 
@@ -399,11 +421,12 @@ type QuestionPageResp struct {
 	LastAnswerID       string    `json:"last_answer_id"`
 	LastAnsweredUserID string    `json:"-"`
 	LastAnsweredAt     time.Time `json:"-"`
-
+	UserID             string    `json:"user_id"`
 	// operator information
 	OperatedAt    int64                     `json:"operated_at"`
 	Operator      *QuestionPageRespOperator `json:"operator"`
 	OperationType string                    `json:"operation_type"`
+	BuyerUserIds  []string                  `json:"buyer_user_ids"`
 }
 
 type QuestionPageRespOperator struct {
@@ -421,6 +444,11 @@ type AdminQuestionPageReq struct {
 	Query       string `validate:"omitempty,gt=0,lte=100" json:"query" form:"query" `
 	Status      int    `json:"-"`
 	LoginUserID string `json:"-"`
+}
+
+type HandleQuestionBuyReq struct {
+	UserBuyID  string `json:"user_id"`
+	QuestionID string `json:"question_id"`
 }
 
 func (req *AdminQuestionPageReq) Check() (errField []*validator.FormErrorField, err error) {

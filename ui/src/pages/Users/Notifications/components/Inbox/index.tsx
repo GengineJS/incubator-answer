@@ -42,13 +42,13 @@ const Inbox = ({ data, handleReadNotification }) => {
         let url = '';
         switch (item.object_info.object_type) {
           case 'question':
-            url = `/questions/${item.object_info.object_id}`;
+            url = `/questions/${item.object_info.object_id}?content_type=${item.object_info.content_type}`;
             break;
           case 'answer':
-            url = `/questions/${question}/${item.object_info.object_id}`;
+            url = `/questions/${question}/${item.object_info.object_id}?content_type=${item.object_info.content_type}`;
             break;
           case 'comment':
-            url = `/questions/${question}/${answer}?commentId=${comment}`;
+            url = `/questions/${question}/${answer}?commentId=${comment}&content_type=${item.object_info.content_type}`;
             break;
           default:
             url = '';

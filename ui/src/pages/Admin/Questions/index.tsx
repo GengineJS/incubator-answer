@@ -111,7 +111,11 @@ const Questions: FC = () => {
               <tr key={li.id}>
                 <td>
                   <a
-                    href={pathFactory.questionLanding(li.id, li.url_title)}
+                    href={pathFactory.questionLanding(
+                      li.id,
+                      li.url_title,
+                      li.content_type,
+                    )}
                     target="_blank"
                     className="text-break text-wrap"
                     rel="noreferrer">

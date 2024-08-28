@@ -26,7 +26,8 @@ import { logout } from '@/services';
 import { loggedUserInfoStore } from '@/stores';
 import Storage from '@/utils/storage';
 import { RouteAlias } from '@/router/alias';
-import { REDIRECT_PATH_STORAGE_KEY } from '@/common/constants';
+import { IframeMsgType, REDIRECT_PATH_STORAGE_KEY } from '@/common/constants';
+import { iframeManager } from '@/common/functions';
 
 const Index = () => {
   const { t } = useTranslation('translation', { keyPrefix: 'page_title' });
@@ -38,6 +39,12 @@ const Index = () => {
 
   useEffect(() => {
     if (loggedUserInfo.username) {
+      console.log(loggedUserInfo.username);
+      iframeManager.postMsg({
+        email: loggedUserInfo.username,
+        password: '',
+        type: IframeMsgType.LOGOUT,
+      });
       logout().then(() => {
         clearUserStore();
         const redirect =

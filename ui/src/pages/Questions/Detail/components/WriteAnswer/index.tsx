@@ -29,7 +29,7 @@ import { usePromptWithUnload } from '@/hooks';
 import { useCaptchaPlugin } from '@/utils/pluginKit';
 import { Editor, Icon, Modal, TextArea } from '@/components';
 import { FormDataType, PostAnswerReq } from '@/common/interface';
-import { postAnswer } from '@/services';
+import { postAIAnswer, postAnswer } from '@/services';
 import { guard, handleFormError, SaveDraft, storageExpires } from '@/utils';
 import { DRAFT_ANSWER_STORAGE_KEY } from '@/common/constants';
 import { writeSettingStore } from '@/stores';
@@ -158,10 +158,10 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
     }
   };
 
-  const submitAnswer = () => {
+  const submitAnswer = (isAI: boolean = false) => {
     const params: PostAnswerReq = {
       question_id: data?.qid,
-      content: formData.content.value,
+      content: isAI ? 'AIReply' : formData.content.value,
       html: marked.parse(formData.content.value),
     };
     const imgCode = aCaptcha?.getCaptcha();
@@ -169,7 +169,7 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
       params.captcha_code = imgCode.captcha_code;
       params.captcha_id = imgCode.captcha_id;
     }
-    postAnswer(params)
+    (isAI ? postAIAnswer(params) : postAnswer(params))
       .then(async (res) => {
         await aCaptcha?.close();
         setShowEditor(false);
@@ -204,6 +204,13 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
       return;
     }
     aCaptcha.check(() => submitAnswer());
+  };
+
+  const clickAIBtn = () => {
+    if (!guard.tryNormalLogged(true)) {
+      return;
+    }
+    submitAnswer(true);
   };
 
   const clickBtn = () => {
@@ -337,7 +344,7 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
             {t('btn_name')}
           </Button>
           {!data.aiAnswered ? (
-            <Button onClick={clickBtn}>{t('btn_ai_name')}</Button>
+            <Button onClick={clickAIBtn}>{t('btn_ai_name')}</Button>
           ) : (
             <div className="lh-1 btn m-0">
               <Badge bg="secondary" pill>

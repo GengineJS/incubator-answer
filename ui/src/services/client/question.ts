@@ -43,6 +43,7 @@ export const useHotQuestions = (
     page_size: 6,
     order: 'frequent',
     in_days: 7,
+    order_type: 'all',
   },
 ) => {
   params.content_type = getUrlQuestionType();

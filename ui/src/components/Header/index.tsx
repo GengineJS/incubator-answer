@@ -49,13 +49,19 @@ import {
   sideNavStore,
 } from '@/stores';
 import { logout, useQueryNotificationStatus } from '@/services';
-import { ContentType } from '@/common/constants';
+import { assetBunName, ContentType, IframeMsgType } from '@/common/constants';
+import {
+  closeNavbarIfOpen,
+  iframeManager,
+  isAssetBunPageType,
+} from '@/common/functions';
 
 import NavItems from './components/NavItems';
 
 import './index.scss';
 
 const Header: FC = () => {
+  iframeManager.initIframe();
   const navigate = useNavigate();
   const location = useLocation();
   const [urlSearch] = useSearchParams();
@@ -68,6 +74,7 @@ const Header: FC = () => {
   const loginSetting = loginSettingStore((state) => state.login);
   const { updateReview, updateVisible } = sideNavStore();
   const { data: redDot } = useQueryNotificationStatus();
+  const isAssetBun = isAssetBunPageType();
   /**
    * Automatically append `tag` information when creating a question
    */
@@ -99,6 +106,11 @@ const Header: FC = () => {
 
   const handleLogout = async (evt) => {
     evt.preventDefault();
+    iframeManager.postMsg({
+      email: user.e_mail!,
+      password: '',
+      type: IframeMsgType.LOGOUT,
+    });
     await logout();
     clearUserStore();
     window.location.replace(window.location.href);
@@ -111,13 +123,7 @@ const Header: FC = () => {
   }, [q]);
 
   useEffect(() => {
-    const collapse = document.querySelector('#navBarContent');
-    if (collapse && collapse.classList.contains('show')) {
-      const toggle = document.querySelector('#navBarToggle') as HTMLElement;
-      if (toggle) {
-        toggle?.click();
-      }
-    }
+    closeNavbarIfOpen();
 
     // clear search input when navigate to other page
     if (location.pathname !== '/search' && searchStr) {
@@ -130,7 +136,7 @@ const Header: FC = () => {
   if (theme_config?.[theme]?.navbar_style) {
     navbarStyle = `theme-${theme_config[theme].navbar_style}`;
   }
-
+  const toHomeUrl = isAssetBun ? window.location : '/';
   return (
     <Navbar
       variant={navbarStyle === 'theme-colored' ? 'dark' : ''}
@@ -148,7 +154,10 @@ const Header: FC = () => {
         />
 
         <div className="d-flex justify-content-between align-items-center nav-grow flex-nowrap">
-          <Navbar.Brand to="/" as={Link} className="lh-1 me-0 me-sm-5 p-0">
+          <Navbar.Brand
+            to={toHomeUrl}
+            as={Link}
+            className="lh-1 me-0 me-sm-5 p-0">
             {brandingInfo.logo ? (
               <>
                 <img
@@ -164,7 +173,10 @@ const Header: FC = () => {
                 />
               </>
             ) : (
-              <span>{siteInfo.name}</span>
+              <span>
+                {isAssetBun ? assetBunName : siteInfo.name}
+                {isAssetBun || <sup>AI</sup>}
+              </span>
             )}
           </Navbar.Brand>
 

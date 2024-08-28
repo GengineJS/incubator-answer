@@ -20,6 +20,8 @@
 import { RouteAlias } from '@/router/alias';
 import { userCenterStore } from '@/stores';
 import { getUcAgent, UcAgent } from '@/services/user-center';
+import { hasQueryParam, isAssetBunPageType } from '@/common/functions';
+import { assetBunSearch } from '@/common/constants';
 
 export const pullUcAgent = async () => {
   const uca = await getUcAgent();
@@ -36,6 +38,13 @@ export const getLoginUrl = (uca?: UcAgent) => {
   ) {
     ret = uca.agent_info.login_redirect_url;
   }
+  if (isAssetBunPageType()) {
+    if (hasQueryParam(ret)) {
+      ret += `&${assetBunSearch}`;
+    } else {
+      ret += `?${assetBunSearch}`;
+    }
+  }
   return ret;
 };
 
@@ -44,6 +53,13 @@ export const getSignUpUrl = (uca?: UcAgent) => {
   uca ||= userCenterStore.getState().agent;
   if (uca?.enabled && uca?.agent_info?.sign_up_redirect_url) {
     ret = uca.agent_info.sign_up_redirect_url;
+  }
+  if (isAssetBunPageType()) {
+    if (hasQueryParam(ret)) {
+      ret += `&${assetBunSearch}`;
+    } else {
+      ret += `?${assetBunSearch}`;
+    }
   }
   return ret;
 };

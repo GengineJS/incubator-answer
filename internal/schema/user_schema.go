@@ -21,7 +21,6 @@ package schema
 
 import (
 	"encoding/json"
-
 	"github.com/apache/incubator-answer/internal/base/reason"
 	"github.com/apache/incubator-answer/internal/base/translator"
 	"github.com/segmentfault/pacman/errors"
@@ -92,10 +91,14 @@ type UserLoginResp struct {
 	RoleID int `json:"role_id"`
 	// user status
 	Status string `json:"status"`
+	// alipay score
+	Score int `json:"score"`
 	// user have password
 	HavePassword bool `json:"have_password"`
 	// visit token
 	VisitToken string `json:"visit_token"`
+	// Vip信息
+	GroupInfo interface{} `json:"group_info"`
 }
 
 func (r *UserLoginResp) ConvertFromUserEntity(userInfo *entity.User) {
@@ -156,6 +159,9 @@ type GetOtherUserInfoByUsernameResp struct {
 	Location  string `json:"location"`
 	Status    string `json:"status"`
 	StatusMsg string `json:"status_msg,omitempty"`
+	Score     int    `json:"score"`
+	// Vip信息
+	GroupInfo interface{} `json:"group_info"`
 }
 
 func (r *GetOtherUserInfoByUsernameResp) ConvertFromUserEntity(userInfo *entity.User) {

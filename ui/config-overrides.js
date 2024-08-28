@@ -22,10 +22,9 @@ const {
   addWebpackAlias,
   setWebpackOptimizationSplitChunks,
 } = require("customize-cra");
-
 const path = require("path");
 const i18nPath = path.resolve(__dirname, "../i18n");
-
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
   webpack: function(config, env) {
     addWebpackAlias({
@@ -37,7 +36,6 @@ module.exports = {
       test: /\.ya?ml$/,
       use: "yaml-loader"
     })(config);
-
     setWebpackOptimizationSplitChunks({
       maxInitialRequests: 20,
       minSize: 20 * 1024,
@@ -123,13 +121,22 @@ module.exports = {
         },
       },
     })(config);
-
+    // 添加CopyWebpackPlugin插件
+    config.plugins.push(
+      new CopyWebpackPlugin({
+        patterns: [
+          { from: path.resolve(__dirname, './share.html'), to: path.resolve(__dirname, './build/static/share.html') }, // 从根目录拷贝share.html到build目录
+        ],
+      })
+    );
     // add i18n dir to ModuleScopePlugin allowedPaths
     const moduleScopePlugin = config.resolve.plugins.find(_ => _.constructor.name === "ModuleScopePlugin");
     if (moduleScopePlugin) {
       moduleScopePlugin.allowedPaths.push(i18nPath);
     }
-
+    // if (env === 'production') {
+    //   config.devtool = false;
+    // }
     return config;
   },
   devServer: function(configFunction) {

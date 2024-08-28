@@ -28,6 +28,8 @@ import { register } from '@/services';
 import userStore from '@/stores/loggedUserInfo';
 import { handleFormError, scrollToElementTop } from '@/utils';
 import { useLegalClick } from '@/behaviour/useLegalClick';
+import { isAssetBunPageType } from '@/common/functions';
+import { assetBunPolicyUrl, assetBunPrivateUrl } from '@/common/constants';
 
 interface Props {
   callback: () => void;
@@ -143,7 +145,9 @@ const Index: React.FC<Props> = ({ callback }) => {
       handleRegister();
     });
   };
-
+  const isAssetBun = isAssetBunPageType();
+  const privatesUrl = isAssetBun ? assetBunPrivateUrl : '/privacy';
+  const policyUrl = isAssetBun ? assetBunPolicyUrl : '/tos';
   return (
     <>
       <Form noValidate onSubmit={handleSubmit} autoComplete="off">
@@ -225,7 +229,7 @@ const Index: React.FC<Props> = ({ callback }) => {
         <Trans i18nKey="login.agreements" ns="translation">
           By registering, you agree to the
           <Link
-            to="/privacy"
+            to={privatesUrl}
             onClick={(evt) => {
               legalClick(evt, 'privacy');
             }}
@@ -234,7 +238,7 @@ const Index: React.FC<Props> = ({ callback }) => {
           </Link>
           and
           <Link
-            to="/tos"
+            to={policyUrl}
             onClick={(evt) => {
               legalClick(evt, 'tos');
             }}

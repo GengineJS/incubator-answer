@@ -40,6 +40,7 @@ import { tryNormalLogged } from '@/utils/guard';
 import { floppyNavigation } from '@/utils';
 import { toastStore } from '@/stores';
 import { getUrlQuestionType } from '@/common/functions';
+import { PayContentType } from '@/common/constants';
 
 interface IProps {
   type: 'answer' | 'question';
@@ -47,6 +48,7 @@ interface IProps {
   aid?: string;
   title: string;
   hasAnswer?: boolean;
+  score?: number;
   isAccepted: boolean;
   callback: (type: string) => void;
   memberActions;
@@ -58,6 +60,7 @@ const Index: FC<IProps> = ({
   title,
   isAccepted = false,
   hasAnswer = false,
+  score = 0,
   memberActions = [],
   callback,
 }) => {
@@ -70,16 +73,21 @@ const Index: FC<IProps> = ({
   const refreshQuestion = () => {
     callback?.('default');
   };
+  const isPayType = PayContentType.indexOf(contentType) !== -1;
+  // 是否返还积分?
+  const isBackScore = score && isPayType && !isAccepted;
+  const notDel = !(score && isPayType && isAccepted);
+  const isAnswer = type === 'answer';
+
   const closeModal = useReportModal(refreshQuestion);
-  const editUrl =
-    type === 'answer'
-      ? `/posts/${qid}/${aid}/edit?content_type=${contentType}`
-      : `/posts/${qid}/edit?content_type=${contentType}`;
+  const editUrl = isAnswer
+    ? `/posts/${qid}/${aid}/edit?content_type=${contentType}`
+    : `/posts/${qid}/edit?content_type=${contentType}`;
 
   const handleReport = () => {
     reportModal.onShow({
       type,
-      id: type === 'answer' ? aid : qid,
+      id: isAnswer ? aid : qid,
       action: 'flag',
     });
   };
@@ -95,6 +103,7 @@ const Index: FC<IProps> = ({
   const submitDeleteQuestion = () => {
     const req = {
       id: qid,
+      score: isBackScore ? score : 0,
       captcha_code: undefined,
       captcha_id: undefined,
     };
@@ -145,7 +154,13 @@ const Index: FC<IProps> = ({
     if (type === 'question') {
       Modal.confirm({
         title: t('title'),
-        content: hasAnswer ? t('question') : t('other'),
+        content: hasAnswer
+          ? isBackScore
+            ? t('question_score')
+            : t('question')
+          : isBackScore
+            ? t('other_score')
+            : t('other'),
         cancelBtnVariant: 'link',
         confirmBtnVariant: 'danger',
         confirmText: t('delete', { keyPrefix: 'btns' }),
@@ -161,10 +176,10 @@ const Index: FC<IProps> = ({
       });
     }
 
-    if (type === 'answer' && aid) {
+    if (isAnswer && aid) {
       Modal.confirm({
         title: t('title'),
-        content: isAccepted ? t('answer_accepted') : t('other'),
+        content: isAccepted ? t('answer_accepted') : t('answer_other'),
         cancelBtnVariant: 'link',
         confirmBtnVariant: 'danger',
         confirmText: t('delete', { keyPrefix: 'btns' }),
@@ -194,7 +209,7 @@ const Index: FC<IProps> = ({
           });
         }
 
-        if (type === 'answer') {
+        if (isAnswer) {
           unDeleteAnswer(aid).then(() => {
             callback?.('all');
           });
@@ -209,7 +224,7 @@ const Index: FC<IProps> = ({
     }
     evt.preventDefault();
     let checkObjectId = qid;
-    if (type === 'answer') {
+    if (isAnswer) {
       checkObjectId = aid;
     }
     editCheck(checkObjectId).then(() => {
@@ -321,7 +336,7 @@ const Index: FC<IProps> = ({
       (v) =>
         v.action === 'report' ||
         v.action === 'edit' ||
-        v.action === 'delete' ||
+        (notDel && v.action === 'delete') ||
         v.action === 'undelete',
     ) || [];
   const secondAction =

@@ -85,6 +85,7 @@ export interface QuestionParams extends ImgCodeReq {
   url_title?: string;
   content: string;
   content_type: ContentType;
+  score: number;
   tags: Tag[];
 }
 
@@ -156,6 +157,7 @@ export interface UserInfoBase {
   website: string;
   location: string;
   ip_info?: string;
+  score: number;
   status?: 'normal' | 'suspended' | 'deleted' | 'inactive';
   /** roles */
   role_id?: RoleId;
@@ -297,8 +299,11 @@ export type QuestionOrderBy =
   | 'score'
   | 'unanswered';
 
+export type QuestionTypeBy = 'all' | 'integral' | 'non-integral';
+
 export interface QueryQuestionsReq extends Paging {
   order: QuestionOrderBy;
+  order_type: string;
   content_type?: number;
   tag?: string;
   in_days?: number;
@@ -505,6 +510,7 @@ export interface SearchResItem {
     user_info: UserInfoBase;
     vote_count: number;
     answer_count: number;
+    score: number;
     accepted: boolean;
     tags: TagBase[];
     status?: string;
@@ -561,6 +567,7 @@ export interface TimelineObject {
   title: string;
   url_title?: string;
   object_type: string;
+  content_type: string;
   question_id: string;
   answer_id: string;
   main_tag_slug_name?: string;

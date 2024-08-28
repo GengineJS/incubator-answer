@@ -23,11 +23,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
+	questioncommon "github.com/apache/incubator-answer/internal/service/question_common"
 	"github.com/apache/incubator-answer/internal/service/report_common"
 	"github.com/apache/incubator-answer/internal/service/review"
 	usercommon "github.com/apache/incubator-answer/internal/service/user_common"
 	"github.com/apache/incubator-answer/pkg/converter"
+	"strconv"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/base/data"
@@ -52,6 +53,7 @@ type NotificationService struct {
 	reportRepo         report_common.ReportRepo
 	reviewService      *review.ReviewService
 	userRepo           usercommon.UserRepo
+	questionRepo       questioncommon.QuestionRepo
 }
 
 func NewNotificationService(
@@ -60,6 +62,7 @@ func NewNotificationService(
 	notificationCommon *notficationcommon.NotificationCommon,
 	revisionService *revision_common.RevisionService,
 	userRepo usercommon.UserRepo,
+	questionRepo questioncommon.QuestionRepo,
 	reportRepo report_common.ReportRepo,
 	reviewService *review.ReviewService,
 ) *NotificationService {
@@ -69,6 +72,7 @@ func NewNotificationService(
 		notificationCommon: notificationCommon,
 		revisionService:    revisionService,
 		userRepo:           userRepo,
+		questionRepo:       questionRepo,
 		reportRepo:         reportRepo,
 		reviewService:      reviewService,
 	}
@@ -226,7 +230,14 @@ func (ns *NotificationService) formatNotificationPage(ctx context.Context, notif
 		}
 
 		item.ID = notificationInfo.ID
-		item.NotificationAction = translator.Tr(lang, item.NotificationAction)
+		notificationsAction := item.NotificationAction
+		if len(item.ExtraInfo) > 0 {
+			notificationsAction = translator.TrWithData(lang, item.NotificationAction, item.ExtraInfo)
+		} else {
+			notificationsAction = translator.Tr(lang, notificationsAction)
+		}
+
+		item.NotificationAction = notificationsAction
 		item.UpdateTime = notificationInfo.UpdatedAt.Unix()
 		item.IsRead = notificationInfo.IsRead == schema.NotificationRead
 
@@ -243,6 +254,11 @@ func (ns *NotificationService) formatNotificationPage(ctx context.Context, notif
 				}
 				item.ObjectInfo.ObjectMap["question"] = uid.EnShortID(item.ObjectInfo.ObjectMap["question"])
 			}
+		}
+		qid, exits := item.ObjectInfo.ObjectMap["question"]
+		if exits {
+			question, _, _ := ns.questionRepo.GetQuestion(ctx, qid)
+			item.ObjectInfo.ContentType = strconv.Itoa(question.ContentType)
 		}
 
 		if item.UserInfo != nil && !userMapping[item.UserInfo.ID] {

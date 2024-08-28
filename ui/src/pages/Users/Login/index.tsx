@@ -17,14 +17,14 @@
  * under the License.
  */
 
-import React, { FormEvent, useState, useEffect } from 'react';
-import { Container, Form, Button, Col } from 'react-bootstrap';
+import React, { FormEvent, useEffect, useState } from 'react';
+import { Button, Col, Container, Form } from 'react-bootstrap';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { usePageTags } from '@/hooks';
-import type { LoginReqParams, FormDataType } from '@/common/interface';
-import { Unactivate, WelcomeTitle, PluginRender } from '@/components';
+import type { FormDataType, LoginReqParams } from '@/common/interface';
+import { PluginRender, Unactivate, WelcomeTitle } from '@/components';
 import {
   loggedUserInfoStore,
   loginSettingStore,
@@ -34,14 +34,21 @@ import {
   floppyNavigation,
   guard,
   handleFormError,
-  userCenter,
   scrollToElementTop,
+  userCenter,
 } from '@/utils';
 import { useCaptchaPlugin } from '@/utils/pluginKit';
 import { login, UcAgent } from '@/services';
 import { setupAppTheme } from '@/utils/localize';
+import {
+  getTargetAssetBunHost,
+  iframeManager,
+  isAssetBunPageType,
+} from '@/common/functions';
+import { assetBunSearch, IframeMsgType } from '@/common/constants';
 
 const Index: React.FC = () => {
+  iframeManager.initIframe();
   const { t } = useTranslation('translation', { keyPrefix: 'login' });
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -112,7 +119,11 @@ const Index: React.FC = () => {
 
     return bol;
   };
-
+  const isAssetBun = isAssetBunPageType();
+  const toLinkSysUrl = isAssetBun
+    ? window.location.pathname
+    : `${window.location.pathname}?${assetBunSearch}`;
+  const i18nSysKey = isAssetBun ? 'login.info_answer' : 'login.info_assetbun';
   const handleLogin = (event?: any) => {
     if (event) {
       event.preventDefault();
@@ -127,7 +138,11 @@ const Index: React.FC = () => {
       params.captcha_code = captcha.captcha_code;
       params.captcha_id = captcha.captcha_id;
     }
-
+    iframeManager.postMsg({
+      email: params.e_mail,
+      password: params.pass,
+      type: IframeMsgType.LOGIN,
+    });
     login(params)
       .then(async (res) => {
         await passwordCaptcha?.close?.();
@@ -139,6 +154,10 @@ const Index: React.FC = () => {
           setStep(2);
         } else {
           guard.handleLoginRedirect(navigate);
+        }
+        if (isAssetBun) {
+          const abUrl = getTargetAssetBunHost();
+          window.open(abUrl, '_blank');
         }
       })
       .catch((err) => {
@@ -181,7 +200,6 @@ const Index: React.FC = () => {
   usePageTags({
     title: t('login', { keyPrefix: 'page_title' }),
   });
-
   return (
     <Container style={{ paddingTop: '4rem', paddingBottom: '5rem' }}>
       <WelcomeTitle />
@@ -273,17 +291,33 @@ const Index: React.FC = () => {
                 </div>
               </Form>
               {loginSetting.allow_new_registrations && (
-                <div className="text-center mt-5">
-                  <Trans i18nKey="login.info_sign" ns="translation">
-                    Don't have an account?
-                    <Link
-                      to={userCenter.getSignUpUrl()}
-                      tabIndex={2}
-                      onClick={floppyNavigation.handleRouteLinkClick}>
-                      Sign up
-                    </Link>
-                  </Trans>
-                </div>
+                <>
+                  <div className="text-center mt-5">
+                    <Trans i18nKey="login.info_sign" ns="translation">
+                      Don't have an account?
+                      <Link
+                        to={userCenter.getSignUpUrl()}
+                        tabIndex={2}
+                        onClick={floppyNavigation.handleRouteLinkClick}>
+                        Sign up
+                      </Link>
+                    </Trans>
+                  </div>
+                  <div className="text-center small mt-1">
+                    <Trans i18nKey={i18nSysKey} ns="translation">
+                      Need AI help?
+                      <Link
+                        to={toLinkSysUrl}
+                        onClick={() => {
+                          const parsedUrl = new URL(window.location.pathname);
+                          const fullDomain = `${parsedUrl.protocol}//${parsedUrl.hostname}`;
+                          window.location.href = fullDomain + toLinkSysUrl;
+                        }}>
+                        Learn earn
+                      </Link>
+                    </Trans>
+                  </div>
+                </>
               )}
             </>
           ) : null}

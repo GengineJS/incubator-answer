@@ -64,7 +64,7 @@ func addGravatarBaseURL(ctx context.Context, x *xorm.Engine) error {
 	if exist {
 		content := &schema.SiteUsersReq{}
 		_ = json.Unmarshal([]byte(usersSiteInfo.Content), content)
-		content.GravatarBaseURL = "https://www.gravatar.com/avatar/"
+		content.GravatarBaseURL = "https://cravatar.cn/avatar/"
 		data, _ := json.Marshal(content)
 		usersSiteInfo.Content = string(data)
 

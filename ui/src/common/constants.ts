@@ -17,6 +17,9 @@
  * under the License.
  */
 
+import { getUrlQuestionType } from '@/common/functions';
+// import { Modal } from '@/components';
+
 export const DEFAULT_SITE_NAME = 'Answer';
 export const DEFAULT_LANG = 'en_US';
 export const CURRENT_LANG_STORAGE_KEY = '_a_lang_';
@@ -31,6 +34,10 @@ export const QUESTIONS_ORDER_STORAGE_KEY = '_a_qok_';
 export const DEFAULT_THEME = 'system';
 export const ADMIN_PRIVILEGE_CUSTOM_LEVEL = 99;
 export const SKELETON_SHOW_TIME = 1000;
+export const enum IframeMsgType {
+  LOGIN,
+  LOGOUT,
+}
 
 export const USER_AGENT_NAMES = {
   SegmentFault: 'SegmentFault',
@@ -664,3 +671,67 @@ export const QueryContentTypeFromStr = {
   assetbuns: ContentType.ASSETBUN,
   bounties: ContentType.BOUNTY,
 };
+
+export const assetBunName = '资产包子云盘';
+
+export enum PageType {
+  ASSETBUN = 1,
+  ANSWER = 2,
+}
+export const assetBunSearch = `page_type=${PageType.ASSETBUN}`;
+export const assetBunPolicyUrl = 'https://assetbun.com/policy/';
+export const assetBunPrivateUrl = 'https://assetbun.com/privacy/';
+export const shareLocalStorageDomains = ['localhost', 'learn.cn'];
+export const targetLocalStorageDomains = ['localhost', 'cloud.assetbun.com'];
+export const targetLocalStorageUrl = [
+  'http://localhost:5212/share.html',
+  'https://cloud.assetbun.com/share.html',
+];
+export const targetAssetBunUrl = [
+  'http://localhost:5212/home',
+  'https://cloud.assetbun.com/home',
+];
+export const PayContentType = [
+  ContentType.QUESTION,
+  ContentType.BOUNTY,
+  ContentType.ASSETBUN,
+];
+
+// 由提出问题的人已经做出了付款操作类型的帖子，让别人付款查看的类型不属于该帖子
+export function hasPayType(ct: number = -1): boolean {
+  const contentType = ct === -1 ? getUrlQuestionType() : ct;
+  return PayContentType.indexOf(contentType) !== -1;
+}
+
+export function isModerator(question, userInfo): boolean {
+  let questionUserId = question.user_id;
+
+  if (!questionUserId && question.user_info) {
+    questionUserId = question.user_info.id;
+  }
+  const isAuthor = userInfo?.id === questionUserId;
+  const isAdmin = userInfo?.role_id === 2;
+  const moderator = userInfo?.role_id === 3;
+  return isAuthor || isAdmin || moderator;
+}
+
+export function isVIP(user): boolean {
+  if (!user || !user.group_info) {
+    return false;
+  }
+  const groupInfo = user.group_info;
+  return groupInfo.Name !== 'Admin' && groupInfo.Name !== 'User';
+}
+
+// export function openModal(title, content, confirmText, confirmCallback): void {
+//   Modal.confirm({
+//     title,
+//     content,
+//     cancelBtnVariant: 'link',
+//     confirmBtnVariant: 'danger',
+//     confirmText,
+//     onConfirm: () => {
+//       confirmCallback();
+//     },
+//   });
+// }

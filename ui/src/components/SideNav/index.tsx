@@ -28,7 +28,7 @@ import { ContentType } from '@/common/constants';
 import { loggedUserInfoStore, sideNavStore } from '@/stores';
 import { Icon } from '@/components';
 import './index.scss';
-import { getUrlQuestionType } from '@/common/functions';
+import { closeNavbarIfOpen, getUrlQuestionType } from '@/common/functions';
 
 const Index: FC = () => {
   const { t } = useTranslation();
@@ -39,6 +39,7 @@ const Index: FC = () => {
   const contentType = getUrlQuestionType();
   const handleNavClick = (e, path) => {
     e.preventDefault();
+    closeNavbarIfOpen();
     navigate(path);
   };
   return (
@@ -55,6 +56,9 @@ const Index: FC = () => {
         <Nav variant="pills" className="flex-column">
           <NavLink
             to={`/questions?content_type=${ContentType.QUESTION}`}
+            onClick={() => {
+              closeNavbarIfOpen();
+            }}
             className={({ isActive }) =>
               (isActive && contentType === ContentType.QUESTION) ||
               pathname === '/'

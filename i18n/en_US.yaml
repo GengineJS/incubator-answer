@@ -768,6 +768,7 @@ ui:
     hours: hours
     days: days
   comment:
+    btn_add_subject_comment: Add comment
     btn_add_comment: Add comment
     btn_ai_add_comment: Add AI comment
     reply_to: Reply to
@@ -930,6 +931,8 @@ ui:
     login_to_continue: Log in to continue
     info_sign: Don't have an account? <1>Sign up</1>
     info_login: Already have an account? <1>Log in</1>
+    info_assetbun: Have resources to upload? <1>Asset Bun</1>
+    info_answer: Have questions and need AI help? <1>Learn earn</1>
     agreements: By registering, you agree to the <1>privacy policy</1> and <3>terms of service</3>.
     forgot_pass: Forgot password?
     name:

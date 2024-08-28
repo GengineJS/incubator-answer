@@ -28,6 +28,7 @@ import { Avatar, Icon, SvgIcon } from '@/components';
 import type { UserInfoRes } from '@/common/interface';
 import { getUcBranding, UcBrandingEntry } from '@/services';
 import { userCenterStore } from '@/stores';
+import { isVIP } from '@/common/constants';
 
 interface Props {
   data: UserInfoRes;
@@ -37,7 +38,7 @@ const Index: FC<Props> = ({ data }) => {
   const { t } = useTranslation('translation', { keyPrefix: 'personal' });
   const { agent: ucAgent } = userCenterStore();
   const [ucBranding, setUcBranding] = useState<UcBrandingEntry[]>([]);
-
+  const isVip = isVIP(data);
   const initData = () => {
     if (ucAgent?.enabled && data?.username) {
       getUcBranding(data.username).then((resp) => {
@@ -96,7 +97,24 @@ const Index: FC<Props> = ({ data }) => {
             </div>
           )}
         </div>
-        <div className="text-secondary mb-4">@{data.username}</div>
+        <div className="text-secondary mb-4">
+          @{`${data.username} `}
+          <span
+            style={{
+              padding: '1px 3px',
+              borderRadius: '5px',
+              backgroundImage: isVip
+                ? data.group_info.Name === 'SVIP'
+                  ? 'linear-gradient(to right, #b65959, #8e44ad)'
+                  : 'linear-gradient(to right, #bf9f00, #ff8c00)'
+                : 'linear-gradient(to right, #959697, #6c757d)',
+              color: 'white',
+              fontSize: 'x-small',
+              display: 'inline-block',
+            }}>
+            {isVip ? data.group_info.Name : t(data.group_info.Name)}
+          </span>
+        </div>
 
         <div className="d-flex flex-wrap mb-3">
           <div className="me-3">
@@ -107,9 +125,15 @@ const Index: FC<Props> = ({ data }) => {
             <strong className="fs-5">{data.answer_count || 0}</strong>
             <span className="text-secondary"> {t('x_answers')}</span>
           </div>
-          <div>
+          <div className="me-3">
             <strong className="fs-5">{data?.question_count || 0}</strong>
             <span className="text-secondary"> {t('x_questions')}</span>
+          </div>
+          <div>
+            <a href="https://cloud.assetbun.com/setting">
+              <strong className="fs-5">{data?.score || 0}</strong>
+            </a>
+            <span className="text-secondary"> {t('x_integral')}</span>
           </div>
         </div>
 

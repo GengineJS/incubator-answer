@@ -27,6 +27,7 @@ import (
 	"github.com/apache/incubator-answer/internal/base/translator"
 	"github.com/apache/incubator-answer/internal/base/validator"
 	answercommon "github.com/apache/incubator-answer/internal/service/answer_common"
+	"github.com/apache/incubator-answer/internal/service/assetbun"
 	"github.com/apache/incubator-answer/internal/service/comment_common"
 	"github.com/apache/incubator-answer/internal/service/export"
 	questioncommon "github.com/apache/incubator-answer/internal/service/question_common"
@@ -48,7 +49,6 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/segmentfault/pacman/errors"
 	"github.com/segmentfault/pacman/log"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // UserAdminRepo user repository
@@ -65,6 +65,7 @@ type UserAdminRepo interface {
 
 // UserAdminService user service
 type UserAdminService struct {
+	assetbunRepo          assetbun.AssetBunRepo
 	userRepo              UserAdminRepo
 	userRoleRelService    *role.UserRoleRelService
 	authService           *auth.AuthService
@@ -79,6 +80,7 @@ type UserAdminService struct {
 
 // NewUserAdminService new user admin service
 func NewUserAdminService(
+	assetbunRepo assetbun.AssetBunRepo,
 	userRepo UserAdminRepo,
 	userRoleRelService *role.UserRoleRelService,
 	authService *auth.AuthService,
@@ -91,6 +93,7 @@ func NewUserAdminService(
 	commentCommonRepo comment_common.CommentCommonRepo,
 ) *UserAdminService {
 	return &UserAdminService{
+		assetbunRepo:          assetbunRepo,
 		userRepo:              userRepo,
 		userRoleRelService:    userRoleRelService,
 		authService:           authService,
@@ -193,7 +196,7 @@ func (us *UserAdminService) AddUser(ctx context.Context, req *schema.AddUserReq)
 		return errors.BadRequest(reason.EmailDuplicate)
 	}
 
-	hashPwd, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	hashPwd, err := schema.SetPassword(req.Password) // bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
@@ -299,7 +302,7 @@ func (us *UserAdminService) formatBulkAddUsers(ctx context.Context, req *schema.
 		userInfo := &entity.User{}
 		userInfo.EMail = user.Email
 		userInfo.DisplayName = user.DisplayName
-		hashPwd, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		hashPwd, _ := schema.SetPassword(user.Password) // bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 		userInfo.Pass = string(hashPwd)
 		userInfo.Username, err = us.userCommonService.MakeUsername(ctx, userInfo.DisplayName)
 		if err != nil {
@@ -331,7 +334,7 @@ func (us *UserAdminService) UpdateUserPassword(ctx context.Context, req *schema.
 		return errors.BadRequest(reason.UserNotFound)
 	}
 
-	hashPwd, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	hashPwd, err := schema.SetPassword(req.Password) // bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}

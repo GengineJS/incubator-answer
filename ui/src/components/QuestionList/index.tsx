@@ -17,13 +17,11 @@
  * under the License.
  */
 
-import { FC } from 'react';
-import { ListGroup } from 'react-bootstrap';
-import { NavLink, useSearchParams } from 'react-router-dom';
+import React, { FC, useState } from 'react';
+import { ListGroup, Dropdown } from 'react-bootstrap';
+import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import type { QuestionOrderBy } from '@/common/interface';
-import { pathFactory } from '@/router/pathFactory';
 import {
   Tag,
   Pagination,
@@ -35,10 +33,15 @@ import {
   Counts,
   Icon,
 } from '@/components';
+import { QuestionOrderBy } from '@/common/interface';
 import * as Type from '@/common/interface';
 import { useSkeletonControl } from '@/hooks';
 import { getUrlQuestionType } from '@/common/functions';
 import { ContentTypeStrQuery } from '@/common/i18n';
+import IntegralLink from '@/components/IntegralLink';
+import { isModerator } from '@/common/constants';
+import { loggedUserInfoStore } from '@/stores';
+import handleOpenPayScore from '@/components/Pay';
 
 export const QUESTION_ORDER_KEYS: Type.QuestionOrderBy[] = [
   'active',
@@ -47,13 +50,18 @@ export const QUESTION_ORDER_KEYS: Type.QuestionOrderBy[] = [
   'score',
   'unanswered',
 ];
+export const TYPE_ORDER_KEYS: Type.QuestionTypeBy[] = [
+  'all',
+  'integral',
+  'non-integral',
+];
 interface Props {
   source: 'questions' | 'tag';
   order?: QuestionOrderBy;
   data;
   isLoading: boolean;
 }
-
+let currContentType = 1;
 const QuestionList: FC<Props> = ({
   source,
   order,
@@ -69,18 +77,71 @@ const QuestionList: FC<Props> = ({
   const pageSize = 20;
   const count = data?.count || 0;
   const contentType = getUrlQuestionType();
+  // 是标签还是问题
+  const currPathName = source === 'questions' ? '/questions' : '';
+  const contentTypeI18 = !currPathName
+    ? ''
+    : t(ContentTypeStrQuery[contentType]);
+
+  const allCTI18 = t('all') + contentTypeI18;
+  const [selectedType, setSelectedType] = useState(allCTI18);
+  if (currContentType !== contentType) {
+    currContentType = contentType;
+    setSelectedType(allCTI18);
+  }
+  const [searchParams, setUrlSearchParams] = useSearchParams();
+  const sortKeyType = 'order_type';
+  const user = loggedUserInfoStore((state) => state.user);
+  const handleParams = (orderType): string => {
+    searchParams.delete('page');
+    searchParams.set(sortKeyType, orderType);
+    const searchStr = searchParams.toString();
+    return `?${searchStr}`;
+  };
+  const navigate = useNavigate();
+  const handleSelectType = (key) => {
+    const idx = parseInt(key, 10) - 1;
+    const typeOrderKey = TYPE_ORDER_KEYS[idx];
+    const str = handleParams(typeOrderKey);
+    if (currPathName) {
+      navigate(`${currPathName}${str}`);
+    } else {
+      setUrlSearchParams(str);
+    }
+    currContentType = contentType;
+    setSelectedType(t(typeOrderKey) + contentTypeI18);
+  };
   return (
     <div>
       <div className="mb-3 d-flex flex-wrap justify-content-between">
-        <h5 className="fs-5 text-nowrap mb-3 mb-md-0">
+        {/* <h5 className="fs-5 text-nowrap mb-3 mb-md-0">
           {source === 'questions'
             ? t(`all_${ContentTypeStrQuery[contentType]}`)
             : t('x_questions', { count })}
-        </h5>
+        </h5> */}
+        <Dropdown onSelect={handleSelectType}>
+          <Dropdown.Toggle
+            variant="light"
+            size="sm"
+            className="text-capitalize fit-content btn active btn-outline-secondary">
+            {selectedType || t('all') + contentTypeI18}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item eventKey="1">
+              {t('all') + contentTypeI18}
+            </Dropdown.Item>
+            <Dropdown.Item eventKey="2">
+              {t('integral') + contentTypeI18}
+            </Dropdown.Item>
+            <Dropdown.Item eventKey="3">
+              {t('non-integral') + contentTypeI18}
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
         <QueryGroup
           data={QUESTION_ORDER_KEYS}
           currentSort={curOrder}
-          pathname={source === 'questions' ? '/questions' : ''}
+          pathname={currPathName}
           i18nKeyPrefix="question"
         />
       </div>
@@ -89,6 +150,7 @@ const QuestionList: FC<Props> = ({
           <QuestionListLoader />
         ) : (
           data?.list?.map((li) => {
+            const integral = li.score;
             return (
               <ListGroup.Item
                 key={li.id}
@@ -102,13 +164,22 @@ const QuestionList: FC<Props> = ({
                     />
                   )}
                   <NavLink
-                    to={pathFactory.questionLanding(
-                      li.id,
-                      `${li.url_title}`,
-                      contentType,
-                    )}
-                    className="link-dark">
+                    onClick={(event) => {
+                      event.preventDefault();
+                      handleOpenPayScore(t, navigate, user, li);
+                    }}
+                    className="link-dark"
+                    to=".">
                     {li.title}
+                    <IntegralLink
+                      score={integral}
+                      t={t}
+                      contentType={contentType}
+                      isPay={
+                        isModerator(li, user) ||
+                        li.buyer_user_ids.indexOf(user.id) !== -1
+                      }
+                    />
                     {li.status === 2 ? ` [${t('closed')}]` : ''}
                   </NavLink>
                 </h5>
@@ -131,6 +202,7 @@ const QuestionList: FC<Props> = ({
                       votes: li.vote_count,
                       answers: li.answer_count,
                       views: li.view_count,
+                      score: li.score,
                     }}
                     isAccepted={li.accepted_answer_id >= 1}
                     className="mt-2 mt-md-0"

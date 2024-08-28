@@ -31,6 +31,7 @@ const ActionBar = ({
   username,
   createdAt,
   isVote,
+  mode,
   aiReplied,
   isAI,
   voteCount = 0,
@@ -75,7 +76,8 @@ const ActionBar = ({
           onClick={onReply}>
           {t('btn_reply')}
         </Button>
-        {!isAI &&
+        {mode !== 'question' &&
+          !isAI &&
           (aiReplied ? (
             <div className="lh-1 m-0">
               <Badge bg="secondary" pill>
