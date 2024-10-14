@@ -46,6 +46,7 @@ import (
 	"github.com/apache/incubator-answer/internal/repo/user_external_login"
 	"github.com/apache/incubator-answer/internal/repo/user_notification_config"
 	"github.com/apache/incubator-answer/internal/router"
+	"github.com/apache/incubator-answer/internal/service/Sse"
 	"github.com/apache/incubator-answer/internal/service/action"
 	activity2 "github.com/apache/incubator-answer/internal/service/activity"
 	activity_common2 "github.com/apache/incubator-answer/internal/service/activity_common"
@@ -163,12 +164,13 @@ func initApplication(debug bool, serverConf *conf.Server, dbConf *data.Database,
 	notificationQueueService := notice_queue.NewNotificationQueueService()
 	externalNotificationQueueService := notice_queue.NewNewQuestionNotificationQueueService()
 	commentService := comment2.NewCommentService(commentRepo, commentCommonRepo, userCommon, objService, voteRepo, emailService, userRepo, notificationQueueService, externalNotificationQueueService, activityQueueService)
+	sseService := Sse.NewSseService()
 	rolePowerRelRepo := role.NewRolePowerRelRepo(dataData)
 	rolePowerRelService := role2.NewRolePowerRelService(rolePowerRelRepo, userRoleRelService)
 	rankService := rank2.NewRankService(userCommon, userRankRepo, objService, userRoleRelService, rolePowerRelService, configService)
 	limitRepo := limit.NewRateLimitRepo(dataData)
 	rateLimitMiddleware := middleware.NewRateLimitMiddleware(limitRepo)
-	commentController := controller.NewCommentController(commentService, rankService, captchaService, rateLimitMiddleware)
+	commentController := controller.NewCommentController(commentService, sseService, rankService, captchaService, rateLimitMiddleware)
 	reportRepo := report.NewReportRepo(dataData, uniqueIDRepo)
 	answerActivityRepo := activity.NewAnswerActivityRepo(dataData, activityRepo, userRankRepo, notificationQueueService)
 	answerActivityService := activity2.NewAnswerActivityService(answerActivityRepo, configService)
@@ -192,7 +194,7 @@ func initApplication(debug bool, serverConf *conf.Server, dbConf *data.Database,
 	collectionService := collection2.NewCollectionService(collectionRepo, collectionGroupRepo, questionCommon)
 	collectionController := controller.NewCollectionController(collectionService)
 	questionController := controller.NewQuestionController(questionService, answerService, rankService, siteInfoCommonService, captchaService, rateLimitMiddleware)
-	answerController := controller.NewAnswerController(answerService, rankService, captchaService, siteInfoCommonService, rateLimitMiddleware)
+	answerController := controller.NewAnswerController(answerService, sseService, rankService, captchaService, siteInfoCommonService, rateLimitMiddleware)
 	aiController := controller.NewAIController(commentController, answerController)
 	searchParser := search_parser.NewSearchParser(tagCommonService, userCommon)
 	searchRepo := search_common.NewSearchRepo(dataData, uniqueIDRepo, userCommon, questionRepo, tagCommonService)

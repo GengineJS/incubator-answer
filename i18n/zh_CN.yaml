@@ -455,9 +455,9 @@ backend:
   email_tpl:
     change_email:
       title:
-        other: "[{{.SiteName}}] 确认你的新邮箱地址"
+        other: "[{{.SiteName}}AI 与 资产包子云盘] 确认你的新邮箱地址"
       body:
-        other: "请点击以下链接确认你在 {{.SiteName}} 上的新邮箱地址：<br>\n<a href='{{.ChangeEmailUrl}}' target='_blank'>{{.ChangeEmailUrl}}</a><br><br>\n\n如果你没有请求此更改，请忽略此邮件。\n"
+        other: "请点击以下链接确认你在 [{{.SiteName}}AI 与 资产包子云盘] 上的新邮箱地址：<br>\n<a href='{{.ChangeEmailUrl}}' target='_blank'>{{.ChangeEmailUrl}}</a><br><br>\n\n如果你没有请求此更改，请忽略此邮件。\n"
     new_answer:
       title:
         other: "[{{.SiteName}}] {{.DisplayName}} 回复了你的问题"
@@ -480,17 +480,17 @@ backend:
         other: "<a href='{{.QuestionUrl}}'>{{.QuestionTitle}}</a><br>\n<small>{{.Tags}}</small><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
     pass_reset:
       title:
-        other: "[{{.SiteName }}] 重置密码"
+        other: "[{{.SiteName}}AI 与 资产包子云盘] 重置密码"
       body:
-        other: "有人要求在 [{{.SiteName}}] 上重置你的密码。<br><br>\n\n如果这不是你的操作，请安心忽略此电子邮件。<br><br>\n\n请点击以下链接设置一个新密码：<br>\n<a href='{{.PassResetUrl}}' target='_blank'>{{.PassResetUrl}}</a>\n"
+        other: "有人要求在 [{{.SiteName}}AI 与 资产包子云盘] 上重置你的密码。<br><br>\n\n如果这不是你的操作，请安心忽略此电子邮件。<br><br>\n\n请点击以下链接设置一个新密码：<br>\n<a href='{{.PassResetUrl}}' target='_blank'>{{.PassResetUrl}}</a>\n"
     register:
       title:
-        other: "[{{.SiteName}}] 确认你的新账户"
+        other: "[{{.SiteName}}AI 与 资产包子云盘] 确认你的新账户"
       body:
-        other: "欢迎加入 {{.SiteName}}！<br><br>\n\n请点击以下链接确认并激活你的新账户：<br>\n<a href='{{.RegisterUrl}}' target='_blank'>{{.RegisterUrl}}</a><br><br>\n\n如果上面的链接不能点击，请将其复制并粘贴到你的浏览器地址栏中。\n"
+        other: "欢迎加入 {{.SiteName}}AI 与 资产包子云盘！<br><br>\n\n请点击以下链接确认并激活你的新账户：<br>\n<a href='{{.RegisterUrl}}' target='_blank'>{{.RegisterUrl}}</a><br><br>\n\n如果上面的链接不能点击，请将其复制并粘贴到你的浏览器地址栏中。\n"
     test:
       title:
-        other: "[{{.SiteName}}] 测试邮件"
+        other: "[{{.SiteName}}AI 与 资产包子云盘] 测试邮件"
       body:
         other: "这是一封测试邮件。"
   action_activity_type:
@@ -559,6 +559,7 @@ ui:
   notifications:
     title: 通知
     inbox: 收件箱
+    you: 您
     achievement: 成就
     new_alerts: 新通知
     all_read: 全部标记为已读
@@ -903,7 +904,7 @@ ui:
       placeholder: 搜索
   footer:
     build_on: >-
-      Copyright © 2024.深圳市大瞳世界科技有限公司 粤ICP备2023062274号-2  <br />人工智能驱动 © {{cc}}.
+      Copyright © 2024.深圳市大瞳世界科技有限公司 粤ICP备2023062274号-2  <br />人工智能助力知识分享 © {{cc}}AI x 资产包子云盘
   upload_img:
     name: 更改
     loading: 加载中...
@@ -1278,8 +1279,8 @@ ui:
   modal_confirm:
     title: 发生错误...
   account_result:
-    success: 你的账号已通过验证，即将返回首页。
-    link: 返回首页
+    success: 你的账号已通过验证，可以点击按钮返回主页。
+    link: 返回主页
     invalid: >-
       抱歉，此验证链接已失效。也许你的账号已经激活了？
     confirm_new_email: 你的电子邮箱已更新

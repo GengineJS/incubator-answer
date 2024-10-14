@@ -73,7 +73,7 @@ func (operator *AIQWenService) GetAIReply(ctx *gin.Context, objId string, replyI
 		return "", ""
 	}
 
-	fmt.Printf("收到了AI回复")
+	// fmt.Printf("收到了AI回复")
 	originStr := aiResp.Output.Text
 	return originStr, string(blackfriday.Run([]byte(originStr)))
 }

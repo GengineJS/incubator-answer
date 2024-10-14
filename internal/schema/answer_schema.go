@@ -108,7 +108,7 @@ type AnswerInfo struct {
 	CreateTime     int64             `json:"create_time"`
 	UpdateTime     int64             `json:"update_time"`
 	Accepted       int               `json:"accepted"`
-	UserID         string            `json:"-"`
+	UserID         string            `json:"user_id"`
 	UpdateUserID   string            `json:"-"`
 	UserInfo       *UserBasicInfo    `json:"user_info,omitempty"`
 	UpdateUserInfo *UserBasicInfo    `json:"update_user_info,omitempty"`

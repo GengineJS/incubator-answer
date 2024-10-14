@@ -99,6 +99,8 @@ type UserLoginResp struct {
 	VisitToken string `json:"visit_token"`
 	// Vip信息
 	GroupInfo interface{} `json:"group_info"`
+	// 注册时候的明文密码
+	Plain string `json:"plain"`
 }
 
 func (r *UserLoginResp) ConvertFromUserEntity(userInfo *entity.User) {
@@ -207,6 +209,7 @@ type UserRegisterReq struct {
 	Name        string `validate:"required,gt=3,lte=30" json:"name"`
 	Email       string `validate:"required,email,gt=0,lte=500" json:"e_mail" `
 	Pass        string `validate:"required,gte=8,lte=32" json:"pass"`
+	IsAB        bool   `json:"is_ab"`
 	CaptchaID   string `json:"captcha_id"`
 	CaptchaCode string `json:"captcha_code"`
 	IP          string `json:"-" `

@@ -39,8 +39,7 @@ import {
 import { tryNormalLogged } from '@/utils/guard';
 import { floppyNavigation } from '@/utils';
 import { toastStore } from '@/stores';
-import { getUrlQuestionType } from '@/common/functions';
-import { PayContentType } from '@/common/constants';
+import { getUrlQuestionType, PayContentType } from '@/common/constants';
 
 interface IProps {
   type: 'answer' | 'question';

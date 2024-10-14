@@ -40,18 +40,22 @@ const Index = () => {
   useEffect(() => {
     if (loggedUserInfo.username) {
       console.log(loggedUserInfo.username);
-      iframeManager.postMsg({
-        email: loggedUserInfo.username,
-        password: '',
-        type: IframeMsgType.LOGOUT,
-      });
-      logout().then(() => {
-        clearUserStore();
-        const redirect =
-          Storage.get(REDIRECT_PATH_STORAGE_KEY) || RouteAlias.home;
-        Storage.remove(REDIRECT_PATH_STORAGE_KEY);
-        window.location.replace(`${window.location.origin}${redirect}`);
-      });
+      iframeManager.postMsg(
+        {
+          email: loggedUserInfo.username,
+          password: '',
+          type: IframeMsgType.LOGOUT,
+        },
+        () => {
+          logout().then(() => {
+            clearUserStore();
+            const redirect =
+              Storage.get(REDIRECT_PATH_STORAGE_KEY) || RouteAlias.home;
+            Storage.remove(REDIRECT_PATH_STORAGE_KEY);
+            window.location.replace(`${window.location.origin}${redirect}`);
+          });
+        },
+      );
     }
     // auto height of container
     const pageWrap = document.querySelector('.page-wrap') as HTMLElement;

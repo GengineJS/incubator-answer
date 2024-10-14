@@ -49,7 +49,12 @@ import {
   sideNavStore,
 } from '@/stores';
 import { logout, useQueryNotificationStatus } from '@/services';
-import { assetBunName, ContentType, IframeMsgType } from '@/common/constants';
+import {
+  assetBunName,
+  assetBunSearch,
+  ContentType,
+  IframeMsgType,
+} from '@/common/constants';
 import {
   closeNavbarIfOpen,
   iframeManager,
@@ -91,7 +96,6 @@ const Header: FC = () => {
       revision: Number(redDot?.revision),
     });
   }, [redDot]);
-
   const handleInput = (val) => {
     setSearch(val);
   };
@@ -100,20 +104,27 @@ const Header: FC = () => {
     if (!searchStr) {
       return;
     }
-    const searchUrl = `/search?q=${encodeURIComponent(searchStr)}`;
+    const searchUrl = isAssetBun
+      ? `/search?q=${encodeURIComponent(searchStr)}&${assetBunSearch}`
+      : `/search?q=${encodeURIComponent(searchStr)}`;
     navigate(searchUrl);
   };
 
   const handleLogout = async (evt) => {
     evt.preventDefault();
-    iframeManager.postMsg({
-      email: user.e_mail!,
-      password: '',
-      type: IframeMsgType.LOGOUT,
-    });
-    await logout();
-    clearUserStore();
-    window.location.replace(window.location.href);
+    iframeManager.postMsg(
+      {
+        email: user.e_mail!,
+        password: '',
+        type: IframeMsgType.LOGOUT,
+      },
+      () => {
+        logout().then(() => {
+          clearUserStore();
+          window.location.replace(window.location.href);
+        });
+      },
+    );
   };
 
   useEffect(() => {
@@ -242,13 +253,28 @@ const Header: FC = () => {
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
-                <Dropdown.Item href={`${askUrl}${ContentType.QUESTION}`}>
+                <Dropdown.Item
+                  href={
+                    isAssetBun
+                      ? `${askUrl}${ContentType.QUESTION}&${assetBunSearch}`
+                      : `${askUrl}${ContentType.QUESTION}`
+                  }>
                   {t('header.nav.question')}
                 </Dropdown.Item>
-                <Dropdown.Item href={`${askUrl}${ContentType.ARTICLE}`}>
+                <Dropdown.Item
+                  href={
+                    isAssetBun
+                      ? `${askUrl}${ContentType.ARTICLE}&${assetBunSearch}`
+                      : `${askUrl}${ContentType.ARTICLE}`
+                  }>
                   {t('header.nav.article')}
                 </Dropdown.Item>
-                <Dropdown.Item href={`${askUrl}${ContentType.BOUNTY}`}>
+                <Dropdown.Item
+                  href={
+                    isAssetBun
+                      ? `${askUrl}${ContentType.BOUNTY}&${assetBunSearch}`
+                      : `${askUrl}${ContentType.BOUNTY}`
+                  }>
                   {t('header.nav.bounty')}
                 </Dropdown.Item>
                 <Dropdown.Item
@@ -275,13 +301,28 @@ const Header: FC = () => {
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu>
-                      <Dropdown.Item href={`${askUrl}${ContentType.QUESTION}`}>
+                      <Dropdown.Item
+                        href={
+                          isAssetBun
+                            ? `${askUrl}${ContentType.QUESTION}&${assetBunSearch}`
+                            : `${askUrl}${ContentType.QUESTION}`
+                        }>
                         {t('header.nav.question')}
                       </Dropdown.Item>
-                      <Dropdown.Item href={`${askUrl}${ContentType.ARTICLE}`}>
+                      <Dropdown.Item
+                        href={
+                          isAssetBun
+                            ? `${askUrl}${ContentType.ARTICLE}&${assetBunSearch}`
+                            : `${askUrl}${ContentType.ARTICLE}`
+                        }>
                         {t('header.nav.article')}
                       </Dropdown.Item>
-                      <Dropdown.Item href={`${askUrl}${ContentType.BOUNTY}`}>
+                      <Dropdown.Item
+                        href={
+                          isAssetBun
+                            ? `${askUrl}${ContentType.BOUNTY}&${assetBunSearch}`
+                            : `${askUrl}${ContentType.BOUNTY}`
+                        }>
                         {t('header.nav.bounty')}
                       </Dropdown.Item>
                       <Dropdown.Item

@@ -24,21 +24,36 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { usePageTags } from '@/hooks';
 import { loggedUserInfoStore } from '@/stores';
 import { activateAccount } from '@/services';
+import { iframeManager } from '@/common/functions';
+import { IframeMsgType } from '@/common/constants';
 
 const Index: FC = () => {
+  iframeManager.initIframe();
   const { t } = useTranslation('translation', { keyPrefix: 'page_title' });
   const [searchParams] = useSearchParams();
   const updateUser = loggedUserInfoStore((state) => state.update);
   const navigate = useNavigate();
   useEffect(() => {
     const code = searchParams.get('code');
-
+    const isAB = searchParams.get('page_type') === '1';
+    const successUrl = `/users/account-activation/success`;
     if (code) {
       activateAccount(encodeURIComponent(code)).then((res) => {
         updateUser(res);
-        setTimeout(() => {
-          navigate('/users/account-activation/success', { replace: true });
-        }, 0);
+        iframeManager.postMsg(
+          {
+            email: res.e_mail,
+            password: res.plain,
+            type: IframeMsgType.LOGIN,
+          },
+          () => {
+            setTimeout(() => {
+              navigate(isAB ? `${successUrl}?page_type=1` : successUrl, {
+                replace: true,
+              });
+            }, 0);
+          },
+        );
       });
     } else {
       navigate('/', { replace: true });

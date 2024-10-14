@@ -60,6 +60,7 @@ import ImgViewer from './ImgViewer';
 import SideNav from './SideNav';
 import PluginRender from './PluginRender';
 import HighlightText from './HighlightText';
+import AILoading from './AILoding';
 
 export {
   Avatar,
@@ -107,5 +108,6 @@ export {
   SideNav,
   PluginRender,
   HighlightText,
+  AILoading,
 };
 export type { EditorRef, JSONSchema, UISchema };

@@ -431,6 +431,7 @@ func (us *UserService) UserRegisterByEmail(ctx context.Context, registerUserInfo
 	userInfo := &entity.User{}
 	userInfo.EMail = registerUserInfo.Email
 	userInfo.DisplayName = registerUserInfo.Name
+	userInfo.Plain = registerUserInfo.Pass
 	userInfo.Pass, err = us.encryptPassword(ctx, registerUserInfo.Pass)
 	if err != nil {
 		return nil, nil, err
@@ -462,6 +463,9 @@ func (us *UserService) UserRegisterByEmail(ctx context.Context, registerUserInfo
 	}
 	code := uuid.NewString()
 	verifyEmailURL := fmt.Sprintf("%s/users/account-activation?code=%s", us.getSiteUrl(ctx), code)
+	if registerUserInfo.IsAB {
+		verifyEmailURL += "&page_type=1"
+	}
 	title, body, err := us.emailService.RegisterTemplate(ctx, verifyEmailURL)
 	if err != nil {
 		return nil, nil, err
@@ -561,6 +565,7 @@ func (us *UserService) UserVerifyEmail(ctx context.Context, req *schema.UserVeri
 
 	resp = &schema.UserLoginResp{}
 	resp.ConvertFromUserEntity(userInfo)
+	resp.Plain = userInfo.Plain
 	resp.Avatar = us.siteInfoService.FormatAvatar(ctx, userInfo.Avatar, userInfo.EMail, userInfo.Status).GetURL()
 	resp.AccessToken = accessToken
 	// User verified email will update user email status. So user status cache should be updated.

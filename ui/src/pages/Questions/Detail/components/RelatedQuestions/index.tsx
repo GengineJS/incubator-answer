@@ -25,11 +25,10 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components';
 import { useSimilarQuestion } from '@/services';
 import { RelatedContentQuery } from '@/common/i18n';
-import { getUrlQuestionType } from '@/common/functions';
 import IntegralLink from '@/components/IntegralLink';
 import handleOpenPayScore from '@/components/Pay';
 import { loggedUserInfoStore } from '@/stores';
-import { isModerator } from '@/common/constants';
+import { getUrlQuestionType, isModerator } from '@/common/constants';
 
 interface Props {
   id: string;

@@ -44,7 +44,9 @@ import {
   postVote,
   addAIComment,
 } from '@/services';
-import { commentReplyStore } from '@/stores';
+import { commentReplyStore, loggedUserInfoStore } from '@/stores';
+import AILoading from '../AILoding';
+import { SseService } from '@/common/functions';
 
 import { Form, ActionBar, Reply } from './components';
 
@@ -64,7 +66,19 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
     page_size: pageSize,
   });
   const [comments, setComments] = useState<any>([]);
-
+  const [aiLoading, setAILoading] = useState(false);
+  const userInfo = loggedUserInfoStore((state) => state.user);
+  SseService.GetInstance().addAIEvent('AIComment', (eve) => {
+    if (!aiLoading) {
+      return;
+    }
+    const info = eve.data;
+    const answerInfo = JSON.parse(info);
+    if (answerInfo.user_id === userInfo.id) {
+      setAILoading(false);
+      window.location.reload();
+    }
+  });
   const reportModal = useReportModal();
 
   const addCaptcha = useCaptchaModal('comment');
@@ -369,6 +383,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
         'comments-wrap',
         comments.length > 0 && 'bg-light px-3 py-2 rounded',
       )}>
+      <AILoading loading={aiLoading} color="#3f51b5" />
       {comments.map((item) => {
         // eslint-disable-next-line no-lone-blocks
         {
@@ -444,6 +459,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
                   handleReply(item.comment_id);
                 }}
                 onAIReply={() => {
+                  setAILoading(true);
                   handleSendReply({
                     ...item,
                     value: 'AIReply',
@@ -488,6 +504,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
               size="sm"
               onClick={() => {
                 if (tryNormalLogged(true)) {
+                  setAILoading(true);
                   handleSendReply({
                     value: 'AIReply',
                     type: 'comment',

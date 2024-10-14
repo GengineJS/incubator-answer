@@ -25,15 +25,26 @@ import classNames from 'classnames';
 import isEmpty from 'lodash/isEmpty';
 
 import { FormatTime, Empty } from '@/components';
+import { loggedUserInfoStore } from '@/stores';
 
 const Inbox = ({ data, handleReadNotification }) => {
   const { t } = useTranslation('translation', { keyPrefix: 'notifications' });
+  const sessionUser = loggedUserInfoStore((state) => state.user);
+  console.log(sessionUser);
   if (!data) {
     return null;
   }
   if (isEmpty(data)) {
     return <Empty />;
   }
+  const getDisplayName = function (item) {
+    const user = sessionUser;
+    const qDisName = item.user_info?.display_name;
+    if (user.id === item.user_info?.id) {
+      return t('you');
+    }
+    return qDisName;
+  };
   return (
     <ListGroup className="rounded-0">
       {data.map((item) => {
@@ -63,11 +74,11 @@ const Inbox = ({ data, handleReadNotification }) => {
             <div>
               {item.user_info && item.user_info.status !== 'deleted' ? (
                 <Link to={`/users/${item.user_info.username}`}>
-                  {item.user_info.display_name}{' '}
+                  {getDisplayName(item)}{' '}
                 </Link>
               ) : (
                 // someone for anonymous user display
-                <span>{item.user_info?.display_name || t('someone')} </span>
+                <span>{getDisplayName(item) || t('someone')} </span>
               )}
               {item.notification_action}{' '}
               <Link to={url} onClick={() => handleReadNotification(item.id)}>

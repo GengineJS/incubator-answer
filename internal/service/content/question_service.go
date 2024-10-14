@@ -337,7 +337,12 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 			return errorlist, err
 		}
 	}
-
+	user, _, _ := qs.userRepo.GetByUserID(ctx, req.UserID)
+	// 是否在列表显示问题, 如果是管理员，默认显示
+	questionShow := entity.QuestionHide
+	if user.IsAdmin {
+		questionShow = entity.QuestionShow
+	}
 	question := &entity.Question{}
 	now := time.Now()
 	question.UserID = req.UserID
@@ -354,7 +359,7 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 	question.CreatedAt = now
 	question.PostUpdateTime = now
 	question.Pin = entity.QuestionUnPin
-	question.Show = entity.QuestionShow
+	question.Show = questionShow
 	question.ContentType = int(req.ContentType)
 	isPayType := false
 	if req.ContentType != entity.TypeArticle && req.ContentType != entity.TypeAiPic {
@@ -410,7 +415,7 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 			log.Errorf("update user question count error %v", err)
 		}
 	}
-	if isPayType {
+	if isPayType && req.Score > 0 {
 		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, req.UserID, question.ID, req.UserID, question.Title, constant.NotificationSubIntegral, 0, req.Score)
 	}
 	qs.activityQueueService.Send(ctx, &schema.ActivityMsg{
@@ -580,7 +585,9 @@ func (qs *QuestionService) RemoveQuestion(ctx context.Context, req *schema.Remov
 	// 	 log.Errorf("user DeleteQuestion rank rollback error %s", err.Error())
 	// }
 	qs.assetbunRepo.OffsetScore(ctx, questionInfo.UserID, questionInfo.Score)
-	qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, questionInfo.UserID, questionInfo.ID, questionInfo.UserID, questionInfo.Title, constant.NotificationDeleteBackIntegral, 0, questionInfo.Score)
+	if questionInfo.Score > 0 {
+		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, questionInfo.UserID, questionInfo.ID, questionInfo.UserID, questionInfo.Title, constant.NotificationDeleteBackIntegral, 0, questionInfo.Score)
+	}
 	qs.activityQueueService.Send(ctx, &schema.ActivityMsg{
 		UserID:           questionInfo.UserID,
 		TriggerUserID:    converter.StringToInt64(req.UserID),

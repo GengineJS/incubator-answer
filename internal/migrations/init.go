@@ -63,7 +63,7 @@ func (m *Mentor) InitDB() error {
 	m.do("sync table", m.syncTable)
 	m.do("init version table", m.initVersionTable)
 	// m.do("init admin user", m.initAdminUser)
-	m.do("init all users from assetbun", m.initAllUserAndRole)
+	m.do("init all users and data from assetbun", m.initAllUserAndRole)
 	m.do("init config", m.initConfig)
 	m.do("init default privileges config", m.initDefaultRankPrivileges)
 	m.do("init role", m.initRole)
@@ -78,7 +78,8 @@ func (m *Mentor) InitDB() error {
 	m.do("init site info user config", m.initSiteInfoUsersConfig)
 	m.do("init site info privilege rank", m.initSiteInfoPrivilegeRank)
 	m.do("init site info write", m.initSiteInfoWrite)
-	m.do("init default content", m.initDefaultContent)
+	// TODO: 不添加默认数据
+	// m.do("init default content", m.initDefaultContent)
 	return m.err
 }
 
@@ -125,6 +126,8 @@ func (m *Mentor) initAdminUser() {
 func (m *Mentor) initAllUserAndRole() {
 	// 同步assetbun与answer之间的用户数据表
 	assetbun.SyncUsers(m.ctx, m.engine)
+	// 同步assetbun与answer之间用户资源分享的信息转为question数据表数据
+	assetbun.SyncShares(m.ctx, m.engine)
 }
 
 func (m *Mentor) initConfig() {

@@ -53,14 +53,18 @@ const questionLanding = (
   return `/questions/${questionId}?content_type=${contentType}`;
 };
 
-const answerLanding = (params: {
-  questionId: string;
-  slugTitle?: string;
-  answerId: string;
-}) => {
+const answerLanding = (
+  params: {
+    questionId: string;
+    slugTitle?: string;
+    answerId: string;
+  },
+  contentType: number = 1,
+) => {
   const questionLandingUrl = questionLanding(
     params.questionId,
     params.slugTitle,
+    contentType,
   );
   return `${questionLandingUrl}/${params.answerId}`;
 };

@@ -20,7 +20,7 @@ const IntegralLink = ({ score, t, contentType, isPay = false }) => {
       href="./"
       target="_blank"
       rel="noreferrer"
-      style={{ color: 'gold' }}
+      style={{ color: '#5575f6' }}
       onClick={handleClick}>
       {isPayType ||
         (isPay ? (

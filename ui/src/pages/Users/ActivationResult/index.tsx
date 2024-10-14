@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 
 import { usePageTags } from '@/hooks';
 import { WelcomeTitle } from '@/components';
+import { getTargetAssetBunHost, isAssetBunPageType } from '@/common/functions';
 
 const Index: FC = () => {
   const { t } = useTranslation('translation', { keyPrefix: 'account_result' });
@@ -31,6 +32,7 @@ const Index: FC = () => {
   usePageTags({
     title: t('account_activation', { keyPrefix: 'page_title' }),
   });
+  const isAB = isAssetBunPageType();
   return (
     <Container className="pt-4 mt-2 mb-5">
       <Row className="justify-content-center">
@@ -40,7 +42,17 @@ const Index: FC = () => {
             <>
               <p className="text-center">{t('success')}</p>
               <div className="text-center">
-                <Link to="/">{t('link')}</Link>
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <Link
+                  to="/"
+                  onClick={(e) => {
+                    if (isAB) {
+                      e.preventDefault();
+                      window.location.href = getTargetAssetBunHost();
+                    }
+                  }}>
+                  {t('link')}
+                </Link>
               </div>
             </>
           )}

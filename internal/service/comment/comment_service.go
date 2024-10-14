@@ -183,7 +183,7 @@ func (cs *CommentService) AddComment(ctx context.Context, req *schema.AddComment
 	resp = &schema.GetCommentResp{}
 	resp.SetFromComment(comment)
 	resp.MemberActions = permission.GetCommentPermission(ctx, req.UserID, resp.UserID,
-		time.Now(), req.CanEdit, req.CanDelete)
+		time.Now(), req.CanEdit, req.CanDelete, comment.IsAI)
 
 	commentResp, err := cs.addCommentNotification(ctx, req, resp, comment, objInfo)
 	if err != nil {
@@ -351,9 +351,8 @@ func (cs *CommentService) GetComment(ctx context.Context, req *schema.GetComment
 
 	// check if current user vote this comment
 	resp.IsVote = cs.checkIsVote(ctx, req.UserID, resp.CommentID)
-
 	resp.MemberActions = permission.GetCommentPermission(ctx, req.UserID, resp.UserID,
-		comment.CreatedAt, req.CanEdit, req.CanDelete)
+		comment.CreatedAt, req.CanEdit, req.CanDelete, comment.IsAI)
 	return resp, nil
 }
 
@@ -451,7 +450,7 @@ func (cs *CommentService) convertCommentEntity2Resp(ctx context.Context, req *sc
 	commentResp.IsVote = cs.checkIsVote(ctx, req.UserID, commentResp.CommentID)
 
 	commentResp.MemberActions = permission.GetCommentPermission(ctx,
-		req.UserID, commentResp.UserID, comment.CreatedAt, req.CanEdit, req.CanDelete)
+		req.UserID, commentResp.UserID, comment.CreatedAt, req.CanEdit, req.CanDelete, comment.IsAI)
 	return commentResp, nil
 }
 

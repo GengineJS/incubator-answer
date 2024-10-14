@@ -27,12 +27,13 @@ import classNames from 'classnames';
 
 import { usePromptWithUnload } from '@/hooks';
 import { useCaptchaPlugin } from '@/utils/pluginKit';
-import { Editor, Icon, Modal, TextArea } from '@/components';
+import { Editor, Icon, Modal, TextArea, AILoading } from '@/components';
 import { FormDataType, PostAnswerReq } from '@/common/interface';
 import { postAIAnswer, postAnswer } from '@/services';
 import { guard, handleFormError, SaveDraft, storageExpires } from '@/utils';
 import { DRAFT_ANSWER_STORAGE_KEY } from '@/common/constants';
-import { writeSettingStore } from '@/stores';
+import { loggedUserInfoStore, writeSettingStore } from '@/stores';
+import { SseService } from '@/common/functions';
 
 interface Props {
   visible?: boolean;
@@ -68,11 +69,22 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
   const aCaptcha = useCaptchaPlugin('answer');
   const writeInfo = writeSettingStore((state) => state.write);
   const [editorCanSave, setEditorCanSave] = useState(false);
-
+  const [aiLoading, setAILoading] = useState(false);
   usePromptWithUnload({
     when: Boolean(formData.content.value),
   });
-
+  const userInfo = loggedUserInfoStore((state) => state.user);
+  SseService.GetInstance().addAIEvent('AIHandle', (eve) => {
+    if (!aiLoading) {
+      return;
+    }
+    const info = eve.data;
+    const answerInfo = JSON.parse(info);
+    if (answerInfo.user_id === userInfo.id) {
+      setAILoading(false);
+      window.location.reload();
+    }
+  });
   const removeDraft = () => {
     // immediately remove debounced save
     saveDraft.save.cancel();
@@ -210,6 +222,7 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
     if (!guard.tryNormalLogged(true)) {
       return;
     }
+    setAILoading(true);
     submitAnswer(true);
   };
 
@@ -246,9 +259,9 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
     setShowEditor(true);
     setEditorFocusState(true);
   };
-
   return (
     <Form noValidate className="mt-4">
+      <AILoading loading={aiLoading} color="#3f51b5" />
       {(!data.answered || showEditor) && (
         <Form.Group className="mb-3">
           <Form.Label>

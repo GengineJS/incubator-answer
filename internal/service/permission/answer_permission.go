@@ -30,18 +30,18 @@ import (
 
 // GetAnswerPermission get answer permission
 func GetAnswerPermission(ctx context.Context, userID, creatorUserID string,
-	status int, canEdit, canDelete, canRecover bool) (
+	status int, canEdit, canDelete, canRecover bool, isAI bool) (
 	actions []*schema.PermissionMemberAction) {
 	lang := handler.GetLangByCtx(ctx)
 	actions = make([]*schema.PermissionMemberAction, 0)
-	if len(userID) > 0 {
+	if !isAI && len(userID) > 0 {
 		actions = append(actions, &schema.PermissionMemberAction{
 			Action: "report",
 			Name:   translator.Tr(lang, reportActionName),
 			Type:   "reason",
 		})
 	}
-	if canEdit || userID == creatorUserID {
+	if !isAI && (canEdit || userID == creatorUserID) {
 		actions = append(actions, &schema.PermissionMemberAction{
 			Action: "edit",
 			Name:   translator.Tr(lang, editActionName),
@@ -49,7 +49,7 @@ func GetAnswerPermission(ctx context.Context, userID, creatorUserID string,
 		})
 	}
 
-	if (canDelete || userID == creatorUserID) && status != entity.AnswerStatusDeleted {
+	if !isAI && ((canDelete || userID == creatorUserID) && status != entity.AnswerStatusDeleted) {
 		actions = append(actions, &schema.PermissionMemberAction{
 			Action: "delete",
 			Name:   translator.Tr(lang, deleteActionName),
@@ -57,7 +57,7 @@ func GetAnswerPermission(ctx context.Context, userID, creatorUserID string,
 		})
 	}
 
-	if canRecover && status == entity.AnswerStatusDeleted {
+	if !isAI && (canRecover && status == entity.AnswerStatusDeleted) {
 		actions = append(actions, &schema.PermissionMemberAction{
 			Action: "undelete",
 			Name:   translator.Tr(lang, undeleteActionName),

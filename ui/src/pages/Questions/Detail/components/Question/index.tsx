@@ -36,7 +36,6 @@ import {
 import { useRenderHtmlPlugin } from '@/utils/pluginKit';
 import { formatCount, guard } from '@/utils';
 import { following } from '@/services';
-import { pathFactory } from '@/router/pathFactory';
 import {
   getUrlQuestionType,
   needQuestionToLoginOrUp,
@@ -104,14 +103,7 @@ const Index: FC<Props> = ({ data, initPage, hasAnswer, isLogged }) => {
             title={t('pinned', { keyPrefix: 'btns' })}
           />
         )}
-        <Link
-          className="link-dark"
-          reloadDocument
-          to={pathFactory.questionLanding(
-            data.id,
-            data.url_title,
-            data.content_type,
-          )}>
+        <div className="link-dark">
           {data.title}
           <IntegralLink
             score={data.score}
@@ -125,7 +117,7 @@ const Index: FC<Props> = ({ data, initPage, hasAnswer, isLogged }) => {
           {data.status === 2
             ? ` [${t('closed', { keyPrefix: 'question' })}]`
             : ''}
-        </Link>
+        </div>
       </h1>
 
       <div className="d-flex flex-wrap align-items-center small mb-3 text-secondary">

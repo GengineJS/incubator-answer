@@ -138,37 +138,44 @@ const Index: React.FC = () => {
       params.captcha_code = captcha.captcha_code;
       params.captcha_id = captcha.captcha_id;
     }
-    iframeManager.postMsg({
-      email: params.e_mail,
-      password: params.pass,
-      type: IframeMsgType.LOGIN,
-    });
-    login(params)
-      .then(async (res) => {
-        await passwordCaptcha?.close?.();
-        updateUser(res);
-        setupAppTheme();
-        const userStat = guard.deriveLoginState();
-        if (userStat.isNotActivated) {
-          // inactive
-          setStep(2);
-        } else {
-          guard.handleLoginRedirect(navigate);
-        }
-        if (isAssetBun) {
-          const abUrl = getTargetAssetBunHost();
-          window.open(abUrl, '_blank');
-        }
-      })
-      .catch((err) => {
-        if (err.isError) {
-          const data = handleFormError(err, formData);
-          setFormData({ ...data });
-          passwordCaptcha?.handleCaptchaError?.(err.list);
-          const ele = document.getElementById(err.list[0].error_field);
-          scrollToElementTop(ele);
-        }
-      });
+    iframeManager.postMsg(
+      {
+        email: params.e_mail,
+        password: params.pass,
+        type: IframeMsgType.LOGIN,
+      },
+      (code: number) => {
+        login(params)
+          .then(async (res) => {
+            await passwordCaptcha?.close?.();
+            updateUser(res);
+            setupAppTheme();
+            // if (res.status === 'normal') {
+            //
+            // }
+            const userStat = guard.deriveLoginState();
+            if (userStat.isNotActivated) {
+              // inactive
+              setStep(2);
+            } else {
+              guard.handleLoginRedirect(navigate);
+            }
+            if (isAssetBun && code === 0) {
+              const abUrl = getTargetAssetBunHost();
+              window.open(abUrl, '_blank');
+            }
+          })
+          .catch((err) => {
+            if (err.isError) {
+              const data = handleFormError(err, formData);
+              setFormData({ ...data });
+              passwordCaptcha?.handleCaptchaError?.(err.list);
+              const ele = document.getElementById(err.list[0].error_field);
+              scrollToElementTop(ele);
+            }
+          });
+      },
+    );
   };
 
   const handleSubmit = async (event: FormEvent) => {

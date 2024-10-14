@@ -200,7 +200,9 @@ export const activated = () => {
   const us = deriveLoginState();
   if (us.isNotActivated) {
     gr.ok = false;
-    gr.redirect = RouteAlias.inactive;
+    gr.redirect = isAssetBunPageType()
+      ? `${RouteAlias.inactive}&${assetBunSearch}`
+      : RouteAlias.inactive;
   }
   return gr;
 };
@@ -326,7 +328,11 @@ export const tryNormalLogged = (canNavigate: boolean = false) => {
     return false;
   }
   if (us.isNotActivated) {
-    floppyNavigation.navigate(RouteAlias.inactive);
+    floppyNavigation.navigate(
+      isAssetBunPageType()
+        ? `${RouteAlias.inactive}&${assetBunSearch}`
+        : RouteAlias.inactive,
+    );
   } else if (us.isForbidden) {
     floppyNavigation.navigate(RouteAlias.suspended, {
       handler: 'replace',
@@ -372,12 +378,17 @@ export const handleLoginWithToken = (
         loggedUserInfoStore.getState().update(res);
         const userStat = deriveLoginState();
         if (userStat.isNotActivated) {
-          floppyNavigation.navigate(RouteAlias.inactive, {
-            handler,
-            options: {
-              replace: true,
+          floppyNavigation.navigate(
+            isAssetBunPageType()
+              ? `${RouteAlias.inactive}&${assetBunSearch}`
+              : RouteAlias.inactive,
+            {
+              handler,
+              options: {
+                replace: true,
+              },
             },
-          });
+          );
         } else {
           handleLoginRedirect(handler);
         }

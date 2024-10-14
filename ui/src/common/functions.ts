@@ -1,24 +1,18 @@
+// eslint-disable-next-line max-classes-per-file
 import {
-  ContentType,
+  getUrlQueryParam,
+  getUrlQuestionType,
   hasPayType,
   IframeMsgType,
   isModerator,
   PageType,
   shareLocalStorageDomains,
-  targetAssetBunUrl,
+  targetAssetBunHomeUrl,
+  targetAssetBunRootUrl,
   targetLocalStorageUrl,
 } from '@/common/constants';
 
-export function getUrlQueryParam(key: string): string | null {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(key);
-}
-
-export function getUrlQuestionType(key: string = 'content_type'): number {
-  const param = getUrlQueryParam(key);
-  return param ? parseInt(param, 10) : ContentType.QUESTION;
-}
-
+export { getUrlQueryParam, getUrlQuestionType };
 export function needQuestionToLoginOrUp(question, userInfo): void {
   if (!hasPayType(question.content_type) && question.score) {
     // 没有登录
@@ -74,7 +68,10 @@ export function getTargetLocalStorageHost(): string {
 export function getTargetAssetBunHost(): string {
   const currDomain = getDomainName();
   const idx = shareLocalStorageDomains.indexOf(currDomain);
-  return targetAssetBunUrl[idx];
+  const redirectStr = getUrlQueryParam('redirect');
+  return redirectStr
+    ? targetAssetBunRootUrl[idx] + decodeURIComponent(redirectStr)
+    : targetAssetBunHomeUrl[idx];
 }
 
 export interface IframeParams {
@@ -83,8 +80,46 @@ export interface IframeParams {
   type: IframeMsgType;
 }
 
+export class SseService {
+  private static sse: SseService;
+
+  private static eveSource: EventSource;
+
+  private static aiCallbacks: Map<string, any> = new Map<string, any>();
+
+  static GetInstance() {
+    if (SseService.sse) {
+      return SseService.sse;
+    }
+    SseService.sse = new SseService();
+    const currDomain = getDomainName();
+    const eveUrl =
+      currDomain === 'localhost'
+        ? 'http://localhost:8080/events?stream=message'
+        : 'https://learnearn.cn:8080/events?stream=message';
+    SseService.eveSource = new EventSource(eveUrl);
+    SseService.eveSource.addEventListener('message', SseService.aiCallback);
+    return SseService.sse;
+  }
+
+  private static aiCallback(eve) {
+    SseService.aiCallbacks.forEach((callback) => {
+      callback(eve);
+    });
+  }
+
+  addAIEvent(key, callback) {
+    if (SseService.aiCallbacks.has(key)) {
+      SseService.aiCallbacks.delete(key);
+    }
+    SseService.aiCallbacks.set(key, callback);
+  }
+}
+
 class IframeManager {
   private iframe: HTMLIFrameElement | null = null;
+
+  private callback;
 
   public initIframe() {
     // 尝试从DOM中获取现有的<iframe>
@@ -102,11 +137,23 @@ class IframeManager {
       this.iframe.onload = () => {
         console.log('Iframe loaded.');
       };
+      const that = this;
+      window.addEventListener(
+        'message',
+        function (event) {
+          if (that.callback) {
+            that.callback(event.data);
+            that.callback = null;
+          }
+        },
+        false,
+      );
     }
     return this.iframe;
   }
 
-  public postMsg(params: IframeParams) {
+  public postMsg(params: IframeParams, callback) {
+    this.callback = callback;
     const iframe = this.initIframe();
     const contentWindow = iframe.contentWindow!;
     const targetStorageUrl = getTargetLocalStorageHost();

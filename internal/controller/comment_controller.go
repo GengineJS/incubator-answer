@@ -20,6 +20,8 @@
 package controller
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/apache/incubator-answer/internal/base/handler"
 	"github.com/apache/incubator-answer/internal/base/middleware"
 	"github.com/apache/incubator-answer/internal/base/reason"
@@ -27,6 +29,7 @@ import (
 	"github.com/apache/incubator-answer/internal/base/validator"
 	"github.com/apache/incubator-answer/internal/entity"
 	"github.com/apache/incubator-answer/internal/schema"
+	"github.com/apache/incubator-answer/internal/service/Sse"
 	"github.com/apache/incubator-answer/internal/service/action"
 	"github.com/apache/incubator-answer/internal/service/comment"
 	"github.com/apache/incubator-answer/internal/service/content"
@@ -35,6 +38,7 @@ import (
 	"github.com/apache/incubator-answer/internal/service/rank"
 	"github.com/apache/incubator-answer/pkg/uid"
 	"github.com/gin-gonic/gin"
+	"github.com/r3labs/sse/v2"
 	"github.com/segmentfault/pacman/errors"
 	"net/http"
 )
@@ -42,6 +46,7 @@ import (
 // CommentController comment controller
 type CommentController struct {
 	commentService      *comment.CommentService
+	sseService          *Sse.SseService
 	rankService         *rank.RankService
 	actionService       *action.CaptchaService
 	rateLimitMiddleware *middleware.RateLimitMiddleware
@@ -50,12 +55,14 @@ type CommentController struct {
 // NewCommentController new controller
 func NewCommentController(
 	commentService *comment.CommentService,
+	sseService *Sse.SseService,
 	rankService *rank.RankService,
 	actionService *action.CaptchaService,
 	rateLimitMiddleware *middleware.RateLimitMiddleware,
 ) *CommentController {
 	return &CommentController{
 		commentService:      commentService,
+		sseService:          sseService,
 		rankService:         rankService,
 		actionService:       actionService,
 		rateLimitMiddleware: rateLimitMiddleware,
@@ -63,10 +70,19 @@ func NewCommentController(
 }
 
 func (cc *CommentController) AddAIComment(ctx *gin.Context, service *content.AIQWenService) {
-	cc.addComment(ctx, service)
+	cc.addComment(ctx, service, func(resp *schema.GetCommentResp) {
+		jsonData, err := json.Marshal(resp)
+		if err != nil {
+			fmt.Println("Error marshalling JSON:", err)
+			return
+		}
+		cc.sseService.Eve.Publish("message", &sse.Event{
+			Data: jsonData,
+		})
+	})
 }
 
-func (cc *CommentController) addComment(ctx *gin.Context, service *content.AIQWenService) {
+func (cc *CommentController) addComment(ctx *gin.Context, service *content.AIQWenService, callback func(resp *schema.GetCommentResp)) {
 	req := &schema.AddCommentReq{}
 	if handler.BindAndCheck(ctx, req) {
 		return
@@ -124,6 +140,9 @@ func (cc *CommentController) addComment(ctx *gin.Context, service *content.AIQWe
 	if !isAdmin || !linkUrlLimitUser {
 		cc.actionService.ActionRecordAdd(ctx, entity.CaptchaActionComment, req.UserID)
 	}
+	if callback != nil {
+		callback(resp)
+	}
 	handler.HandleResponse(ctx, err, resp)
 }
 
@@ -138,7 +157,7 @@ func (cc *CommentController) addComment(ctx *gin.Context, service *content.AIQWe
 // @Success 200 {object} handler.RespBody{data=schema.GetCommentResp}
 // @Router /answer/api/v1/comment [post]
 func (cc *CommentController) AddComment(ctx *gin.Context) {
-	cc.addComment(ctx, nil)
+	cc.addComment(ctx, nil, nil)
 }
 
 // RemoveComment remove comment

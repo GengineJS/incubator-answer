@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { memo, FC } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import React, { memo, FC } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ListGroupItem } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 
@@ -33,6 +33,10 @@ import {
 import Pattern from '@/common/pattern';
 import type { SearchResItem } from '@/common/interface';
 import { escapeRemove } from '@/utils';
+import { isModerator } from '@/common/constants';
+import IntegralLink from '@/components/IntegralLink';
+import { loggedUserInfoStore } from '@/stores';
+import handleOpenPayScore from '@/components/Pay';
 
 interface Props {
   data: SearchResItem;
@@ -45,23 +49,28 @@ const Index: FC<Props> = ({ data }) => {
   let itemUrl = pathFactory.questionLanding(
     data.object.id,
     data.object.url_title,
+    data.object.content_type,
   );
   if (data.object_type === 'answer' && data.object.question_id) {
-    itemUrl = pathFactory.answerLanding({
-      questionId: data.object.question_id,
-      slugTitle: data.object.url_title,
-      answerId: data.object.id,
-    });
+    itemUrl = pathFactory.answerLanding(
+      {
+        questionId: data.object.question_id,
+        slugTitle: data.object.url_title,
+        answerId: data.object.id,
+      },
+      data.object.content_type,
+    );
   }
 
   const [searchParams] = useSearchParams();
   const q = searchParams.get('q');
+  const navigate = useNavigate();
   const keywords =
     q
       ?.replace(Pattern.search, '')
       ?.split(' ')
       ?.filter((v) => v !== '') || [];
-
+  const user = loggedUserInfoStore((state) => state.user);
   return (
     <ListGroupItem className="py-3 px-0 border-start-0 border-end-0 bg-transparent">
       <div className="mb-2 clearfix">
@@ -70,8 +79,23 @@ const Index: FC<Props> = ({ data }) => {
           style={{ marginTop: '2px' }}>
           {data.object_type === 'question' ? 'Q' : 'A'}
         </span>
-        <Link className="h5 mb-0 link-dark text-break" to={itemUrl}>
+        <Link
+          onClick={(event) => {
+            event.preventDefault();
+            handleOpenPayScore(t, navigate, user, data.object, itemUrl);
+          }}
+          className="h5 mb-0 link-dark text-break"
+          to=".">
           <HighlightText text={data.object.title} keywords={keywords} />
+          <IntegralLink
+            score={data.object.score}
+            t={t}
+            contentType={data.object.content_type}
+            isPay={
+              isModerator(data.object, user) ||
+              data.object.buyer_user_ids.indexOf(user.id || '') !== -1
+            }
+          />
           {data.object.status === 'closed'
             ? ` [${t('closed', { keyPrefix: 'question' })}]`
             : null}

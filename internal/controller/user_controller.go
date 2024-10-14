@@ -292,7 +292,6 @@ func (uc *UserController) UserRegisterByEmail(ctx *gin.Context) {
 			return
 		}
 	}
-
 	resp, errFields, err := uc.userService.UserRegisterByEmail(ctx, req)
 	if len(errFields) > 0 {
 		for _, field := range errFields {

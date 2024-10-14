@@ -902,8 +902,7 @@ ui:
       placeholder: Search
   footer:
     build_on: >-
-      Powered by <1> Apache Answer </1>- the open-source software that powers Q&A
-      communities.<br />Made with love © {{cc}}.
+      Copyright © 2024.深圳市大瞳世界科技有限公司 粤ICP备2023062274号-2  <br />人工智能助力知识分享 © {{cc}}AI x 资产包子云盘
   upload_img:
     name: Change
     loading: loading...

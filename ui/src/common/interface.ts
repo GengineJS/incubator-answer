@@ -116,6 +116,7 @@ export interface LoginReqParams {
 
 export interface RegisterReqParams extends LoginReqParams {
   name: string;
+  is_ab: boolean;
 }
 
 export interface ModifyPasswordReq {
@@ -503,6 +504,8 @@ export interface SearchResItem {
   object: {
     url_title?: string;
     id: string;
+    content_type: number;
+    buyer_user_ids: string[];
     question_id?: string;
     title: string;
     excerpt: string;

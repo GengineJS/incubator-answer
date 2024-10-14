@@ -3,46 +3,24 @@ package assetbun
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/base/data"
 	"github.com/apache/incubator-answer/internal/base/reason"
 	"github.com/apache/incubator-answer/internal/entity"
+	"github.com/apache/incubator-answer/internal/repo/unique"
 	"github.com/apache/incubator-answer/internal/schema"
 	"github.com/apache/incubator-answer/internal/service/assetbun"
 	"github.com/apache/incubator-answer/internal/service/notice_queue"
+	"github.com/apache/incubator-answer/pkg/htmltext"
 	"github.com/gin-gonic/gin"
 	"github.com/segmentfault/pacman/errors"
+	"github.com/speps/go-hashids"
 	"math"
 	"strconv"
 	"time"
 	"xorm.io/xorm"
 )
-
-// AssetBun的用户表
-type Users struct {
-	ID        string    `xorm:"not null pk autoincr BIGINT(20) id"`
-	CreatedAt time.Time `xorm:"created TIMESTAMP created_at"`
-	UpdatedAt time.Time `xorm:"updated TIMESTAMP updated_at"`
-	DeletedAt time.Time `xorm:"TIMESTAMP deleted_at"`
-
-	// 其他字段
-	Email    string `xorm:"not null VARCHAR(100) email"`
-	Nick     string `xorm:"not null default '' VARCHAR(50) UNIQUE nick"`
-	Password string `xorm:"not null default '' VARCHAR(255) password"`
-	// 是否已经邮箱激活，0为激活，1为未激活，2未被封禁，3为超额被封禁
-	Status          int    `xorm:"not null default 1 TINYINT(4) status"`
-	AuditFree       bool   `xorm:"not null default 0 TINYINT(4) audit_free"`
-	Storage         uint64 `xorm:"not null default 0 TINYINT(4) storage"`
-	OpenID          string
-	TwoFactor       string
-	Avatar          string
-	Options         string `xorm:"TEXT"`
-	Authn           string `xorm:"TEXT"`
-	Score           int    `xorm:"not null default 0 TINYINT(4) score"`
-	PreviousGroupID uint   `xorm:"not null default 0 TINYINT(4) previous_group_id"`
-	GroupID         uint   `xorm:"not null default 2 TINYINT(4) group_id"`
-	Phone           string `xorm:"not null VARCHAR(100) phone"`
-}
 
 // 定义请求的URL
 var assetBunAPIURL = []string{"http://localhost:5212/api/v3", "https://cloud.assetbun.com/api/v3"}
@@ -154,8 +132,8 @@ func NewAssetBunRepo(data *data.Data) assetbun.AssetBunRepo {
 	}
 }
 
-func GetAbUser(ctx context.Context, ab *assetBunRepo, userID string) (*Users, error) {
-	userInfo := &Users{}
+func GetAbUser(ctx context.Context, ab *assetBunRepo, userID string) (*assetbun.Users, error) {
+	userInfo := &assetbun.Users{}
 	_, err := ab.data.DB.Context(ctx).Where("id = ?", userID).Get(userInfo)
 	if err != nil {
 		err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
@@ -201,43 +179,83 @@ func (ab *assetBunRepo) GetScore(ctx context.Context, userID string) (score int,
 	return userInfo.Score, nil
 }
 
+func createRefFile(ctx context.Context, engine *xorm.Engine, user *assetbun.Users) error {
+	defaultFolder := &assetbun.Folders{}
+	defaultFolder.Name = "/"
+	defaultFolder.OwnerID = user.ID
+	defaultFolder.CreatedAt = time.Now()
+	defaultFolder.UpdatedAt = time.Now()
+	_, err := engine.Context(ctx).Insert(defaultFolder)
+
+	settings := &assetbun.Settings{}
+	_, err = engine.Context(ctx).Where("name = ?", "initial_files").Get(settings)
+	if err != nil {
+		return err
+	}
+	if settings.Value != "" {
+		initialFileIDs := make([]uint, 0)
+		if err := json.Unmarshal([]byte(settings.Value), &initialFileIDs); err != nil {
+			return err
+		}
+		files := make([]*assetbun.Files, 0)
+		for _, id := range initialFileIDs {
+			file := &assetbun.Files{}
+			engine.Context(ctx).Where("id = ?", id).Get(file)
+			saveFile := &assetbun.Files{}
+			saveFile.CreatedAt = time.Now()
+			saveFile.UpdatedAt = time.Now()
+			saveFile.UserID = user.ID
+			saveFile.FolderID = defaultFolder.ID
+			saveFile.Name = file.Name
+			saveFile.SourceName = file.SourceName
+			saveFile.PicInfo = file.PicInfo
+			saveFile.PolicyID = file.PolicyID
+			saveFile.MetaData = file.MetaData
+			saveFile.Size = file.Size
+			user.Storage += saveFile.Size
+			files = append(files, saveFile)
+		}
+		if len(files) > 0 {
+			_, err = engine.Context(ctx).InsertMulti(files)
+		}
+	}
+	return nil
+}
+
 // 同步Answer用户数据到AssetBun
 func SyncUserToAB(ctx context.Context, engine *xorm.Engine, user *entity.User) {
-	_, _ = engine.Transaction(func(session *xorm.Session) (interface{}, error) {
-		session = session.Context(ctx)
-
-		// 从UserSync表中获取用户
-		userSync := new(Users)
-		userSync.ID = user.ID
-		userSync.CreatedAt = user.CreatedAt
-		userSync.UpdatedAt = user.UpdatedAt
-		userSync.DeletedAt = user.DeletedAt
-		userSync.Nick = user.DisplayName
-		if user.IsAdmin {
-			userSync.GroupID = 1
-		}
-		userSync.Password = user.Pass
-		if user.MailStatus == entity.EmailStatusAvailable {
-			userSync.Status = 0
-		}
-		userSync.Email = user.EMail
-		userSync.Avatar = user.Avatar
-		if _, err := session.Insert(userSync); err != nil {
-			return nil, err
-		}
-
-		// 提交事务
-		if err := session.Commit(); err != nil {
-			return nil, err
-		}
-		return nil, nil
-	})
+	// 从UserSync表中获取用户
+	userSync := new(assetbun.Users)
+	userSync.ID = user.ID
+	userSync.CreatedAt = user.CreatedAt
+	userSync.UpdatedAt = user.UpdatedAt
+	userSync.DeletedAt = user.DeletedAt
+	userSync.Nick = user.DisplayName
+	// 普通用户
+	userSync.GroupID = 2
+	if user.IsAdmin {
+		userSync.GroupID = 1
+	}
+	userSync.Password = user.Pass
+	if user.MailStatus == int(entity.EmailStatusAvailable) {
+		// 0：Active 账户正常状态
+		// 1：NotActivicated 未激活
+		// 2：Baned 被封禁
+		// 3：OveruseBaned 超额使用被封禁
+		userSync.Status = 0
+	}
+	userSync.Email = user.EMail
+	userSync.Avatar = user.Avatar
+	userSync.Storage = 0
+	userSync.Options = "{}"
+	createRefFile(ctx, engine, userSync)
+	engine.Context(ctx).Insert(userSync)
 }
 
 func UpdateEmail(ctx context.Context, engine *xorm.Engine, userID, email string) {
 	_, _ = engine.Transaction(func(session *xorm.Session) (interface{}, error) {
 		session = session.Context(ctx)
-		_, err := engine.Context(ctx).Where("id = ?", userID).Update(&Users{Email: email})
+		_, err := engine.Context(ctx).Where("id = ?", userID).Update(&assetbun.Users{Email: email})
 		if err != nil {
 			return nil, err
 		}
@@ -249,7 +267,7 @@ func UpdateEmail(ctx context.Context, engine *xorm.Engine, userID, email string)
 func UpdatePassword(ctx context.Context, engine *xorm.Engine, userID, pass string) {
 	_, _ = engine.Transaction(func(session *xorm.Session) (interface{}, error) {
 		session = session.Context(ctx)
-		_, err := engine.Context(ctx).Where("id = ?", userID).Cols("password").Update(&Users{Password: pass})
+		_, err := engine.Context(ctx).Where("id = ?", userID).Cols("password").Update(&assetbun.Users{Password: pass})
 		if err != nil {
 			return nil, err
 		}
@@ -266,9 +284,104 @@ func UpdateEmailStatus(ctx context.Context, engine *xorm.Engine, userID string, 
 		} else if emailStatus == entity.EmailStatusAvailable {
 			status = 0
 		}
-		cond := &Users{Status: status}
+		cond := &assetbun.Users{Status: status}
 		_, err := engine.Context(ctx).Where("id = ?", userID).Cols("status").Update(cond)
 		if err != nil {
+			return nil, err
+		}
+		return nil, nil
+	})
+}
+
+// ID类型
+const (
+	ShareID  = iota // 分享
+	UserID          // 用户
+	FileID          // 文件ID
+	FolderID        // 目录ID
+	TagID           // 标签ID
+	PolicyID        // 存储策略ID
+	SourceLinkID
+)
+
+// HashEncode 对给定数据计算HashID
+func HashEncode(v []int) (string, error) {
+	hd := hashids.NewData()
+	hd.Salt = "I64ZDekUUHT4HMyEiK9emnQD4eFZeDgXHR8WrV97o7PFCFwv432FoOVTqwwDCVtK"
+
+	h, err := hashids.NewWithData(hd)
+	if err != nil {
+		return "", err
+	}
+
+	id, err := h.Encode(v)
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
+// HashID 计算数据库内主键对应的HashID
+func HashID(id int, t int) string {
+	v, _ := HashEncode([]int{int(id), t})
+	return v
+}
+
+func SyncShares(ctx context.Context, engine *xorm.Engine) {
+	_, _ = engine.Transaction(func(session *xorm.Session) (interface{}, error) {
+		session = session.Context(ctx)
+		shares := make([]assetbun.Shares, 0)
+		if err := session.Find(&shares); err != nil {
+			return nil, err
+		}
+		uniqueIDRepo := unique.NewUniqueIDRepo(&data.Data{DB: engine})
+		currentTime := time.Now()
+		// 遍历share表中的记录
+		for _, share := range shares {
+			file := &assetbun.Files{}
+			getFile, err := session.ID(share.SourceID).Get(file)
+			// 已过期，被删除，过期，报错的查询不创建question条目
+			if !share.DeletedAt.IsZero() || (share.Expires != nil && currentTime.After(*share.Expires)) || !getFile || err != nil {
+				continue
+			}
+			question := &entity.Question{}
+			q1Id, _ := uniqueIDRepo.GenUniqueIDStr(ctx, entity.Question{}.TableName())
+			question.ID = q1Id
+			question.UserID = strconv.Itoa(share.UserID)
+			question.Score = share.Score // req.Score
+			sid, _ := strconv.Atoi(share.ID)
+			question.Title = share.SourceName
+			hashedID := HashID(sid, ShareID)
+			baseURL := "https://cloud.assetbun.com/s/"
+			// 使用fmt.Sprintf来创建带有动态href属性的<a>标签
+			link := fmt.Sprintf(`<a href="%s%s" target="_blank">点击访问资源地址</a>`, baseURL, hashedID)
+			question.OriginalText = baseURL + hashedID
+			question.ParsedText = link
+			// question.ParsedText = req.HTML
+			question.AcceptedAnswerID = "0"
+			question.LastAnswerID = "0"
+			question.LastEditUserID = "0"
+			//question.PostUpdateTime = nil
+			question.Status = entity.QuestionStatusPending
+			question.RevisionID = "0"
+			question.CreatedAt = share.CreatedAt
+			question.UpdatedAt = share.CreatedAt
+			question.PostUpdateTime = share.CreatedAt
+			question.Pin = entity.QuestionUnPin
+			question.Show = entity.QuestionHide
+			if share.Status == 3 {
+				question.Status = entity.QuestionStatusAvailable
+				question.Show = entity.QuestionShow
+			}
+			question.ContentType = int(entity.TypeAssetBun)
+			if _, err := session.Insert(question); err != nil {
+				return nil, err
+			}
+			srcLink := `https://learnearn.cn/questions/` + question.ID + `/` + htmltext.UrlTitle(question.Title) + `?content_type=3`
+			_, _ = session.ID(share.ID).Cols("source_link").Update(&assetbun.Shares{SourceLink: srcLink})
+		}
+		// 提交事务
+		if err := session.Commit(); err != nil {
 			return nil, err
 		}
 		return nil, nil
@@ -278,7 +391,7 @@ func UpdateEmailStatus(ctx context.Context, engine *xorm.Engine, userID string, 
 func SyncUsers(ctx context.Context, engine *xorm.Engine) {
 	_, _ = engine.Transaction(func(session *xorm.Session) (interface{}, error) {
 		session = session.Context(ctx)
-		users := make([]Users, 0)
+		users := make([]assetbun.Users, 0)
 		if err := session.Find(&users); err != nil {
 			return nil, err
 		}

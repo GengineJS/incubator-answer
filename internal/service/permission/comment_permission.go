@@ -31,10 +31,10 @@ import (
 
 // GetCommentPermission get comment permission
 func GetCommentPermission(ctx context.Context, userID string, creatorUserID string,
-	createdAt time.Time, canEdit, canDelete bool) (actions []*schema.PermissionMemberAction) {
+	createdAt time.Time, canEdit, canDelete bool, isAI bool) (actions []*schema.PermissionMemberAction) {
 	lang := handler.GetLangByCtx(ctx)
 	actions = make([]*schema.PermissionMemberAction, 0)
-	if len(userID) > 0 {
+	if !isAI && len(userID) > 0 {
 		actions = append(actions, &schema.PermissionMemberAction{
 			Action: "report",
 			Name:   translator.Tr(lang, reportActionName),
@@ -42,7 +42,7 @@ func GetCommentPermission(ctx context.Context, userID string, creatorUserID stri
 		})
 	}
 	deadline := createdAt.Add(constant.CommentEditDeadline)
-	if canEdit || (userID == creatorUserID && time.Now().Before(deadline)) {
+	if !isAI && (canEdit || (userID == creatorUserID && time.Now().Before(deadline))) {
 		actions = append(actions, &schema.PermissionMemberAction{
 			Action: "edit",
 			Name:   translator.Tr(lang, editActionName),
@@ -50,7 +50,7 @@ func GetCommentPermission(ctx context.Context, userID string, creatorUserID stri
 		})
 	}
 
-	if canDelete || userID == creatorUserID {
+	if !isAI && (canDelete || userID == creatorUserID) {
 		actions = append(actions, &schema.PermissionMemberAction{
 			Action: "delete",
 			Name:   translator.Tr(lang, deleteActionName),

@@ -22,9 +22,10 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
 
 import { Modal } from '@/components';
 import { loggedUserInfoStore, toastStore, errorCodeStore } from '@/stores';
-import { LOGGED_TOKEN_STORAGE_KEY } from '@/common/constants';
+import { assetBunSearch, LOGGED_TOKEN_STORAGE_KEY } from '@/common/constants';
 import { RouteAlias } from '@/router/alias';
 import { getCurrentLang } from '@/utils/localize';
+import { isAssetBunPageType } from '@/common/functions';
 
 import Storage from './storage';
 import { floppyNavigation } from './floppyNavigation';
@@ -162,7 +163,11 @@ class Request {
           }
           if (data?.type === 'inactive') {
             // inactivated
-            floppyNavigation.navigate(RouteAlias.inactive);
+            floppyNavigation.navigate(
+              isAssetBunPageType()
+                ? `${RouteAlias.inactive}&${assetBunSearch}`
+                : RouteAlias.inactive,
+            );
             return Promise.reject(false);
           }
 

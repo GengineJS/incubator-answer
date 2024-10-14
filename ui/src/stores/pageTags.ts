@@ -20,6 +20,7 @@
 import create from 'zustand';
 
 import { HelmetBase, HelmetUpdate } from '@/common/interface';
+import { isAssetBunPageType } from '@/common/functions';
 
 import siteInfoStore from './siteInfo';
 
@@ -27,15 +28,21 @@ interface HelmetStore {
   items: HelmetBase;
   update: (params: HelmetUpdate) => void;
 }
-
+const abName = '资产包子云盘';
 const makePageTitle = (title = '', subtitle = '') => {
   const { siteInfo } = siteInfoStore.getState();
   if (!subtitle) {
     subtitle = `${siteInfo.name}`;
   }
   let pageTitle = subtitle;
+  const isAB = isAssetBunPageType();
   if (title && title !== subtitle) {
+    if (isAB) {
+      subtitle = abName;
+    }
     pageTitle = `${title}${subtitle ? ` - ${subtitle}` : ''}`;
+  } else if (isAB) {
+    pageTitle = abName;
   }
   return pageTitle;
 };

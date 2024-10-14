@@ -147,6 +147,8 @@ type SearchObject struct {
 	ContentType     int      `json:"content_type"`
 	Score           int      `json:"score"`
 	BuyerUserIds    []string `json:"buyer_user_ids"`
+	// 帖子作者的id,userinfo的id可能是回答者的id
+	UserID string `json:"user_id"`
 	// user info
 	UserInfo *SearchObjectUser `json:"user_info"`
 	// tags

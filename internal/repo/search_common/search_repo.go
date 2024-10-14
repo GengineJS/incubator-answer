@@ -509,6 +509,7 @@ func (sr *searchRepo) parseResult(ctx context.Context, res []map[string][]byte, 
 		var QuestionID = string(r["question_id"])
 		var ContentType, _ = strconv.Atoi(string(r["content_type"]))
 		var Score, _ = strconv.Atoi(string(r["score"]))
+		currQuestion, _, _ := sr.questionCommon.GetQuestion(ctx, QuestionID)
 		buyers, _ := sr.questionCommon.GetBuyers(ctx, QuestionID)
 		if handler.GetEnableShortID(ctx) {
 			ID = uid.EnShortID(ID)
@@ -520,6 +521,7 @@ func (sr *searchRepo) parseResult(ctx context.Context, res []map[string][]byte, 
 			Title:           string(r["title"]),
 			ContentType:     ContentType,
 			Score:           Score,
+			UserID:          currQuestion.UserID,
 			UrlTitle:        htmltext.UrlTitle(string(r["title"])),
 			Excerpt:         htmltext.FetchMatchedExcerpt(string(r["parsed_text"]), words, "...", 100),
 			CreatedAtParsed: tp.Unix(),

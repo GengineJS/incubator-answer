@@ -20,8 +20,11 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/apache/incubator-answer/internal/service/Sse"
 	"github.com/apache/incubator-answer/internal/service/object_info"
+	"github.com/r3labs/sse/v2"
 	"net/http"
 
 	"github.com/apache/incubator-answer/internal/base/handler"
@@ -44,6 +47,7 @@ import (
 // AnswerController answer controller
 type AnswerController struct {
 	answerService         *content.AnswerService
+	sseService            *Sse.SseService
 	rankService           *rank.RankService
 	actionService         *action.CaptchaService
 	siteInfoCommonService siteinfo_common.SiteInfoCommonService
@@ -53,6 +57,7 @@ type AnswerController struct {
 // NewAnswerController new controller
 func NewAnswerController(
 	answerService *content.AnswerService,
+	sseService *Sse.SseService,
 	rankService *rank.RankService,
 	actionService *action.CaptchaService,
 	siteInfoCommonService siteinfo_common.SiteInfoCommonService,
@@ -60,6 +65,7 @@ func NewAnswerController(
 ) *AnswerController {
 	return &AnswerController{
 		answerService:         answerService,
+		sseService:            sseService,
 		rankService:           rankService,
 		actionService:         actionService,
 		siteInfoCommonService: siteInfoCommonService,
@@ -181,7 +187,7 @@ func (ac *AnswerController) Get(ctx *gin.Context) {
 	})
 }
 
-func (ac *AnswerController) add(ctx *gin.Context, service *content.AIQWenService) {
+func (ac *AnswerController) add(ctx *gin.Context, service *content.AIQWenService, callback func(*schema.AnswerInfo, *schema.QuestionInfoResp)) {
 	req := &schema.AnswerAddReq{}
 	if handler.BindAndCheck(ctx, req) {
 		return
@@ -279,12 +285,16 @@ func (ac *AnswerController) add(ctx *gin.Context, service *content.AIQWenService
 	objectOwner := ac.rankService.CheckOperationObjectOwner(ctx, req.UserID, info.ID)
 	req.CanEdit = canList[0] || objectOwner
 	req.CanDelete = canList[1] || objectOwner
+
 	if !can {
 		handler.HandleResponse(ctx, errors.Forbidden(reason.RankFailToMeetTheCondition), nil)
 		return
 	}
 	info.MemberActions = permission.GetAnswerPermission(ctx, req.UserID, info.UserID,
-		0, req.CanEdit, req.CanDelete, false)
+		0, req.CanEdit, req.CanDelete, false, service != nil)
+	if callback != nil {
+		callback(info, questionInfo)
+	}
 	handler.HandleResponse(ctx, nil, gin.H{
 		"info":     info,
 		"question": questionInfo,
@@ -292,7 +302,16 @@ func (ac *AnswerController) add(ctx *gin.Context, service *content.AIQWenService
 }
 
 func (ac *AnswerController) AddAI(ctx *gin.Context, service *content.AIQWenService) {
-	ac.add(ctx, service)
+	ac.add(ctx, service, func(info *schema.AnswerInfo, question *schema.QuestionInfoResp) {
+		jsonData, err := json.Marshal(info)
+		if err != nil {
+			fmt.Println("Error marshalling JSON:", err)
+			return
+		}
+		ac.sseService.Eve.Publish("message", &sse.Event{
+			Data: jsonData,
+		})
+	})
 }
 
 // Add godoc
@@ -306,7 +325,7 @@ func (ac *AnswerController) AddAI(ctx *gin.Context, service *content.AIQWenServi
 // @Success 200 {string} string ""
 // @Router /answer/api/v1/answer [post]
 func (ac *AnswerController) Add(ctx *gin.Context) {
-	ac.add(ctx, nil)
+	ac.add(ctx, nil, nil)
 }
 
 // Update godoc

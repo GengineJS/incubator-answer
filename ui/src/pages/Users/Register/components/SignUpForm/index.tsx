@@ -106,6 +106,7 @@ const Index: React.FC<Props> = ({ callback }) => {
       name: formData.name.value,
       e_mail: formData.e_mail.value,
       pass: formData.pass.value,
+      is_ab: isAssetBunPageType(),
     };
 
     const captcha = emailCaptcha?.getCaptcha();

@@ -607,6 +607,10 @@ func (as *AnswerService) SearchFormatInfo(ctx context.Context, answers []*entity
 		list = append(list, item)
 		objectIDs = append(objectIDs, info.ID)
 		userIDs = append(userIDs, info.UserID, info.LastEditUserID)
+		if info.IsAI {
+			req.CanDelete = false
+			req.CanEdit = false
+		}
 	}
 
 	userInfoMap, err := as.userCommon.BatchUserBasicInfoByID(ctx, userIDs)
@@ -634,7 +638,8 @@ func (as *AnswerService) SearchFormatInfo(ctx context.Context, answers []*entity
 			item.Status,
 			req.CanEdit,
 			req.CanDelete,
-			req.CanRecover)
+			req.CanRecover,
+			item.IsAI)
 	}
 	return list, nil
 }

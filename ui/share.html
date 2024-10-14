@@ -4,7 +4,6 @@
 
 </head>
 <body>
-heoolo
 <script type="text/javascript">
   const urlDomains = [
     "localhost",
@@ -110,6 +109,7 @@ heoolo
       } else if(msgType === MsgType.LOGOUT) {
         getDataWithFetch(learnEarnAPIURL[urlDomains.indexOf(currDomain)] + logoutUrl, (data) => {});
         localStorage.removeItem(LOGGED_TOKEN_STORAGE_KEY);
+        window.parent.postMessage(event.data, '*');
       }
     }
   }, false);

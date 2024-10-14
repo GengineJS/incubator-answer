@@ -34,7 +34,6 @@ import (
 	"github.com/apache/incubator-answer/plugin"
 	"github.com/segmentfault/pacman/errors"
 	"github.com/segmentfault/pacman/log"
-	"xorm.io/xorm"
 )
 
 // userRepo user repository
@@ -51,24 +50,20 @@ func NewUserRepo(data *data.Data) usercommon.UserRepo {
 
 // AddUser add user
 func (ur *userRepo) AddUser(ctx context.Context, user *entity.User) (err error) {
-	_, err = ur.data.DB.Transaction(func(session *xorm.Session) (interface{}, error) {
-		session = session.Context(ctx)
-		userInfo := &entity.User{}
-		exist, err := session.Where("username = ?", user.Username).Get(userInfo)
-		if err != nil {
-			return nil, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
-		}
-		if exist {
-			return nil, errors.InternalServer(reason.UsernameDuplicate)
-		}
-		_, err = session.Insert(user)
-		if err != nil {
-			return nil, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
-		}
-		assetbun.SyncUserToAB(ctx, ur.data.DB, user)
-		return nil, nil
-	})
-	return
+	userInfo := &entity.User{}
+	exist, err := ur.data.DB.Where("username = ?", user.Username).Get(userInfo)
+	if err != nil {
+		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+	if exist {
+		return errors.InternalServer(reason.UsernameDuplicate)
+	}
+	_, err = ur.data.DB.Insert(user)
+	if err != nil {
+		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+	assetbun.SyncUserToAB(ctx, ur.data.DB, user)
+	return nil
 }
 
 // IncreaseAnswerCount increase answer count

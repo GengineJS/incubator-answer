@@ -26,6 +26,8 @@ import type * as Type from '@/common/interface';
 import { Avatar, Icon } from '@/components';
 import { floppyNavigation } from '@/utils';
 import { userCenterStore } from '@/stores';
+import { isAssetBunPageType } from '@/common/functions';
+import { assetBunSearch } from '@/common/constants';
 
 interface Props {
   redDot: Type.NotificationStatus | undefined;
@@ -45,12 +47,19 @@ const Index: FC<Props> = ({ redDot, userInfo, logOut }) => {
       navigate(href);
     }
   };
+  const isAssetBun = isAssetBunPageType();
+  let inboxUrl = '/users/notifications/inbox';
+  let achievementUrl = '/users/notifications/achievement';
+  if (isAssetBun) {
+    inboxUrl += `?${assetBunSearch}`;
+    achievementUrl += `?${assetBunSearch}`;
+  }
   return (
     <>
       <Nav className="flex-row">
         <Nav.Link
           as={NavLink}
-          to="/users/notifications/inbox"
+          to={inboxUrl}
           title={t('inbox', { keyPrefix: 'notifications' })}
           className="icon-link d-flex align-items-center justify-content-center p-0 me-3 position-relative">
           <Icon name="bell-fill" className="fs-4" />
@@ -65,7 +74,7 @@ const Index: FC<Props> = ({ redDot, userInfo, logOut }) => {
 
         <Nav.Link
           as={NavLink}
-          to="/users/notifications/achievement"
+          to={achievementUrl}
           title={t('achievement', { keyPrefix: 'notifications' })}
           className="icon-link d-flex align-items-center justify-content-center p-0 me-3 position-relative">
           <Icon name="trophy-fill" className="fs-4" />
@@ -96,17 +105,29 @@ const Index: FC<Props> = ({ redDot, userInfo, logOut }) => {
 
         <Dropdown.Menu>
           <Dropdown.Item
-            href={`/users/${userInfo.username}`}
+            href={
+              isAssetBun
+                ? `/users/${userInfo.username}?${assetBunSearch}`
+                : `/users/${userInfo.username}`
+            }
             onClick={handleLinkClick}>
             {t('header.nav.profile')}
           </Dropdown.Item>
           <Dropdown.Item
-            href={`/users/${userInfo.username}/bookmarks`}
+            href={
+              isAssetBun
+                ? `/users/${userInfo.username}/bookmarks?${assetBunSearch}`
+                : `/users/${userInfo.username}/bookmarks`
+            }
             onClick={handleLinkClick}>
             {t('header.nav.bookmark')}
           </Dropdown.Item>
           <Dropdown.Item
-            href="/users/settings/profile"
+            href={
+              isAssetBun
+                ? `/users/settings/profile?${assetBunSearch}`
+                : `/users/settings/profile`
+            }
             onClick={handleLinkClick}>
             {t('header.nav.setting')}
           </Dropdown.Item>
