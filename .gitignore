@@ -25,7 +25,7 @@ Thumbs*.db
 tmp
 vendor/
 /answer-data/
-/answer
-/new_answer
+# /answer
+# /new_answer
 
 dist/
