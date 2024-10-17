@@ -21,7 +21,8 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
+	"net/http"
+
 	"github.com/apache/incubator-answer/internal/base/handler"
 	"github.com/apache/incubator-answer/internal/base/middleware"
 	"github.com/apache/incubator-answer/internal/base/reason"
@@ -40,7 +41,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/r3labs/sse/v2"
 	"github.com/segmentfault/pacman/errors"
-	"net/http"
 )
 
 // CommentController comment controller
@@ -71,11 +71,9 @@ func NewCommentController(
 
 func (cc *CommentController) AddAIComment(ctx *gin.Context, service *content.AIQWenService) {
 	cc.addComment(ctx, service, func(resp *schema.GetCommentResp) {
-		jsonData, err := json.Marshal(resp)
-		if err != nil {
-			fmt.Println("Error marshalling JSON:", err)
-			return
-		}
+		jsonData, _ := json.Marshal(struct {
+			user_id string
+		}{user_id: resp.UserID})
 		cc.sseService.Eve.Publish("message", &sse.Event{
 			Data: jsonData,
 		})

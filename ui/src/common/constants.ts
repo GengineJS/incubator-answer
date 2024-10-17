@@ -679,7 +679,7 @@ export enum PageType {
 export const assetBunSearch = `page_type=${PageType.ASSETBUN}`;
 export const assetBunPolicyUrl = 'https://assetbun.com/policy/';
 export const assetBunPrivateUrl = 'https://assetbun.com/privacy/';
-export const shareLocalStorageDomains = ['localhost', 'learn.cn'];
+export const shareLocalStorageDomains = ['localhost', 'learnearn.cn'];
 export const targetLocalStorageDomains = ['localhost', 'cloud.assetbun.com'];
 export const targetLocalStorageUrl = [
   'http://localhost:5212/share.html',

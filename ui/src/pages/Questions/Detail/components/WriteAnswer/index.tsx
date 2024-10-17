@@ -194,6 +194,7 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
         });
         removeDraft();
         callback?.(res.info);
+        if (isAI) setAILoading(false);
       })
       .catch((ex) => {
         if (ex.isError) {

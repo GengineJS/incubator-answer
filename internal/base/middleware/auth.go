@@ -213,7 +213,7 @@ func (am *AuthUserMiddleware) CheckPrivateMode() gin.HandlerFunc {
 }
 func ShowIndexPage(ctx *gin.Context) {
 	ctx.Header("content-type", "text/html;charset=utf-8")
-	ctx.Header("X-Frame-Options", "DENY")
+	// ctx.Header("X-Frame-Options", "SAMEORIGIN")
 	file, err := ui.Build.ReadFile("build/index.html")
 	if err != nil {
 		log.Error(err)

@@ -22,10 +22,11 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/apache/incubator-answer/internal/service/Sse"
 	"github.com/apache/incubator-answer/internal/service/object_info"
 	"github.com/r3labs/sse/v2"
-	"net/http"
 
 	"github.com/apache/incubator-answer/internal/base/handler"
 	"github.com/apache/incubator-answer/internal/base/middleware"
@@ -303,11 +304,9 @@ func (ac *AnswerController) add(ctx *gin.Context, service *content.AIQWenService
 
 func (ac *AnswerController) AddAI(ctx *gin.Context, service *content.AIQWenService) {
 	ac.add(ctx, service, func(info *schema.AnswerInfo, question *schema.QuestionInfoResp) {
-		jsonData, err := json.Marshal(info)
-		if err != nil {
-			fmt.Println("Error marshalling JSON:", err)
-			return
-		}
+		jsonData, _ := json.Marshal(struct {
+			user_id string
+		}{user_id: info.UserID})
 		ac.sseService.Eve.Publish("message", &sse.Event{
 			Data: jsonData,
 		})

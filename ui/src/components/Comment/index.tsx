@@ -218,6 +218,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
         }
 
         setVisibleComment(false);
+        if (item.isAI) setAILoading(false);
       })
       .catch((ex) => {
         if (ex.isError) {

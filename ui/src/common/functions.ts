@@ -96,7 +96,7 @@ export class SseService {
     const eveUrl =
       currDomain === 'localhost'
         ? 'http://localhost:8080/events?stream=message'
-        : 'https://learnearn.cn:8080/events?stream=message';
+        : 'https://sse.learnearn.cn/events?stream=message';
     SseService.eveSource = new EventSource(eveUrl);
     SseService.eveSource.addEventListener('message', SseService.aiCallback);
     return SseService.sse;
