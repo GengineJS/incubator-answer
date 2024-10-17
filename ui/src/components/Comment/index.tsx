@@ -68,13 +68,14 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
   const [comments, setComments] = useState<any>([]);
   const [aiLoading, setAILoading] = useState(false);
   const userInfo = loggedUserInfoStore((state) => state.user);
-  SseService.GetInstance().addAIEvent('AIComment', (eve) => {
+  SseService.GetInstance().addAICallback('AIComment', (eve) => {
     if (!aiLoading) {
       return;
     }
     const info = eve.data;
     const answerInfo = JSON.parse(info);
     if (answerInfo.user_id === userInfo.id) {
+      SseService.GetInstance().removeAIEventListener();
       setAILoading(false);
       window.location.reload();
     }
@@ -218,7 +219,10 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
         }
 
         setVisibleComment(false);
-        if (item.isAI) setAILoading(false);
+        if (item.isAI) {
+          SseService.GetInstance().removeAIEventListener();
+          setAILoading(false);
+        }
       })
       .catch((ex) => {
         if (ex.isError) {
@@ -460,6 +464,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
                   handleReply(item.comment_id);
                 }}
                 onAIReply={() => {
+                  SseService.GetInstance().addAIEventListener();
                   setAILoading(true);
                   handleSendReply({
                     ...item,
@@ -505,6 +510,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
               size="sm"
               onClick={() => {
                 if (tryNormalLogged(true)) {
+                  SseService.GetInstance().addAIEventListener();
                   setAILoading(true);
                   handleSendReply({
                     value: 'AIReply',

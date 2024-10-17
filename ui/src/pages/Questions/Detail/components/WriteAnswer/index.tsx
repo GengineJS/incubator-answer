@@ -74,13 +74,14 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
     when: Boolean(formData.content.value),
   });
   const userInfo = loggedUserInfoStore((state) => state.user);
-  SseService.GetInstance().addAIEvent('AIHandle', (eve) => {
+  SseService.GetInstance().addAICallback('AIHandle', (eve) => {
     if (!aiLoading) {
       return;
     }
     const info = eve.data;
     const answerInfo = JSON.parse(info);
     if (answerInfo.user_id === userInfo.id) {
+      SseService.GetInstance().removeAIEventListener();
       setAILoading(false);
       window.location.reload();
     }
@@ -194,7 +195,10 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
         });
         removeDraft();
         callback?.(res.info);
-        if (isAI) setAILoading(false);
+        if (isAI) {
+          SseService.GetInstance().removeAIEventListener();
+          setAILoading(false);
+        }
       })
       .catch((ex) => {
         if (ex.isError) {
@@ -223,6 +227,7 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
     if (!guard.tryNormalLogged(true)) {
       return;
     }
+    SseService.GetInstance().addAIEventListener();
     setAILoading(true);
     submitAnswer(true);
   };

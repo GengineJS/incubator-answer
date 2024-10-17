@@ -20,6 +20,10 @@ type AIQWenService struct {
 	CommentService *commentService.CommentService
 }
 
+type AIRespStruct struct {
+	UserID string `json:"user_id"`
+}
+
 func removePTags(input string) string {
 	// 使用正则表达式匹配<p>和</p>标签并替换为空字符串
 	re := regexp.MustCompile(`(?i)<p\b[^>]*>|</p>`)

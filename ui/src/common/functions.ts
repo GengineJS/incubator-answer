@@ -98,7 +98,6 @@ export class SseService {
         ? 'http://localhost:8080/events?stream=message'
         : 'https://sse.learnearn.cn/events?stream=message';
     SseService.eveSource = new EventSource(eveUrl);
-    SseService.eveSource.addEventListener('message', SseService.aiCallback);
     return SseService.sse;
   }
 
@@ -108,7 +107,16 @@ export class SseService {
     });
   }
 
-  addAIEvent(key, callback) {
+  addAIEventListener() {
+    this.removeAIEventListener();
+    SseService.eveSource.addEventListener('message', SseService.aiCallback);
+  }
+
+  removeAIEventListener() {
+    SseService.eveSource.removeEventListener('message', SseService.aiCallback);
+  }
+
+  addAICallback(key, callback) {
     if (SseService.aiCallbacks.has(key)) {
       SseService.aiCallbacks.delete(key);
     }

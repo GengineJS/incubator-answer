@@ -71,9 +71,9 @@ func NewCommentController(
 
 func (cc *CommentController) AddAIComment(ctx *gin.Context, service *content.AIQWenService) {
 	cc.addComment(ctx, service, func(resp *schema.GetCommentResp) {
-		jsonData, _ := json.Marshal(struct {
-			user_id string
-		}{user_id: resp.UserID})
+		jsonData, _ := json.Marshal(content.AIRespStruct{
+			UserID: resp.UserID,
+		})
 		cc.sseService.Eve.Publish("message", &sse.Event{
 			Data: jsonData,
 		})

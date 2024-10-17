@@ -304,9 +304,7 @@ func (ac *AnswerController) add(ctx *gin.Context, service *content.AIQWenService
 
 func (ac *AnswerController) AddAI(ctx *gin.Context, service *content.AIQWenService) {
 	ac.add(ctx, service, func(info *schema.AnswerInfo, question *schema.QuestionInfoResp) {
-		jsonData, _ := json.Marshal(struct {
-			user_id string
-		}{user_id: info.UserID})
+		jsonData, _ := json.Marshal(content.AIRespStruct{UserID: info.UserID})
 		ac.sseService.Eve.Publish("message", &sse.Event{
 			Data: jsonData,
 		})
