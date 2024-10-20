@@ -165,7 +165,7 @@ func (uc *UserController) UserEmailLogin(ctx *gin.Context) {
 	uc.setVisitCookies(ctx, resp.VisitToken, true)
 	resp.Score = uc.userService.GetUserScore(ctx, resp.ID)
 	resp.GroupInfo = uc.userService.GetGroupInfo(ctx, resp.ID)
-	// 登录assetbun，但是由于session的关系传递的是learnearn.cn的域名，导致cookie设置的是针对当前域名，所以没法自动登录
+	// 登录assetbun，但是由于session的关系传递的是ai.assetbun.com(learnearn.cn)的域名，导致cookie设置的是针对当前域名，所以没法自动登录
 	// 改为把账户密码传递给assetbun的iframe，通过iframe的share.html页面进行登录即可
 	// abResp := assetbun.PostAssetBunLogin(ctx, req)
 	//resp.AssetBunUser = abResp.Data

@@ -24,7 +24,7 @@ import (
 
 // 定义请求的URL
 var assetBunAPIURL = []string{"http://localhost:5212/api/v3", "https://cloud.assetbun.com/api/v3"}
-var serviceURL = []string{"localhost", "learnearn.cn"}
+var serviceURL = []string{"localhost", "ai.assetbun.com"}
 
 type ABLogin struct {
 	UserName string `json:"userName"`
@@ -377,7 +377,7 @@ func SyncShares(ctx context.Context, engine *xorm.Engine) {
 			if _, err := session.Insert(question); err != nil {
 				return nil, err
 			}
-			srcLink := `https://learnearn.cn/questions/` + question.ID + `/` + htmltext.UrlTitle(question.Title) + `?content_type=3`
+			srcLink := `https://ai.assetbun.com/questions/` + question.ID + `/` + htmltext.UrlTitle(question.Title) + `?content_type=3`
 			_, _ = session.ID(share.ID).Cols("source_link").Update(&assetbun.Shares{SourceLink: srcLink})
 		}
 		// 提交事务
