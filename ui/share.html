@@ -9,6 +9,10 @@
     "localhost",
     "learnearn.cn"
   ];
+  const assetBunDomains = [
+    "localhost",
+    "cloud.assetbun.com"
+  ]
   const learnEarnAPIURL = [
     "http://localhost/answer/api/v1",
     "https://learnearn.cn/answer/api/v1"
@@ -94,7 +98,7 @@
   window.addEventListener('message', function(event) {
     const currDomain = getDomainName(event.origin);
     console.log(currDomain, event.data);
-    if (urlDomains.includes(currDomain)) {
+    if (assetBunDomains.includes(currDomain)) {
       const msgType = event.data.type;
       // login
       if(!msgType) {
