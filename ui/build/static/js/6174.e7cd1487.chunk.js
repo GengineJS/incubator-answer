@@ -1,2 +1,0 @@
-"use strict";(globalThis.webpackChunkanswer_static=globalThis.webpackChunkanswer_static||[]).push([[6174],{86174:(e,n,s)=>{s.r(n),s.d(n,{checkLoginResult:()=>t,getLoginConf:()=>c});var a=s(48764);const c=()=>a.A.get("/answer/api/v1/wecom/login/url"),t=e=>{const n=`/answer/api/v1/wecom/login/check?key=${e}`;return a.A.get(n)}}}]);
-//# sourceMappingURL=6174.e7cd1487.chunk.js.map

@@ -162,12 +162,7 @@ const Index: React.FC = () => {
             }
             if (isAssetBun && code === 0) {
               const abUrl = getTargetAssetBunHost();
-              const abWindow = window.open(abUrl, '_blank');
-              // abWindow!.postMessage('从点识成金发来的数据', abUrl);
-              setTimeout(() => {
-                if (abWindow)
-                  abWindow.postMessage('从点识成金发来的数据', abUrl);
-              }, 50);
+              window.open(abUrl, '_blank');
             }
           })
           .catch((err) => {

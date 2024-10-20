@@ -1,2 +1,0 @@
-"use strict";(globalThis.webpackChunkanswer_static=globalThis.webpackChunkanswer_static||[]).push([[8624],{96243:(s,e,a)=>{a.r(e),a.d(e,{default:()=>i});var t=a(28915),c=a(77919),l=a(68179);const n=({step:s})=>(0,l.jsxs)("div",{className:"d-flex align-items-center small text-secondary",children:[(0,l.jsx)(c.A,{now:s/5*100,variant:"success",style:{width:"200px"},className:"me-2"}),(0,l.jsxs)("span",{children:[s,"/5"]})]}),i=(0,t.memo)(n)}}]);
-//# sourceMappingURL=8624.52d2979a.chunk.js.map

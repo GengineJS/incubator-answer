@@ -1,2 +1,0 @@
-"use strict";(globalThis.webpackChunkanswer_static=globalThis.webpackChunkanswer_static||[]).push([[8479],{28479:(t,e,a)=>{a.r(e),a.d(e,{default:()=>k});var s=a(28915),n=a(51588),c=a(65200),l=a(18596),o=a(47185),i=a(4440);const h=()=>{const{t:t}=(0,n.B)("translation",{keyPrefix:"page_title"}),[e]=(0,c.ok)(),a=(0,l.Zp)();return(0,s.useEffect)((()=>{const t=e.get("access_token");i.ah.handleLoginWithToken(t,a)}),[]),(0,o.M4)({title:t("oauth_callback")}),null},k=(0,s.memo)(h)}}]);
-//# sourceMappingURL=8479.af756a93.chunk.js.map

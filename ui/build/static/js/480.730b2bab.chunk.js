@@ -1,2 +1,0 @@
-"use strict";(globalThis.webpackChunkanswer_static=globalThis.webpackChunkanswer_static||[]).push([[480],{50480:(s,a,t)=>{t.r(a),t.d(a,{default:()=>c});const c={}}}]);
-//# sourceMappingURL=480.730b2bab.chunk.js.map
