@@ -33,7 +33,7 @@ package-lock.json
 /.vscode/
 
 /* !/src/plugins
-/src/plugins/*
+#/src/plugins/*
 !/src/plugins/builtin
 !/src/plugins/Demo
 !/src/plugins/answer-chart
