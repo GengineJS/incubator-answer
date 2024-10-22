@@ -19,7 +19,6 @@
 
 import { useEffect, RefObject } from 'react';
 
-// @ts-ignore
 import mermaid from 'mermaid';
 
 const useRenderChart = (

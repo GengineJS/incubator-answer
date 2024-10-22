@@ -19,7 +19,7 @@
 
 import { useEffect, RefObject } from 'react';
 
-// @ts-ignore
+// @ts-expect-error todo something
 import katexRender from 'katex/contrib/auto-render/auto-render';
 
 const useRenderFormula = (element: HTMLElement | RefObject<HTMLElement> | null) => {
