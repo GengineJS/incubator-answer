@@ -820,6 +820,7 @@ ui:
     article_title: 新增文章
     bounty_title: 新增项目需求
     answer_integral: 用积分让更多人协助(1积分≈0.1元,可提现)。
+    assetbun_integral: 让需要该资源的人为你支付积分(1积分≈0.1元,可提现)，以便下载完整资源。
     article_integral: 让要查看该文章的人为你支付积分(1积分≈0.1元,可提现)，以便查看完整文章。
     bounty_integral: 用积分让更多人协助(1积分≈0.1元,可提现)。
     attention: (被采纳者获得积分,采纳后积分不可修改)

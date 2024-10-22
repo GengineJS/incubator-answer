@@ -1,3 +1,8 @@
 github.com/apache/incubator-answer-plugins/connector-basic@latest
 github.com/apache/incubator-answer-plugins/reviewer-basic@latest
 github.com/apache/incubator-answer-plugins/captcha-basic@latest
+github.com/apache/incubator-answer-plugins/connector-github@latest
+github.com/apache/incubator-answer-plugins/storage-aliyunoss@latest
+github.com/apache/incubator-answer-plugins/cache-redis@latest
+github.com/apache/incubator-answer-plugins/editor-chart@latest
+github.com/apache/incubator-answer-plugins/editor-formula@latest
