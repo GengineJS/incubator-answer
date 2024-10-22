@@ -17,20 +17,16 @@
  * under the License.
  */
 
-package main
+package i18n
 
-import (
-	answercmd "github.com/apache/incubator-answer/cmd"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/cache-redis"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/connector-github"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/editor-chart"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/editor-formula"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/storage-aliyunoss"
+const (
+	InfoName        = "plugin.redis_cache.backend.info.name"
+	InfoDescription = "plugin.redis_cache.backend.info.description"
+
+	ConfigEndpointTitle       = "plugin.redis_cache.backend.config.endpoint.title"
+	ConfigEndpointDescription = "plugin.redis_cache.backend.config.endpoint.description"
+	ConfigUsernameTitle       = "plugin.redis_cache.backend.config.username.title"
+	ConfigUsernameDescription = "plugin.redis_cache.backend.config.username.description"
+	ConfigPasswordTitle       = "plugin.redis_cache.backend.config.password.title"
+	ConfigPasswordDescription = "plugin.redis_cache.backend.config.password.description"
 )
-
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
-func main() {
-	answercmd.Main()
-}

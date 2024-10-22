@@ -17,20 +17,14 @@
  * under the License.
  */
 
-package main
+package i18n
 
-import (
-	answercmd "github.com/apache/incubator-answer/cmd"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/cache-redis"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/connector-github"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/editor-chart"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/editor-formula"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/storage-aliyunoss"
+const (
+	ConnectorName                 = "plugin.github_connector.backend.name"
+	InfoName                      = "plugin.github_connector.backend.info.name"
+	InfoDescription               = "plugin.github_connector.backend.info.description"
+	ConfigClientIDTitle           = "plugin.github_connector.backend.config.client_id.title"
+	ConfigClientIDDescription     = "plugin.github_connector.backend.config.client_id.description"
+	ConfigClientSecretTitle       = "plugin.github_connector.backend.config.client_secret.title"
+	ConfigClientSecretDescription = "plugin.github_connector.backend.config.client_secret.description"
 )
-
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
-func main() {
-	answercmd.Main()
-}
