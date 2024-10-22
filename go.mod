@@ -104,6 +104,7 @@ require (
 	github.com/golang/geo v0.0.0-20190812012225-f41920e961ce // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
+	github.com/google/subcommands v1.0.1 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.16 // indirect
@@ -175,3 +176,13 @@ require (
 replace lukechampine.com/uint128 v1.1.1 => github.com/aichy126/uint128 v1.1.1
 
 replace modernc.org/cc/v3 v3.40.0 => gitlab.com/cznic/cc/v3 v3.40.0
+
+replace github.com/apache/incubator-answer/ui/src/plugins/cache-redis => ../ui/src/plugins/cache-redis
+
+replace github.com/apache/incubator-answer/ui/src/plugins/connector-github => ../ui/src/plugins/connector-github
+
+replace github.com/apache/incubator-answer/ui/src/plugins/editor-formula => ../ui/src/plugins/editor-formula
+
+replace github.com/apache/incubator-answer/ui/src/plugins/editor-chart => ../ui/src/plugins/editor-chart
+
+replace github.com/apache/incubator-answer/ui/src/plugins/storage-aliyunoss => ../ui/src/plugins/storage-aliyunoss
