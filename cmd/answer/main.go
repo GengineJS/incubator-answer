@@ -21,11 +21,6 @@ package main
 
 import (
 	answercmd "github.com/apache/incubator-answer/cmd"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/cache-redis"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/connector-github"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/editor-chart"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/editor-formula"
-	_ "github.com/apache/incubator-answer/ui/src/plugins/storage-aliyunoss"
 )
 
 // @securityDefinitions.apikey ApiKeyAuth

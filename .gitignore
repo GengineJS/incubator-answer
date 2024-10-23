@@ -25,6 +25,7 @@ Thumbs*.db
 tmp
 vendor/
 /answer-data/
+/node_modules
 # /answer
 # /new_answer
 
