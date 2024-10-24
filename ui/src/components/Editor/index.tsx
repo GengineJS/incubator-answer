@@ -48,7 +48,6 @@ import {
 import { htmlRender, useEditor } from './utils';
 import Viewer from './Viewer';
 import { EditorContext } from './EditorContext';
-
 import './index.scss';
 
 export interface EditorRef {
@@ -109,6 +108,9 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
     }
   }, [editor, value]);
 
+  // @ts-ignore
+  // @ts-ignore
+  // @ts-ignore
   return (
     <>
       <div className={classNames('md-editor-wrap rounded', className)}>
@@ -127,6 +129,7 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
               <LinkItem />
               <BlockQuote />
               <Image editorInstance={editor} />
+              {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
               <Table />
               <div className="toolbar-divider" />
               <OL />

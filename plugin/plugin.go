@@ -21,13 +21,11 @@ package plugin
 
 import (
 	"encoding/json"
-	"sync"
-
-	"github.com/segmentfault/pacman/i18n"
-
 	"github.com/apache/incubator-answer/internal/base/handler"
 	"github.com/apache/incubator-answer/internal/base/translator"
 	"github.com/gin-gonic/gin"
+	"github.com/segmentfault/pacman/i18n"
+	"sync"
 )
 
 // GinContext is a wrapper of gin.Context

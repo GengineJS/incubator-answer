@@ -19,4 +19,5 @@
 
 export default null;
 
-// export { default as Demo } from './Demo';
+// export { default as Chart } from 'editor-chart/dist';
+// export { default as Formula } from 'editor-formula/dist';
