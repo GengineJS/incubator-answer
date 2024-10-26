@@ -20,6 +20,7 @@
 /ui/build/*.json
 /ui/build/*.html
 /ui/build/*.txt
+/ui/src/plugins/*/node_modules
 /vendor
 Thumbs*.db
 tmp
