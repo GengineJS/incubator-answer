@@ -50,6 +50,12 @@ importers:
       editor-chart:
         specifier: workspace:*
         version: link:src/plugins/editor-chart
+      editor-formula:
+        specifier: workspace:*
+        version: link:src/plugins/editor-formula
+      embed-basic:
+        specifier: workspace:*
+        version: link:src/plugins/embed-basic
       i18next:
         specifier: ^21.9.0
         version: 21.10.0
@@ -246,6 +252,107 @@ importers:
       mermaid:
         specifier: ^9.1.7
         version: 9.4.3
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-bootstrap:
+        specifier: ^2.10.0
+        version: 2.10.5(@types/react@18.3.12)(react-dom@18.3.1)(react@18.3.1)
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+      react-i18next:
+        specifier: ^11.18.3
+        version: 11.18.6(i18next@21.10.0)(react-dom@18.3.1)(react@18.3.1)
+    devDependencies:
+      '@modyfi/vite-plugin-yaml':
+        specifier: ^1.1.0
+        version: 1.1.0(rollup@2.79.2)(vite@4.5.5)
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.0.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0)(eslint@8.57.1)(typescript@5.4.2)
+      '@typescript-eslint/parser':
+        specifier: ^6.0.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.4.2)
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.3.2
+        version: 3.7.1(vite@4.5.5)
+      eslint:
+        specifier: ^8.45.0
+        version: 8.57.1
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.0
+        version: 4.6.2(eslint@8.57.1)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.3
+        version: 0.4.14(eslint@8.57.1)
+      typescript:
+        specifier: 5.4.2
+        version: 5.4.2
+      vite:
+        specifier: ^4.4.5
+        version: 4.5.5(@types/node@16.18.115)(sass@1.80.4)
+      vite-plugin-dts:
+        specifier: ^3.9.1
+        version: 3.9.1(@types/node@16.18.115)(rollup@2.79.2)(typescript@5.4.2)(vite@4.5.5)
+
+  src/plugins/editor-formula:
+    dependencies:
+      katex:
+        specifier: ^0.16.2
+        version: 0.16.11
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-bootstrap:
+        specifier: ^2.10.0
+        version: 2.10.5(@types/react@18.3.12)(react-dom@18.3.1)(react@18.3.1)
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+      react-i18next:
+        specifier: ^11.18.3
+        version: 11.18.6(i18next@21.10.0)(react-dom@18.3.1)(react@18.3.1)
+    devDependencies:
+      '@modyfi/vite-plugin-yaml':
+        specifier: ^1.1.0
+        version: 1.1.0(rollup@2.79.2)(vite@4.5.5)
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.0.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0)(eslint@8.57.1)(typescript@5.4.2)
+      '@typescript-eslint/parser':
+        specifier: ^6.0.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.4.2)
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.3.2
+        version: 3.7.1(vite@4.5.5)
+      eslint:
+        specifier: ^8.45.0
+        version: 8.57.1
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.0
+        version: 4.6.2(eslint@8.57.1)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.3
+        version: 0.4.14(eslint@8.57.1)
+      typescript:
+        specifier: 5.4.2
+        version: 5.4.2
+      vite:
+        specifier: ^4.4.5
+        version: 4.5.5(@types/node@16.18.115)(sass@1.80.4)
+      vite-plugin-css-injected-by-js:
+        specifier: ^3.3.0
+        version: 3.5.2(vite@4.5.5)
+      vite-plugin-dts:
+        specifier: ^3.9.1
+        version: 3.9.1(@types/node@16.18.115)(rollup@2.79.2)(typescript@5.4.2)(vite@4.5.5)
+
+  src/plugins/embed-basic:
+    dependencies:
+      '@types/react':
+        specifier: ^18.0.17
+        version: 18.3.12
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -5911,7 +6018,6 @@ packages:
   /commander@8.3.0:
     resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
     engines: {node: '>= 12'}
-    dev: true
 
   /commander@9.5.0:
     resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
@@ -10094,6 +10200,13 @@ packages:
       object.values: 1.2.0
     dev: true
 
+  /katex@0.16.11:
+    resolution: {integrity: sha512-RQrI8rlHY92OLf3rho/Ts8i/XvjgguEjOkO1BEXcU3N8BqPpSzBNwV/G0Ukr+P/l3ivvJUE/Fa/CwbS6HesGNQ==}
+    hasBin: true
+    dependencies:
+      commander: 8.3.0
+    dev: false
+
   /keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
     dependencies:
@@ -14239,6 +14352,14 @@ packages:
   /vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+    dev: true
+
+  /vite-plugin-css-injected-by-js@3.5.2(vite@4.5.5):
+    resolution: {integrity: sha512-2MpU/Y+SCZyWUB6ua3HbJCrgnF0KACAsmzOQt1UvRVJCGF6S8xdA3ZUhWcWdM9ivG4I5az8PnQmwwrkC2CAQrQ==}
+    peerDependencies:
+      vite: '>2.0.0-0'
+    dependencies:
+      vite: 4.5.5(@types/node@16.18.115)(sass@1.80.4)
     dev: true
 
   /vite-plugin-dts@3.9.1(@types/node@16.18.115)(rollup@2.79.2)(typescript@5.4.2)(vite@4.5.5):
