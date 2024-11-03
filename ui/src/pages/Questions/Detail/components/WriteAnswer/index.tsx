@@ -31,7 +31,11 @@ import { Editor, Icon, Modal, TextArea, AILoading } from '@/components';
 import { FormDataType, PostAnswerReq } from '@/common/interface';
 import { postAIAnswer, postAnswer } from '@/services';
 import { guard, handleFormError, SaveDraft, storageExpires } from '@/utils';
-import { DRAFT_ANSWER_STORAGE_KEY } from '@/common/constants';
+import {
+  DRAFT_ANSWER_STORAGE_KEY,
+  getUrlQuestionType,
+  NotUseAIOfType,
+} from '@/common/constants';
 import { loggedUserInfoStore, writeSettingStore } from '@/stores';
 import { SseService } from '@/common/functions';
 
@@ -265,6 +269,7 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
     setShowEditor(true);
     setEditorFocusState(true);
   };
+  const contentType = getUrlQuestionType();
   return (
     <Form noValidate className="mt-4">
       <AILoading loading={aiLoading} color="#3f51b5" />
@@ -362,16 +367,17 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
           <Button className="me-3" onClick={clickBtn}>
             {t('btn_name')}
           </Button>
-          {!data.aiAnswered ? (
-            <Button onClick={clickAIBtn}>{t('btn_ai_name')}</Button>
-          ) : (
-            <div className="lh-1 btn m-0">
-              <Badge bg="secondary" pill>
-                <Icon name="check-circle-fill  me-1" />
-                {t('ai_answered')}
-              </Badge>
-            </div>
-          )}
+          {NotUseAIOfType.indexOf(contentType) !== -1 ||
+            (!data.aiAnswered ? (
+              <Button onClick={clickAIBtn}>{t('btn_ai_name')}</Button>
+            ) : (
+              <div className="lh-1 btn m-0">
+                <Badge bg="secondary" pill>
+                  <Icon name="check-circle-fill  me-1" />
+                  {t('ai_answered')}
+                </Badge>
+              </div>
+            ))}
         </>
       )}
 

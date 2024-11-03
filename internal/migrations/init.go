@@ -126,6 +126,7 @@ func (m *Mentor) initAdminUser() {
 func (m *Mentor) initAllUserAndRole() {
 	// 同步assetbun与answer之间的用户数据表
 	assetbun.SyncUsers(m.ctx, m.engine)
+	assetbun.SyncABTags(m.engine)
 	// 同步assetbun与answer之间用户资源分享的信息转为question数据表数据
 	assetbun.SyncShares(m.ctx, m.engine)
 }

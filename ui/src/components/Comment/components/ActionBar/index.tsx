@@ -25,6 +25,7 @@ import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { Icon, FormatTime } from '@/components';
+import { getUrlQuestionType, NotUseAIOfType } from '@/common/constants';
 
 const ActionBar = ({
   nickName,
@@ -43,6 +44,7 @@ const ActionBar = ({
   userStatus = '',
 }) => {
   const { t } = useTranslation('translation', { keyPrefix: 'comment' });
+  const contentType = getUrlQuestionType();
   return (
     <div className="d-flex justify-content-between flex-wrap small">
       <div className="d-flex align-items-center flex-wrap link-secondary">
@@ -76,7 +78,8 @@ const ActionBar = ({
           onClick={onReply}>
           {t('btn_reply')}
         </Button>
-        {mode !== 'question' &&
+        {NotUseAIOfType.indexOf(contentType) === -1 &&
+          mode !== 'question' &&
           !isAI &&
           (aiReplied ? (
             <div className="lh-1 m-0">

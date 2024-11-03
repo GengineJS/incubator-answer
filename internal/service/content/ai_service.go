@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/apache/incubator-answer/internal/base/constant"
 	commentService "github.com/apache/incubator-answer/internal/service/comment"
+	"github.com/apache/incubator-answer/internal/service/content/ai/qwen"
 	"github.com/apache/incubator-answer/internal/service/object_info"
 	"github.com/apache/incubator-answer/pkg/uid"
 	"github.com/gin-gonic/gin"
 	"github.com/russross/blackfriday/v2"
-	"github.com/xinggaoya/qwen-sdk/qwen"
 	"regexp"
 )
 
@@ -78,6 +78,6 @@ func (operator *AIQWenService) GetAIReply(ctx *gin.Context, objId string, replyI
 	}
 
 	// fmt.Printf("收到了AI回复")
-	originStr := aiResp.Output.Text
+	originStr := aiResp.Choices[0].RespMsg.Content
 	return originStr, string(blackfriday.Run([]byte(originStr)))
 }

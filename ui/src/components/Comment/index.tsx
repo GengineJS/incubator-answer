@@ -46,7 +46,8 @@ import {
 } from '@/services';
 import { commentReplyStore, loggedUserInfoStore } from '@/stores';
 import AILoading from '../AILoding';
-import { SseService } from '@/common/functions';
+import { getUrlQuestionType, SseService } from '@/common/functions';
+import { NotUseAIOfType } from '@/common/constants';
 
 import { Form, ActionBar, Reply } from './components';
 
@@ -382,6 +383,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
     );
   };
   let aiCommented = false;
+  const contentType = getUrlQuestionType();
   return (
     <div
       className={classNames(
@@ -501,7 +503,8 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
             ? t('btn_add_comment')
             : t('btn_add_subject_comment')}
         </Button>
-        {mode !== 'question' &&
+        {NotUseAIOfType.indexOf(contentType) === -1 &&
+          mode !== 'question' &&
           !isObjectAI &&
           (!aiCommented ? (
             <Button

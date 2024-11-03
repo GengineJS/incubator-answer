@@ -698,6 +698,8 @@ export const PayContentType = [
   ContentType.BOUNTY,
   ContentType.ASSETBUN,
 ];
+export const ExternalPayContentType = [ContentType.ASSETBUN];
+export const NotUseAIOfType = [ContentType.ASSETBUN];
 
 export function getUrlQueryParam(key: string): string | null {
   const urlParams = new URLSearchParams(window.location.search);

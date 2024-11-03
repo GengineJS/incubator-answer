@@ -327,6 +327,74 @@ func HashID(id int, t int) string {
 	return v
 }
 
+var abTagID = "10030000000000002"
+
+func createOrUpdateABTag(engine *xorm.Engine) (*entity.Tag, bool, error) {
+	var tag entity.Tag
+	exists, err := engine.Where("slug_name = ?", "assetbun").Get(&tag)
+	if err != nil {
+		return nil, false, err
+	}
+
+	if !exists {
+		// 创建新的Tag
+		newTag := &entity.Tag{
+			ID:           abTagID,
+			MainTagID:    0,
+			DisplayName:  "资产包子云盘",
+			OriginalText: "资产包子云盘致力于为用户提供优质资源，同时为创作者实现收益。云盘深知知识分享的珍贵，因此云盘希望能激励创作者创作更多独特、有价值的内容，让用户在学习和探索中受益匪浅的同时，也为创作者提供了一个有意义和有回报的创作平台。",
+			ParsedText:   "<p>资产包子云盘致力于为用户提供优质资源，同时为创作者实现收益。云盘深知知识分享的珍贵，因此云盘希望能激励创作者创作更多独特、有价值的内容，让用户在学习和探索中受益匪浅的同时，也为创作者提供了一个有意义和有回报的创作平台。</p>\n",
+			SlugName:     "assetbun",
+			CreatedAt:    time.Now(),
+			UpdatedAt:    time.Now(),
+			RevisionID:   "10",
+			UserID:       "10",
+			Status:       1,
+			// 其他字段可以根据需要初始化
+		}
+		_, err = engine.Insert(newTag)
+		return newTag, true, err
+	}
+	return &tag, false, err
+}
+
+func SyncABTags(engine *xorm.Engine) {
+	createOrUpdateABTag(engine)
+}
+
+func syncABTagReal(engine *xorm.Engine, objID string) {
+	newTagRel := &entity.TagRel{
+		ObjectID: objID,
+		TagID:    abTagID,
+		Status:   1, // 默认状态
+	}
+	// 插入新的TagRel记录到数据库
+	engine.Insert(newTagRel)
+}
+
+func SyncQuestionABTypeTags(engine *xorm.Engine) {
+	var questions []*entity.Question
+
+	// 查询所有的问题
+	err := engine.Where("content_type = ?", 3).Find(&questions)
+	if err != nil {
+		// 处理错误
+		fmt.Println("Error fetching questions:", err)
+		return
+	}
+	SyncABTags(engine)
+	idx := 0
+	// 打印查询到的所有问题
+	for _, q := range questions {
+		syncABTagReal(engine, q.ID)
+		idx++
+	}
+	var tag entity.Tag
+	engine.Where("slug_name = ?", "assetbun").Get(&tag)
+	tag.QuestionCount = idx
+	engine.Where("slug_name = ?", "assetbun").Update(tag)
+}
+
 func SyncShares(ctx context.Context, engine *xorm.Engine) {
 	_, _ = engine.Transaction(func(session *xorm.Session) (interface{}, error) {
 		session = session.Context(ctx)
@@ -379,6 +447,7 @@ func SyncShares(ctx context.Context, engine *xorm.Engine) {
 			}
 			srcLink := `https://ai.assetbun.com/questions/` + question.ID + `/` + htmltext.UrlTitle(question.Title) + `?content_type=3`
 			_, _ = session.ID(share.ID).Cols("source_link").Update(&assetbun.Shares{SourceLink: srcLink})
+			syncABTagReal(engine, question.ID)
 		}
 		// 提交事务
 		if err := session.Commit(); err != nil {

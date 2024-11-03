@@ -232,6 +232,11 @@ func (qc *QuestionController) ReopenQuestion(ctx *gin.Context) {
 	handler.HandleResponse(ctx, err, nil)
 }
 
+// @Router /answer/api/v1/question/sync_ab_tags [get]
+func (qc *QuestionController) SyncABTags(ctx *gin.Context) {
+	qc.questionService.SyncABTags(ctx)
+}
+
 // GetQuestion get question details
 // @Summary get question details
 // @Description get question details

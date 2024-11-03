@@ -172,6 +172,10 @@ func (qs *QuestionService) CloseQuestion(ctx context.Context, req *schema.CloseQ
 	return nil
 }
 
+func (qs *QuestionService) SyncABTags(ctx context.Context) {
+	qs.questionRepo.SyncABTags(ctx)
+}
+
 // ReopenQuestion reopen question
 func (qs *QuestionService) ReopenQuestion(ctx context.Context, req *schema.ReopenQuestionReq) error {
 	questionInfo, has, err := qs.questionRepo.GetQuestion(ctx, req.QuestionID)

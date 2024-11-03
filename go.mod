@@ -69,7 +69,6 @@ require (
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.16.1
 	github.com/tidwall/gjson v1.14.4
-	github.com/xinggaoya/qwen-sdk v1.3.2
 	github.com/yuin/goldmark v1.4.13
 	golang.org/x/image v0.13.0
 	golang.org/x/net v0.21.0

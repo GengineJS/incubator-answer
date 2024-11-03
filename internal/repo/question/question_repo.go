@@ -23,6 +23,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/apache/incubator-answer/internal/repo/assetbun"
 	"strings"
 	"time"
 	"unicode"
@@ -49,6 +50,10 @@ import (
 type questionRepo struct {
 	data         *data.Data
 	uniqueIDRepo unique.UniqueIDRepo
+}
+
+func (qr *questionRepo) SyncABTags(ctx context.Context) {
+	assetbun.SyncQuestionABTypeTags(qr.data.DB)
 }
 
 // NewQuestionRepo new repository

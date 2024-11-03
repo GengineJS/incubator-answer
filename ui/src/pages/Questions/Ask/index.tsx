@@ -33,6 +33,7 @@ import type * as Type from '@/common/interface';
 import {
   ContentType,
   DRAFT_QUESTION_STORAGE_KEY,
+  ExternalPayContentType,
   hasPayType,
 } from '@/common/constants';
 import {
@@ -584,7 +585,9 @@ const Ask = () => {
                   rel="noopener noreferrer">
                   {`${t(`recharge`)} `}
                 </a>
-                {isPayType ? t(`attention`) : ''}
+                {isPayType && ExternalPayContentType.indexOf(contentType) === -1
+                  ? t(`attention`)
+                  : ''}
               </Form.Text>
               <Form.Control.Feedback type="invalid">
                 {formData.integral.errorMsg}

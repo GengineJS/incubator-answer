@@ -2,8 +2,8 @@ package controller
 
 import (
 	"github.com/apache/incubator-answer/internal/service/content"
+	"github.com/apache/incubator-answer/internal/service/content/ai/qwen"
 	"github.com/gin-gonic/gin"
-	"github.com/xinggaoya/qwen-sdk/qwen"
 )
 
 type AIController struct {
