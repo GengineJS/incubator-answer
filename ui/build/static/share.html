@@ -50,7 +50,7 @@
         }
       })
       .then(data => {
-        console.log('服务器响应数据:', data);
+        // console.log('服务器响应数据:', data);
         if(callback) {
           callback(data);
         }
@@ -79,7 +79,7 @@
         }
       })
       .then(data => {
-        console.log('服务器响应数据:', data);
+        // console.log('服务器响应数据:', data);
         // localStorage.setItem("user", JSON.stringify(data));
         callback(data);
       })
@@ -97,7 +97,7 @@
   }
   window.addEventListener('message', function(event) {
     const currDomain = getDomainName(event.origin);
-    console.log(currDomain, event.data);
+    // console.log(currDomain, event.data);
     if (assetBunDomains.includes(currDomain)) {
       const msgType = event.data.type;
       // login
