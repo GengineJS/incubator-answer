@@ -135,7 +135,7 @@ module.exports = {
       moduleScopePlugin.allowedPaths.push(i18nPath);
     }
     if (env === 'production') {
-      // config.devtool = false;
+      config.devtool = false;
     }
     return config;
   },
