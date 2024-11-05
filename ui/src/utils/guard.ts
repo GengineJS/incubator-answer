@@ -407,8 +407,10 @@ export const handleLoginWithToken = (
                 type: IframeMsgType.LOGIN,
               },
               (code: number) => {
-                if (code === 0) {
+                if (code === 0 && isExternalLogin === 'true') {
                   window.open(getTargetAssetBunHost(), '_self');
+                } else {
+                  handleLoginRedirect(handler);
                 }
               },
             );
