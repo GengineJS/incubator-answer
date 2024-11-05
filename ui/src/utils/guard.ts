@@ -397,9 +397,9 @@ export const handleLoginWithToken = (
             },
           );
         } else {
-          const isAssetBun = localStorage.getItem(AUTH_IS_ASSET_BUN);
+          const isExternalLogin = localStorage.getItem(AUTH_IS_ASSET_BUN);
           localStorage.removeItem(AUTH_IS_ASSET_BUN);
-          if (isAssetBun === 'true') {
+          if (isExternalLogin) {
             iframeManager.postMsg(
               {
                 email: res.e_mail!,
