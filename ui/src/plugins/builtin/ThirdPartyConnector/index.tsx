@@ -33,6 +33,8 @@ import { SvgIcon } from '@/components';
 import info from './info.yaml';
 import { useGetStartUseOauthConnector } from './services';
 import './i18n';
+import {isAssetBunPageType} from "@/common/functions";
+import {AUTH_IS_ASSET_BUN} from "@/common/constants";
 
 const pluginInfo: PluginInfo = {
   slug_name: info.slug_name,
@@ -53,7 +55,12 @@ const Index: FC<Props> = ({ className }) => {
     <div className={classnames('d-grid gap-2', className)}>
       {data?.map((item) => {
         return (
-          <Button variant="outline-secondary" href={item.link} key={item.name}>
+          <Button variant="outline-secondary" onClick={(event) => {
+            event.preventDefault();
+            const isAssetBun = isAssetBunPageType();
+            localStorage.setItem(AUTH_IS_ASSET_BUN, String(isAssetBun));
+            window.open(item.link, "_self");
+          }} key={item.name}>
             <SvgIcon base64={item.icon} svgClassName="btnSvg me-2" />
             <span>{t('connect', { auth_name: item.name })}</span>
           </Button>

@@ -36,6 +36,7 @@ export const enum IframeMsgType {
   LOGIN,
   LOGOUT,
 }
+export const AUTH_IS_ASSET_BUN = 'isAssetBun';
 
 export const USER_AGENT_NAMES = {
   SegmentFault: 'SegmentFault',

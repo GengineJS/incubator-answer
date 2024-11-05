@@ -34,11 +34,17 @@ import {
 import { RouteAlias } from '@/router/alias';
 import {
   assetBunSearch,
+  AUTH_IS_ASSET_BUN,
+  IframeMsgType,
   LOGGED_TOKEN_STORAGE_KEY,
   REDIRECT_PATH_STORAGE_KEY,
 } from '@/common/constants';
 import Storage from '@/utils/storage';
-import { isAssetBunPageType } from '@/common/functions';
+import {
+  getTargetAssetBunHost,
+  iframeManager,
+  isAssetBunPageType,
+} from '@/common/functions';
 
 import { setupAppLanguage, setupAppTimeZone, setupAppTheme } from './localize';
 import { floppyNavigation, NavigateConfig } from './floppyNavigation';
@@ -372,6 +378,7 @@ export const handleLoginWithToken = (
   handler?: NavigateConfig['handler'],
 ) => {
   if (token) {
+    iframeManager.initIframe();
     Storage.set(LOGGED_TOKEN_STORAGE_KEY, token);
     setTimeout(() => {
       getLoggedUserInfo().then((res) => {
@@ -390,7 +397,24 @@ export const handleLoginWithToken = (
             },
           );
         } else {
-          handleLoginRedirect(handler);
+          const isAssetBun = localStorage.getItem(AUTH_IS_ASSET_BUN);
+          localStorage.removeItem(AUTH_IS_ASSET_BUN);
+          if (isAssetBun === 'true') {
+            iframeManager.postMsg(
+              {
+                email: res.e_mail!,
+                password: '      ',
+                type: IframeMsgType.LOGIN,
+              },
+              (code: number) => {
+                if (code === 0) {
+                  window.open(getTargetAssetBunHost(), '_self');
+                }
+              },
+            );
+          } else {
+            handleLoginRedirect(handler);
+          }
         }
       });
     });
