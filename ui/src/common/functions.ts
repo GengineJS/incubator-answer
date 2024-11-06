@@ -74,6 +74,12 @@ export function getTargetAssetBunHost(): string {
     : targetAssetBunHomeUrl[idx];
 }
 
+export function getTargetRootAssetBunHost(): string {
+  const currDomain = getDomainName();
+  const idx = shareLocalStorageDomains.indexOf(currDomain);
+  return targetAssetBunRootUrl[idx];
+}
+
 export interface IframeParams {
   email: string;
   password: string;
@@ -149,7 +155,8 @@ class IframeManager {
       window.addEventListener(
         'message',
         function (event) {
-          if (that.callback) {
+          const originRoot = getTargetRootAssetBunHost();
+          if (that.callback && event.origin === originRoot) {
             that.callback(event.data);
             that.callback = null;
           }

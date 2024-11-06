@@ -410,6 +410,8 @@ export const handleLoginWithToken = (
                 if (code === 0 && isExternalLogin === 'true') {
                   window.open(getTargetAssetBunHost(), '_self');
                 } else {
+                  if (code)
+                    console.warn(`资产包子云盘登录失败，请检查:${code}`);
                   handleLoginRedirect(handler);
                 }
               },
