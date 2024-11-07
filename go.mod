@@ -27,9 +27,9 @@ require (
 	github.com/anargu/gin-brotli v0.0.0-20220116052358-12bf532d5267
 	github.com/apache/incubator-answer-plugins/cache-redis v1.2.8
 	github.com/apache/incubator-answer-plugins/connector-github v1.2.8
-	github.com/apache/incubator-answer-plugins/editor-chart v1.2.9
-	github.com/apache/incubator-answer-plugins/editor-formula v1.2.11
-	github.com/apache/incubator-answer-plugins/embed-basic v1.0.5
+	// github.com/apache/incubator-answer-plugins/editor-chart v1.2.9
+	// github.com/apache/incubator-answer-plugins/editor-formula v1.2.11
+	// github.com/apache/incubator-answer-plugins/embed-basic v1.0.5
 	github.com/apache/incubator-answer-plugins/storage-aliyunoss v1.2.8
 	github.com/apache/incubator-answer-plugins/util v1.0.2
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d

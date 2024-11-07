@@ -85,12 +85,6 @@ github.com/apache/incubator-answer-plugins/cache-redis v1.2.8 h1:wLxPXOMcoqqa3jf
 github.com/apache/incubator-answer-plugins/cache-redis v1.2.8/go.mod h1:8QRZsqAaX36EFMJyGYJSQWtKyD5WtXZ817ZWnnMpoms=
 github.com/apache/incubator-answer-plugins/connector-github v1.2.8 h1:uFIKeSu/4kb36rGypEnccenLXJ/kFRd4Dj5rLAumefs=
 github.com/apache/incubator-answer-plugins/connector-github v1.2.8/go.mod h1:pdN0EADjxA5LypdhMVL0dVLdGa4uHdTs2nN/j0Fgo3o=
-github.com/apache/incubator-answer-plugins/editor-chart v1.2.9 h1:5AOexq+popB0oMpYmYNdjQl4pjhUqQtkPIZwxXuofTc=
-github.com/apache/incubator-answer-plugins/editor-chart v1.2.9/go.mod h1:2EAAdDMvyKacczQko8/gKH5rS0HolZL5fVOI4YsP+Iw=
-github.com/apache/incubator-answer-plugins/editor-formula v1.2.11 h1:XSK0+q9N7BLs6WoxM5F7X5vuTaL+6wDWqgnaQ2ROxuU=
-github.com/apache/incubator-answer-plugins/editor-formula v1.2.11/go.mod h1:ir82D9L6T49tLsD8GJVd5/WAMhqbbPxVlKa9NCC3ByA=
-github.com/apache/incubator-answer-plugins/embed-basic v1.0.5 h1:KKpOH8mR2nty0wdXrwj3B2H+Askmr98P+QWZVWKGiiY=
-github.com/apache/incubator-answer-plugins/embed-basic v1.0.5/go.mod h1:OFnzscbKi1X+I0eCbSLkCBPIVf7b4nFgIWOFBAnRX9Q=
 github.com/apache/incubator-answer-plugins/storage-aliyunoss v1.2.8 h1:FT5c2LB06lnfeH5j2lREYtB9lWnXfnpTPQMQ0Weg3LQ=
 github.com/apache/incubator-answer-plugins/storage-aliyunoss v1.2.8/go.mod h1:CwNnvjGcbCRbMgnHAq5hWEuhIdiX8ZkU1gFBH5uoe1w=
 github.com/apache/incubator-answer-plugins/util v1.0.2 h1:PontocVaiEm+oTj+4aDonwWDZnxywUeHsaTwlQgclfA=
