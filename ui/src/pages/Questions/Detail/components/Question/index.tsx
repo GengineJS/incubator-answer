@@ -43,6 +43,7 @@ import {
 import IntegralLink from '@/components/IntegralLink';
 import { isModerator } from '@/common/constants';
 import { loggedUserInfoStore } from '@/stores';
+import MathJaxArticle from '@/components/MathJaxArticle';
 
 interface Props {
   data: any;
@@ -155,11 +156,7 @@ const Index: FC<Props> = ({ data, initPage, hasAnswer, isLogged }) => {
         })}
       </div>
       <ImgViewer>
-        <article
-          ref={ref}
-          className="fmt text-break text-wrap mt-4"
-          dangerouslySetInnerHTML={{ __html: data?.html }}
-        />
+        <MathJaxArticle ref={null} html={data?.html} />
       </ImgViewer>
 
       <Actions

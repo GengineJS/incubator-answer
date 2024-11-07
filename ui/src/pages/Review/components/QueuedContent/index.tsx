@@ -37,6 +37,7 @@ import { scrollToDocTop } from '@/utils';
 import type * as Type from '@/common/interface';
 import { ADMIN_LIST_STATUS } from '@/common/constants';
 import generateData from '../../utils/generateData';
+import MathJaxArticle from '@/components/MathJaxArticle';
 
 interface IProps {
   refreshCount: () => void;
@@ -186,11 +187,7 @@ const Index: FC<IProps> = ({ refreshCount }) => {
           )}
           <div className="small font-monospace">
             <ImgViewer>
-              <article
-                ref={ref}
-                className="fmt text-break text-wrap"
-                dangerouslySetInnerHTML={{ __html: flagItemData?.parsed_text }}
-              />
+              <MathJaxArticle ref={ref} html={flagItemData?.parsed_text} />
             </ImgViewer>
           </div>
           <div className="d-flex flex-wrap align-items-center justify-content-between mt-4">

@@ -48,9 +48,9 @@ import { commentReplyStore, loggedUserInfoStore } from '@/stores';
 import AILoading from '../AILoding';
 import { getUrlQuestionType, SseService } from '@/common/functions';
 import { NotUseAIOfType } from '@/common/constants';
+import MathJaxArticle from '@/components/MathJaxArticle';
 
 import { Form, ActionBar, Reply } from './components';
-
 import './index.scss';
 
 const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
@@ -421,10 +421,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
                 )}
                 {item.is_ai ? (
                   <ImgViewer>
-                    <article
-                      className="fmt small text-break text-wrap"
-                      dangerouslySetInnerHTML={{ __html: item.parsed_text }}
-                    />
+                    <MathJaxArticle ref={null} html={item.parsed_text} />
                   </ImgViewer>
                 ) : (
                   <div

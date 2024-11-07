@@ -39,6 +39,7 @@ import { acceptanceAnswer } from '@/services';
 import { useRenderHtmlPlugin } from '@/utils/pluginKit';
 import { PayContentType } from '@/common/constants';
 import { getUrlQuestionType } from '@/common/functions';
+import MathJaxArticle from '@/components/MathJaxArticle';
 
 interface Props {
   data: AnswerItem;
@@ -149,10 +150,7 @@ const Index: FC<Props> = ({
         </div>
       )}
       <ImgViewer>
-        <article
-          className="fmt text-break text-wrap"
-          dangerouslySetInnerHTML={{ __html: data?.html }}
-        />
+        <MathJaxArticle ref={null} html={data?.html} />
         {data.is_ai && (
           <div className="fmt fs-7 small text-secondary text-break text-wrap">
             ({t('ai_commented')})
