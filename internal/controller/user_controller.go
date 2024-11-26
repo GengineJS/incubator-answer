@@ -122,6 +122,18 @@ func (uc *UserController) GetOtherUserInfoByUsername(ctx *gin.Context) {
 	handler.HandleResponse(ctx, err, resp)
 }
 
+// 赋予默认的config进行邮件通知
+// @Router /answer/api/v1/user/notify/default [post]
+func (uc *UserController) ApplyDefaultNotifyConfig(ctx *gin.Context) {
+	users, err := uc.userService.GetAllUserIDs(ctx)
+	if err != nil {
+		handler.HandleResponse(ctx, err, 200)
+		return
+	}
+	uc.userNotificationConfigService.SetDefaultUserNotificationConfig(ctx, users)
+	handler.HandleResponse(ctx, nil, 200)
+}
+
 // UserEmailLogin godoc
 // @Summary UserEmailLogin
 // @Description UserEmailLogin

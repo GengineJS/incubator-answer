@@ -41,7 +41,7 @@ import { useCaptchaPlugin } from '@/utils/pluginKit';
 import { login, UcAgent } from '@/services';
 import { setupAppTheme } from '@/utils/localize';
 import {
-  getTargetAssetBunHost,
+  getTargetRootAssetBunHost,
   iframeManager,
   isAssetBunPageType,
 } from '@/common/functions';
@@ -154,15 +154,28 @@ const Index: React.FC = () => {
             //
             // }
             const userStat = guard.deriveLoginState();
+
             if (userStat.isNotActivated) {
               // inactive
               setStep(2);
+            } else if (isAssetBun && code === 0) {
+              localStorage.setItem('loginState', 'true');
+              // 获取当前 URL 中的 redirect 参数
+              const urlParams = new URLSearchParams(window.location.search);
+              // 资产包子云盘的重定向
+              const redirect = urlParams.get('ab_redirect');
+              let targetUrl = getTargetRootAssetBunHost();
+              if (
+                redirect &&
+                redirect !== '/login' &&
+                redirect !== 'undefined'
+              ) {
+                const decodedRedirect = decodeURIComponent(redirect);
+                targetUrl = `${targetUrl}${decodedRedirect}`;
+              }
+              window.open(targetUrl, '_self');
             } else {
               guard.handleLoginRedirect(navigate);
-            }
-            if (isAssetBun && code === 0) {
-              const abUrl = getTargetAssetBunHost();
-              window.open(abUrl, '_blank');
             }
           })
           .catch((err) => {

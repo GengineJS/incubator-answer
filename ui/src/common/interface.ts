@@ -695,9 +695,19 @@ export interface NotificationConfigItem {
   key: string;
 }
 export interface NotificationConfig {
-  all_new_question: NotificationConfigItem;
-  all_new_question_for_following_tags: NotificationConfigItem;
+  all_new_subject: NotificationConfigItem;
+  all_new_subject_for_following_tags: NotificationConfigItem;
   inbox: NotificationConfigItem;
+  email_inbox: NotificationConfigItem;
+  all_email_new_question: NotificationConfigItem;
+  all_email_new_score_question: NotificationConfigItem;
+  all_email_new_article: NotificationConfigItem;
+  all_email_new_score_article: NotificationConfigItem;
+  all_email_new_bounty: NotificationConfigItem;
+  all_email_new_assetbun: NotificationConfigItem;
+  all_email_new_score_assetbun: NotificationConfigItem;
+  all_email_new_subject_for_following_tags: NotificationConfigItem;
+  all_email_new_subject_score_for_following_tags: NotificationConfigItem;
 }
 
 export interface ActivatedPlugin {

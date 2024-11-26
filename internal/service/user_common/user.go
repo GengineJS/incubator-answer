@@ -41,6 +41,9 @@ import (
 
 type UserRepo interface {
 	AddUser(ctx context.Context, user *entity.User) (err error)
+	GetAllUsers(ctx context.Context) []*entity.User
+	GetAdminUsers(ctx context.Context) ([]*entity.User, error)
+	GetAllUserIDs(ctx context.Context) ([]string, error)
 	IncreaseAnswerCount(ctx context.Context, userID string, amount int) (err error)
 	IncreaseQuestionCount(ctx context.Context, userID string, amount int) (err error)
 	UpdateQuestionCount(ctx context.Context, userID string, count int64) (err error)

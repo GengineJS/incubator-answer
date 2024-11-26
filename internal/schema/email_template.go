@@ -21,7 +21,9 @@ package schema
 
 import (
 	"encoding/json"
+
 	"github.com/apache/incubator-answer/internal/base/constant"
+	"github.com/apache/incubator-answer/internal/entity"
 )
 
 const (
@@ -127,15 +129,29 @@ type NewCommentTemplateData struct {
 type NewQuestionTemplateRawData struct {
 	QuestionAuthorUserID string
 	QuestionTitle        string
+	Score                int
+	DisplayName          string
+	ContentType          entity.QuestionType
 	QuestionID           string
 	UnsubscribeCode      string
 	Tags                 []string
+	TagSlugs             []string
 	TagIDs               []string
+}
+
+type ScoreTemplateData struct {
+	Money float32
+	Score int
 }
 
 type NewQuestionTemplateData struct {
 	SiteName       string
 	QuestionTitle  string
+	Score          int
+	Money          float32
+	ContentType    string
+	DisplayName    string
+	Tip            string
 	QuestionUrl    string
 	Tags           string
 	UnsubscribeUrl string

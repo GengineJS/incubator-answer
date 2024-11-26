@@ -77,6 +77,7 @@ type QuestionRepo interface {
 	SitemapQuestions(ctx context.Context, page, pageSize int) (questionIDList []*schema.SiteMapQuestionInfo, err error)
 	RemoveAllUserQuestion(ctx context.Context, userID string) (err error)
 	UpdateSearch(ctx context.Context, questionID string) (err error)
+	GetData() *data.Data
 }
 
 // QuestionCommon user service

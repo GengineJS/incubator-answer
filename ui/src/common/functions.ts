@@ -1,5 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import {
+  assetBunLoginUrl,
   getUrlQueryParam,
   getUrlQuestionType,
   hasPayType,
@@ -74,10 +75,20 @@ export function getTargetAssetBunHost(): string {
     : targetAssetBunHomeUrl[idx];
 }
 
+export function getAssetBunLoginHost(): string {
+  const currDomain = getDomainName();
+  const idx = shareLocalStorageDomains.indexOf(currDomain);
+  return assetBunLoginUrl[idx];
+}
+
 export function getTargetRootAssetBunHost(): string {
   const currDomain = getDomainName();
   const idx = shareLocalStorageDomains.indexOf(currDomain);
   return targetAssetBunRootUrl[idx];
+}
+
+export function getAssetBunReviewURL(): string {
+  return `${getTargetRootAssetBunHost()}/admin/share`;
 }
 
 export interface IframeParams {
@@ -135,6 +146,10 @@ class IframeManager {
 
   private callback;
 
+  private loadedCallback;
+
+  private isLoaded;
+
   public initIframe() {
     // 尝试从DOM中获取现有的<iframe>
     this.iframe = document.getElementById('shareFrame') as HTMLIFrameElement;
@@ -149,7 +164,11 @@ class IframeManager {
       document.body.appendChild(this.iframe);
       // 初始化完成后的回调或其他操作
       this.iframe.onload = () => {
-        console.log('Iframe loaded.');
+        if (this.loadedCallback) {
+          this.loadedCallback();
+          this.loadedCallback = null;
+        }
+        this.isLoaded = true;
       };
       const that = this;
       window.addEventListener(
@@ -165,6 +184,14 @@ class IframeManager {
       );
     }
     return this.iframe;
+  }
+
+  public onLoaded(loadedCallback) {
+    this.loadedCallback = loadedCallback;
+    this.initIframe();
+    if (this.isLoaded) {
+      this.loadedCallback();
+    }
   }
 
   public postMsg(params: IframeParams, callback) {

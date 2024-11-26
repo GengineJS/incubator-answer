@@ -21,6 +21,7 @@ package schema
 
 import (
 	"encoding/json"
+
 	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/entity"
 )
@@ -53,9 +54,19 @@ func (n *NotificationChannels) ToJsonString() string {
 }
 
 type NotificationConfig struct {
-	Inbox                          NotificationChannelConfig `json:"inbox"`
-	AllNewQuestion                 NotificationChannelConfig `json:"all_new_question"`
-	AllNewQuestionForFollowingTags NotificationChannelConfig `json:"all_new_question_for_following_tags"`
+	Inbox                                   NotificationChannelConfig `json:"inbox"`
+	EmailInbox                              NotificationChannelConfig `json:"email_inbox"`
+	AllNewQuestion                          NotificationChannelConfig `json:"all_new_subject"`
+	AllEmailNewQuestion                     NotificationChannelConfig `json:"all_email_new_question"`
+	AllEmailNewScoreQuestion                NotificationChannelConfig `json:"all_email_new_score_question"`
+	AllNewSubjectForFollowingTags           NotificationChannelConfig `json:"all_new_subject_for_following_tags"`
+	AllEmailNewArticle                      NotificationChannelConfig `json:"all_email_new_article"`
+	AllEmailNewScoreArticle                 NotificationChannelConfig `json:"all_email_new_score_article"`
+	AllEmailNewBounty                       NotificationChannelConfig `json:"all_email_new_bounty"`
+	AllEmailNewAssetbun                     NotificationChannelConfig `json:"all_email_new_assetbun"`
+	AllEmailNewScoreAssetbun                NotificationChannelConfig `json:"all_email_new_score_assetbun"`
+	AllEmailNewSubjectForFollowingTags      NotificationChannelConfig `json:"all_email_new_subject_for_following_tags"`
+	AllEmailNewSubjectScoreForFollowingTags NotificationChannelConfig `json:"all_email_new_subject_score_for_following_tags"`
 }
 
 func NewNotificationConfig(configs []*entity.UserNotificationConfig) NotificationConfig {
@@ -64,10 +75,28 @@ func NewNotificationConfig(configs []*entity.UserNotificationConfig) Notificatio
 		switch item.Source {
 		case string(constant.InboxSource):
 			nc.Inbox = NewNotificationChannelConfigFormJson(item.Channels)
-		case string(constant.AllNewQuestionSource):
+		case string(constant.AllNewSubjectSource):
 			nc.AllNewQuestion = NewNotificationChannelConfigFormJson(item.Channels)
-		case string(constant.AllNewQuestionForFollowingTagsSource):
-			nc.AllNewQuestionForFollowingTags = NewNotificationChannelConfigFormJson(item.Channels)
+		case string(constant.AllNewSubjectForFollowingTagsSource):
+			nc.AllNewSubjectForFollowingTags = NewNotificationChannelConfigFormJson(item.Channels)
+		case string(constant.AllEmailNewQuestionSource):
+			nc.AllEmailNewQuestion = NewNotificationChannelConfigFormJson(item.Channels)
+		case string(constant.AllEmailNewScoreQuestionSource):
+			nc.AllEmailNewScoreQuestion = NewNotificationChannelConfigFormJson(item.Channels)
+		case string(constant.AllEmailNewArticleSource):
+			nc.AllEmailNewArticle = NewNotificationChannelConfigFormJson(item.Channels)
+		case string(constant.AllEmailNewScoreArticleSource):
+			nc.AllEmailNewScoreArticle = NewNotificationChannelConfigFormJson(item.Channels)
+		case string(constant.AllEmailNewBountySource):
+			nc.AllEmailNewBounty = NewNotificationChannelConfigFormJson(item.Channels)
+		case string(constant.AllEmailNewAssetbunSource):
+			nc.AllEmailNewAssetbun = NewNotificationChannelConfigFormJson(item.Channels)
+		case string(constant.AllEmailNewScoreAssetbunSource):
+			nc.AllEmailNewScoreAssetbun = NewNotificationChannelConfigFormJson(item.Channels)
+		case string(constant.AllEmailNewSubjectForFollowingTagsSource):
+			nc.AllEmailNewSubjectForFollowingTags = NewNotificationChannelConfigFormJson(item.Channels)
+		case string(constant.AllEmailNewSubjectScoreForFollowingTagsSource):
+			nc.AllEmailNewSubjectScoreForFollowingTags = NewNotificationChannelConfigFormJson(item.Channels)
 		}
 	}
 	return nc
@@ -78,13 +107,53 @@ func (n *NotificationConfig) Format() {
 		n.Inbox.Key = constant.EmailChannel
 		n.Inbox.Enable = false
 	}
+	if n.EmailInbox.Key == "" {
+		n.EmailInbox.Key = constant.EmailChannel
+		n.EmailInbox.Enable = false
+	}
 	if n.AllNewQuestion.Key == "" {
 		n.AllNewQuestion.Key = constant.EmailChannel
 		n.AllNewQuestion.Enable = false
 	}
-	if n.AllNewQuestionForFollowingTags.Key == "" {
-		n.AllNewQuestionForFollowingTags.Key = constant.EmailChannel
-		n.AllNewQuestionForFollowingTags.Enable = false
+	if n.AllNewSubjectForFollowingTags.Key == "" {
+		n.AllNewSubjectForFollowingTags.Key = constant.EmailChannel
+		n.AllNewSubjectForFollowingTags.Enable = false
+	}
+	if n.AllEmailNewQuestion.Key == "" {
+		n.AllEmailNewQuestion.Key = constant.EmailChannel
+		n.AllEmailNewQuestion.Enable = false
+	}
+	if n.AllEmailNewScoreQuestion.Key == "" {
+		n.AllEmailNewScoreQuestion.Key = constant.EmailChannel
+		n.AllEmailNewScoreQuestion.Enable = false
+	}
+	if n.AllEmailNewArticle.Key == "" {
+		n.AllEmailNewArticle.Key = constant.EmailChannel
+		n.AllEmailNewArticle.Enable = false
+	}
+	if n.AllEmailNewScoreArticle.Key == "" {
+		n.AllEmailNewScoreArticle.Key = constant.EmailChannel
+		n.AllEmailNewScoreArticle.Enable = false
+	}
+	if n.AllEmailNewBounty.Key == "" {
+		n.AllEmailNewBounty.Key = constant.EmailChannel
+		n.AllEmailNewBounty.Enable = false
+	}
+	if n.AllEmailNewAssetbun.Key == "" {
+		n.AllEmailNewAssetbun.Key = constant.EmailChannel
+		n.AllEmailNewAssetbun.Enable = false
+	}
+	if n.AllEmailNewScoreAssetbun.Key == "" {
+		n.AllEmailNewScoreAssetbun.Key = constant.EmailChannel
+		n.AllEmailNewScoreAssetbun.Enable = false
+	}
+	if n.AllEmailNewSubjectForFollowingTags.Key == "" {
+		n.AllEmailNewSubjectForFollowingTags.Key = constant.EmailChannel
+		n.AllEmailNewSubjectForFollowingTags.Enable = false
+	}
+	if n.AllEmailNewSubjectScoreForFollowingTags.Key == "" {
+		n.AllEmailNewSubjectScoreForFollowingTags.Key = constant.EmailChannel
+		n.AllEmailNewSubjectScoreForFollowingTags.Enable = false
 	}
 }
 

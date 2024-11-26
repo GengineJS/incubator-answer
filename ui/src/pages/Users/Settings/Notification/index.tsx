@@ -31,9 +31,22 @@ const Index = () => {
     keyPrefix: 'settings.notification',
   });
   const { data: configData } = useGetNotificationConfig();
-
+  const emailSubjects = [
+    'all_email_new_score_question',
+    'all_email_new_question',
+    'all_email_new_score_article',
+    'all_email_new_article',
+    'all_email_new_bounty',
+    'all_email_new_score_assetbun',
+    'all_email_new_assetbun',
+    'all_email_new_subject_for_following_tags',
+    'all_email_new_subject_score_for_following_tags',
+  ];
+  const defaultEmailSubjects = emailSubjects.filter(
+    (subject) => configData?.[subject]?.enable,
+  );
   const schema: JSONSchema = {
-    title: t('heading'),
+    title: t('email_heading'),
     properties: {
       inbox: {
         type: 'boolean',
@@ -41,17 +54,48 @@ const Index = () => {
         description: t('inbox.description'),
         default: configData?.inbox.enable,
       },
-      all_new_question: {
+      all_new_subject: {
         type: 'boolean',
-        title: t('all_new_question.label'),
-        description: t('all_new_question.description'),
-        default: configData?.all_new_question.enable,
+        title: t('all_new_subject.label'),
+        description: t('all_new_subject.description'),
+        default: configData?.all_new_subject.enable,
       },
-      all_new_question_for_following_tags: {
+      all_new_subject_for_following_tags: {
         type: 'boolean',
-        title: t('all_new_question_for_following_tags.label'),
-        description: t('all_new_question_for_following_tags.description'),
-        default: configData?.all_new_question_for_following_tags.enable,
+        title: t('all_new_subject_for_following_tags.label'),
+        description: t('all_new_subject_for_following_tags.description'),
+        default: configData?.all_new_subject_for_following_tags.enable,
+      },
+      // title: {
+      //   type: 'null',
+      //   title: t('email_heading'),
+      // },
+      // email_inbox: {
+      //   type: 'boolean',
+      //   title: t('inbox.label'),
+      //   description: t('inbox.description'),
+      //   default: configData?.email_inbox.enable,
+      // },
+      all_email_new_subject: {
+        type: 'boolean',
+        title: t('all_email_new_subject.label'),
+        description: t('all_email_new_subject.description'),
+        enum: emailSubjects,
+        default: defaultEmailSubjects,
+        enumNames: [
+          t('all_new_score_question.title'),
+          t('all_new_question.title'),
+          t('all_new_score_article.title'),
+          t('all_new_article.title'),
+          t('all_new_bounty.title'),
+          t('all_new_score_assetbun.title'),
+          t('all_new_assetbun.title'),
+          t('all_new_none_score_subject_for_following_tags.title'),
+          t('all_new_score_subject_for_following_tags.title'),
+        ],
+        placeholder: t('all_email_new_subject.placeholder'),
+        displayText: t('all_email_new_subject.displayText'),
+        multiple: true,
       },
     },
   };
@@ -62,17 +106,29 @@ const Index = () => {
         label: t('turn_on'),
       },
     },
-    all_new_question: {
+    all_new_subject: {
       'ui:widget': 'switch',
       'ui:options': {
         label: t('turn_on'),
       },
     },
-    all_new_question_for_following_tags: {
+    all_new_subject_for_following_tags: {
       'ui:widget': 'switch',
       'ui:options': {
         label: t('turn_on'),
-        text: t('all_new_question_for_following_tags.description'),
+        text: t('all_new_subject_for_following_tags.description'),
+      },
+    },
+    // email_inbox: {
+    //   'ui:widget': 'switch',
+    //   'ui:options': {
+    //     label: t('turn_on'),
+    //   },
+    // },
+    all_email_new_subject: {
+      'ui:widget': 'select',
+      'ui:options': {
+        label: t('turn_on'),
       },
     },
   };
@@ -90,15 +146,23 @@ const Index = () => {
         enable: formData.inbox.value,
         key: configData?.inbox.key,
       },
-      all_new_question: {
-        enable: formData.all_new_question.value,
-        key: configData?.all_new_question.key,
+      all_new_subject: {
+        enable: formData.all_new_subject.value,
+        key: configData?.all_new_subject.key,
       },
-      all_new_question_for_following_tags: {
-        enable: formData.all_new_question_for_following_tags.value,
-        key: configData?.all_new_question_for_following_tags.key,
+      all_new_subject_for_following_tags: {
+        enable: formData.all_new_subject_for_following_tags.value,
+        key: configData?.all_new_subject_for_following_tags.key,
       },
     } as NotificationConfig;
+    const allEmailNewSubject = formData.all_email_new_subject
+      .value as Array<string>;
+    allEmailNewSubject.forEach((val) => {
+      params[`${val}`] = {
+        enable: true,
+        key: configData?.[`${val}`].key,
+      };
+    });
 
     putNotificationConfig(params).then(() => {
       toast.onShow({
@@ -113,7 +177,7 @@ const Index = () => {
   };
   return (
     <>
-      <h3 className="mb-4">{t('heading')}</h3>
+      <h3 className="mb-4">{t('email_heading')}</h3>
       <SchemaForm
         schema={schema}
         uiSchema={uiSchema}

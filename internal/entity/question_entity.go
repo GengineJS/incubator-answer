@@ -44,6 +44,14 @@ const (
 	TypeAiPic
 )
 
+type ScoreAction int
+
+const (
+	ScoreAction_IS = iota + 1
+	ScoreAction_NOT
+	ScoreAction_ALL = 1 | 2
+)
+
 var AdminQuestionSearchStatus = map[string]int{
 	"available": QuestionStatusAvailable,
 	"closed":    QuestionStatusClosed,
@@ -94,6 +102,7 @@ type Question struct {
 	CollectionCount  int       `xorm:"not null default 0 INT(11) collection_count"`
 	FollowCount      int       `xorm:"not null default 0 INT(11) follow_count"`
 	Score            int       `xorm:"not null default 0 INT(11) score"`
+	ShareID          string    `xorm:"not null default '' VARCHAR(150) share_id"`
 	AcceptedAnswerID string    `xorm:"not null default 0 BIGINT(20) accepted_answer_id"`
 	LastAnswerID     string    `xorm:"not null default 0 BIGINT(20) last_answer_id"`
 	PostUpdateTime   time.Time `xorm:"post_update_time TIMESTAMP"`

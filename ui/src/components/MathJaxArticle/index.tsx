@@ -3,7 +3,7 @@ import React from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { MathJaxContext, MathJax } from 'better-react-mathjax';
 // math jax
-const config = {
+export const config = {
   loader: { load: ['[tex]/html'] },
   tex: {
     packages: { '[+]': ['html'] },

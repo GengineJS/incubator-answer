@@ -28,12 +28,14 @@ import {
   reopenQuestion,
 } from '@/services';
 import { useReportModal, useToast } from '@/hooks';
+import { getAssetBunReviewURL } from '@/common/functions';
+import { ContentType } from '@/common/constants';
 
 const AnswerActions = ({ itemData, refreshList, curFilter, show, pin }) => {
   const { t } = useTranslation('translation', { keyPrefix: 'delete' });
   const closeModal = useReportModal(refreshList);
   const toast = useToast();
-
+  const contentType = itemData.content_type;
   const handleAction = (type) => {
     if (type === 'delete') {
       Modal.confirm({
@@ -125,7 +127,13 @@ const AnswerActions = ({ itemData, refreshList, curFilter, show, pin }) => {
       <Link
         to={`/review?type=queued_post&objectId=${itemData.id}`}
         className="btn btn-link p-0"
-        title={t('review', { keyPrefix: 'header.nav' })}>
+        title={t('review', { keyPrefix: 'header.nav' })}
+        onClick={(event) => {
+          if (contentType === ContentType.ASSETBUN) {
+            event.preventDefault();
+            window.open(getAssetBunReviewURL(), '_blank');
+          }
+        }}>
         <Icon name="three-dots-vertical" />
       </Link>
     );

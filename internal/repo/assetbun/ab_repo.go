@@ -9,6 +9,7 @@ import (
 	"github.com/apache/incubator-answer/internal/base/reason"
 	"github.com/apache/incubator-answer/internal/entity"
 	"github.com/apache/incubator-answer/internal/repo/unique"
+	"github.com/apache/incubator-answer/internal/repo/user_notification_config"
 	"github.com/apache/incubator-answer/internal/schema"
 	"github.com/apache/incubator-answer/internal/service/assetbun"
 	"github.com/apache/incubator-answer/internal/service/notice_queue"
@@ -177,6 +178,14 @@ func (ab *assetBunRepo) GetScore(ctx context.Context, userID string) (score int,
 		return 0, err
 	}
 	return userInfo.Score, nil
+}
+
+func (ab *assetBunRepo) GetUser(ctx context.Context, userID string) *assetbun.Users {
+	userInfo, err := GetAbUser(ctx, ab, userID)
+	if err != nil {
+		return nil
+	}
+	return userInfo
 }
 
 func createRefFile(ctx context.Context, engine *xorm.Engine, user *assetbun.Users) error {
@@ -441,6 +450,7 @@ func SyncShares(ctx context.Context, engine *xorm.Engine) {
 				question.Status = entity.QuestionStatusAvailable
 				question.Show = entity.QuestionShow
 			}
+			question.ShareID = share.ID
 			question.ContentType = int(entity.TypeAssetBun)
 			if _, err := session.Insert(question); err != nil {
 				return nil, err
@@ -455,6 +465,30 @@ func SyncShares(ctx context.Context, engine *xorm.Engine) {
 		}
 		return nil, nil
 	})
+}
+
+func SetDefaultUserNotificationConfig(ctx context.Context, DB *xorm.Engine, userIDs []string) (
+	err error) {
+	channels := `[{"key":"email","enable":true}]`
+	err = user_notification_config.Add(ctx, DB, userIDs,
+		string(constant.InboxSource), channels)
+	err = user_notification_config.Add(ctx, DB, userIDs,
+		string(constant.AllEmailNewScoreQuestionSource), channels)
+	err = user_notification_config.Add(ctx, DB, userIDs,
+		string(constant.AllEmailNewBountySource), channels)
+	return err
+}
+
+func GetAllUserIDs(ctx context.Context, DB *xorm.Engine) ([]string, error) {
+	var userIds []string
+
+	// 使用 xorm 的 Cols 方法指定只查询 id 字段
+	err := DB.Table(new(entity.User)).Cols("id").Find(&userIds)
+	if err != nil {
+		return nil, err
+	}
+
+	return userIds, nil
 }
 
 func SyncUsers(ctx context.Context, engine *xorm.Engine) {
@@ -530,6 +564,8 @@ func SyncUsers(ctx context.Context, engine *xorm.Engine) {
 		if err := session.Commit(); err != nil {
 			return nil, err
 		}
+		usrIds, _ := GetAllUserIDs(ctx, engine)
+		SetDefaultUserNotificationConfig(ctx, engine, usrIds)
 		return nil, nil
 	})
 }

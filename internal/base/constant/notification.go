@@ -74,9 +74,18 @@ type NotificationChannelKey string
 type NotificationSource string
 
 const (
-	InboxSource                          NotificationSource = "inbox"
-	AllNewQuestionSource                 NotificationSource = "all_new_question"
-	AllNewQuestionForFollowingTagsSource NotificationSource = "all_new_question_for_following_tags"
+	InboxSource                                   NotificationSource = "inbox"
+	AllNewSubjectSource                           NotificationSource = "all_new_subject"
+	AllNewSubjectForFollowingTagsSource           NotificationSource = "all_new_subject_for_following_tags"
+	AllEmailNewQuestionSource                     NotificationSource = "all_email_new_question"
+	AllEmailNewScoreQuestionSource                NotificationSource = "all_email_new_score_question"
+	AllEmailNewArticleSource                      NotificationSource = "all_email_new_article"
+	AllEmailNewScoreArticleSource                 NotificationSource = "all_email_new_score_article"
+	AllEmailNewBountySource                       NotificationSource = "all_email_new_bounty"
+	AllEmailNewAssetbunSource                     NotificationSource = "all_email_new_assetbun"
+	AllEmailNewScoreAssetbunSource                NotificationSource = "all_email_new_score_assetbun"
+	AllEmailNewSubjectForFollowingTagsSource      NotificationSource = "all_email_new_subject_for_following_tags"
+	AllEmailNewSubjectScoreForFollowingTagsSource NotificationSource = "all_email_new_subject_score_for_following_tags"
 )
 
 const (

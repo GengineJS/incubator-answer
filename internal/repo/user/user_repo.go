@@ -21,9 +21,11 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"github.com/apache/incubator-answer/internal/repo/assetbun"
 	"strings"
 	"time"
+	"xorm.io/xorm"
 
 	"github.com/apache/incubator-answer/internal/base/data"
 	"github.com/apache/incubator-answer/internal/base/reason"
@@ -46,6 +48,49 @@ func NewUserRepo(data *data.Data) usercommon.UserRepo {
 	return &userRepo{
 		data: data,
 	}
+}
+
+func GetAllUserIDs(ctx context.Context, DB *xorm.Engine) ([]string, error) {
+	var userIds []string
+
+	// 使用 xorm 的 Cols 方法指定只查询 id 字段
+	err := DB.Table(new(entity.User)).Cols("id").Find(&userIds)
+	if err != nil {
+		return nil, err
+	}
+
+	return userIds, nil
+}
+
+func (ur *userRepo) GetAllUserIDs(ctx context.Context) ([]string, error) {
+	return GetAllUserIDs(ctx, ur.data.DB)
+}
+
+func (ur *userRepo) GetAllUsers(ctx context.Context) []*entity.User {
+	var users []*entity.User
+
+	// 使用 xorm 的 Find 方法查询所有用户
+	err := ur.data.DB.Find(&users)
+	if err != nil {
+		return nil
+	}
+
+	return users
+}
+
+func (ur *userRepo) GetAdminUsers(ctx context.Context) ([]*entity.User, error) {
+	var users []*entity.User
+
+	// 使用 xorm 的 Find 方法查询管理用户，并传递 ctx
+	session := ur.data.DB.NewSession()
+	defer session.Close()
+
+	err := session.Context(ctx).Where("is_admin = ?", true).Find(&users)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get admin users: %w", err)
+	}
+
+	return users, nil
 }
 
 // AddUser add user
@@ -175,18 +220,23 @@ func (ur *userRepo) UpdateInfo(ctx context.Context, userInfo *entity.User) (err 
 }
 
 // GetByUserID get user info by user id
-func (ur *userRepo) GetByUserID(ctx context.Context, userID string) (userInfo *entity.User, exist bool, err error) {
+func GetByUserID(ctx context.Context, DB *xorm.Engine, userID string) (userInfo *entity.User, exist bool, err error) {
 	userInfo = &entity.User{}
-	exist, err = ur.data.DB.Context(ctx).Where("id = ?", userID).Get(userInfo)
+	exist, err = DB.Context(ctx).Where("id = ?", userID).Get(userInfo)
 	if err != nil {
 		err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 		return
 	}
-	err = tryToDecorateUserInfoFromUserCenter(ctx, ur.data, userInfo)
+	err = tryToDecorateUserInfoFromUserCenter(ctx, DB, userInfo)
 	if err != nil {
 		return nil, false, err
 	}
 	return
+}
+
+// GetByUserID get user info by user id
+func (ur *userRepo) GetByUserID(ctx context.Context, userID string) (userInfo *entity.User, exist bool, err error) {
+	return GetByUserID(ctx, ur.data.DB, userID)
 }
 
 func (ur *userRepo) BatchGetByID(ctx context.Context, ids []string) ([]*entity.User, error) {
@@ -207,7 +257,7 @@ func (ur *userRepo) GetByUsername(ctx context.Context, username string) (userInf
 		err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 		return
 	}
-	err = tryToDecorateUserInfoFromUserCenter(ctx, ur.data, userInfo)
+	err = tryToDecorateUserInfoFromUserCenter(ctx, ur.data.DB, userInfo)
 	if err != nil {
 		return nil, false, err
 	}
@@ -265,7 +315,7 @@ func (ur *userRepo) SearchUserListByName(ctx context.Context, name string, limit
 	return
 }
 
-func tryToDecorateUserInfoFromUserCenter(ctx context.Context, data *data.Data, original *entity.User) (err error) {
+func tryToDecorateUserInfoFromUserCenter(ctx context.Context, DB *xorm.Engine, original *entity.User) (err error) {
 	if original == nil {
 		return nil
 	}
@@ -275,7 +325,7 @@ func tryToDecorateUserInfoFromUserCenter(ctx context.Context, data *data.Data, o
 	}
 
 	userInfo := &entity.UserExternalLogin{}
-	session := data.DB.Context(ctx).Where("user_id = ?", original.ID)
+	session := DB.Context(ctx).Where("user_id = ?", original.ID)
 	session.Where("provider = ?", uc.Info().SlugName)
 	exist, err := session.Get(userInfo)
 	if err != nil {

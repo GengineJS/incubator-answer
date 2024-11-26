@@ -257,8 +257,20 @@ const SchemaForm: ForwardRefRenderFunction<FormRef, FormProps> = (
           title,
           description,
           enum: enumValues = [],
+          type,
           enumNames = [],
+          multiple = false,
+          placeholder = '',
+          displayText,
         } = properties[key];
+        if (type === 'null') {
+          return (
+            <>
+              <h3>{title}</h3>
+              <br />
+            </>
+          );
+        }
         const { 'ui:widget': widget = 'input', 'ui:options': uiOpt } =
           uiSchema?.[key] || {};
         formData ||= {};
@@ -301,8 +313,11 @@ const SchemaForm: ForwardRefRenderFunction<FormRef, FormProps> = (
                 onChange={onChange}
                 enumValues={enumValues}
                 enumNames={enumNames}
+                placeholder={placeholder}
                 formData={formData}
                 readOnly={readOnly}
+                multiple={multiple}
+                displayText={displayText}
               />
             ) : null}
             {widget === 'radio' || widget === 'checkbox' ? (
@@ -441,7 +456,7 @@ export const initFormData = (schema: JSONSchema): Type.FormDataType => {
     let defaultVal: any = '';
     if (Array.isArray(prop.default) && prop.enum && prop.enum.length > 0) {
       // for checkbox default values
-      defaultVal = prop.enum;
+      defaultVal = prop.default;
     } else {
       defaultVal = prop?.default;
     }

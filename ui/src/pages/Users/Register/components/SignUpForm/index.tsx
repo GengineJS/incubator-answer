@@ -146,9 +146,9 @@ const Index: React.FC<Props> = ({ callback }) => {
       handleRegister();
     });
   };
-  const isAssetBun = isAssetBunPageType();
-  const privatesUrl = isAssetBun ? assetBunPrivateUrl : '/privacy';
-  const policyUrl = isAssetBun ? assetBunPolicyUrl : '/tos';
+  // const isAssetBun = isAssetBunPageType();
+  const privatesUrl = assetBunPrivateUrl; // isAssetBun ? assetBunPrivateUrl : '/privacy';
+  const policyUrl = assetBunPolicyUrl; // isAssetBun ? assetBunPolicyUrl : '/tos';
   return (
     <>
       <Form noValidate onSubmit={handleSubmit} autoComplete="off">

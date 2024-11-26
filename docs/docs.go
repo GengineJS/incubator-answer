@@ -8261,7 +8261,7 @@ const docTemplate = `{
                 "all_new_question": {
                     "$ref": "#/definitions/schema.NotificationChannelConfig"
                 },
-                "all_new_question_for_following_tags": {
+                "all_new_subject_for_following_tags": {
                     "$ref": "#/definitions/schema.NotificationChannelConfig"
                 },
                 "inbox": {
@@ -9996,7 +9996,7 @@ const docTemplate = `{
                 "all_new_question": {
                     "$ref": "#/definitions/schema.NotificationChannelConfig"
                 },
-                "all_new_question_for_following_tags": {
+                "all_new_subject_for_following_tags": {
                     "$ref": "#/definitions/schema.NotificationChannelConfig"
                 },
                 "inbox": {

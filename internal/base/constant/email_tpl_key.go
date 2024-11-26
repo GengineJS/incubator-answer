@@ -43,4 +43,18 @@ const (
 
 	EmailTplKeyNewQuestionTitle = "email_tpl.new_question.title"
 	EmailTplKeyNewQuestionBody  = "email_tpl.new_question.body"
+
+	EmailQuestionContentType      = "email_tpl.content_type.question"
+	EmailQuestionScoreContentType = "email_tpl.content_type.question_score"
+	EmailArticleContentType       = "email_tpl.content_type.article"
+	EmailArticleScoreContentType  = "email_tpl.content_type.article_score"
+	EmailBountyContentType        = "email_tpl.content_type.bounty"
+	EmailAssetBunContentType      = "email_tpl.content_type.assetbun"
+	EmailAssetBunScoreContentType = "email_tpl.content_type.assetbun_score"
+	EmailAcceptGetScore           = "email_tpl.accept_get"
+	EmailPayScoreUnlock           = "email_tpl.pay_get"
+	EmailPayScoreAssetUnlock      = "email_tpl.pay_asset_get"
+
+	EmailTplKeyNewContentTitle = "email_tpl.new_content.title"
+	EmailTplKeyNewContentBody  = "email_tpl.new_content.body"
 )

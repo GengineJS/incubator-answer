@@ -61,7 +61,8 @@ import SideNav from './SideNav';
 import PluginRender from './PluginRender';
 import HighlightText from './HighlightText';
 import AILoading from './AILoding';
-import MathJaxArticle from './MathJaxArticle';
+import MathJaxArticle, { config as MathJaxConfig } from './MathJaxArticle';
+import FormatPanel from './FormatPanel';
 
 export {
   Avatar,
@@ -111,5 +112,7 @@ export {
   HighlightText,
   AILoading,
   MathJaxArticle,
+  MathJaxConfig,
+  FormatPanel,
 };
 export type { EditorRef, JSONSchema, UISchema };

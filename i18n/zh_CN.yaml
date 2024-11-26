@@ -1,21 +1,3 @@
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-
-# The following fields are used for back-end
 backend:
   base:
     success:
@@ -453,31 +435,50 @@ backend:
       invited_you_to_answer:
         other: 邀请你回复
   email_tpl:
+    integral: 积分
+    accept_get: (参与该主题并被采纳后即可获得{{.Score}}积分,可提现{{.Money}}¥)
+    pay_get: (该主题需要{{.Score}}积分解锁,兑换需{{.Money}}¥)
+    pay_asset_get: (该资源需要{{.Score}}积分解锁,兑换需{{.Money}}¥)
+    content_type:
+      question: "问题"
+      question_score: "积分问题"
+      article: "文章"
+      article_score: "积分文章"
+      picture: "图片"
+      picture_score: "积分图片"
+      bounty: "项目需求"
+      assetbun: "云盘资源"
+      assetbun_score: "云盘积分资源"
     change_email:
       title:
         other: "[{{.SiteName}}AI 与 资产包子云盘] 确认你的新邮箱地址"
       body:
-        other: "请点击以下链接确认你在 [{{.SiteName}}AI 与 资产包子云盘] 上的新邮箱地址：<br>\n<a href='{{.ChangeEmailUrl}}' target='_blank'>{{.ChangeEmailUrl}}</a><br><br>\n\n如果你没有请求此更改，请忽略此邮件。\n"
+        other: "请点击以下链接确认你在 [{{.SiteName}}<sup>AI</sup> 与 资产包子云盘] 上的新邮箱地址：<br>\n<a href='{{.ChangeEmailUrl}}' target='_blank'>{{.ChangeEmailUrl}}</a><br><br>\n\n如果你没有请求此更改，请忽略此邮件。\n"
     new_answer:
       title:
-        other: "[{{.SiteName}}] {{.DisplayName}} 回复了你的问题"
+        other: "[{{.SiteName}}AI] {{.DisplayName}} 回复了你的问题"
       body:
-        other: "<a href='{{.AnswerUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}：<br>\n<blockquote>{{.AnswerSummary}}</blockquote><br>\n<a href='{{.AnswerUrl}}'>在 {{.SiteName}} 上查看</a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
+        other: "<a href='{{.AnswerUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}：<br>\n<blockquote>{{.AnswerSummary}}</blockquote><br>\n<a href='{{.AnswerUrl}}'>在 {{.SiteName}}<sup>AI</sup> 上查看</a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
     invited_you_to_answer:
       title:
-        other: "[{{.SiteName}}] {{.DisplayName}} 邀请您回复问题"
+        other: "[{{.SiteName}}AI] {{.DisplayName}} 邀请您回复问题"
       body:
-        other: "<a href='{{.InviteUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}：<br>\n<blockquote>我想你可能知道答案。</blockquote><br>\n<a href='{{.InviteUrl}}'>在 {{.SiteName}} 上查看</a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
+        other: "<a href='{{.InviteUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}：<br>\n<blockquote>我想你可能知道答案。</blockquote><br>\n<a href='{{.InviteUrl}}'>在 {{.SiteName}}<sup>AI</sup> 上查看</a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
     new_comment:
       title:
-        other: "[{{.SiteName}}] {{.DisplayName}} 评论了你的帖子"
+        other: "[{{.SiteName}}AI] {{.DisplayName}} 评论了你的帖子"
       body:
-        other: "<a href='{{.CommentUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}：<br>\n<blockquote>{{.CommentSummary}}</blockquote><br>\n<a href='{{.CommentUrl}}'>在 {{.SiteName}} 上查看</a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
+        other: "<a href='{{.CommentUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}：<br>\n<blockquote>{{.CommentSummary}}</blockquote><br>\n<a href='{{.CommentUrl}}'>在 {{.SiteName}}<sup>AI</sup> 上查看</a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
     new_question:
       title:
-        other: "[{{.SiteName}}] 新问题: {{.QuestionTitle}}"
+        other: "[{{.SiteName}}AI] 新问题: {{.QuestionTitle}}"
       body:
         other: "<a href='{{.QuestionUrl}}'>{{.QuestionTitle}}</a><br>\n<small>{{.Tags}}</small><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
+    new_content:
+      title:
+        other: "[{{.SiteName}}AI] 发布了新的{{.ContentType}}: {{.QuestionTitle}}"
+      body:
+        other: "用户 {{.DisplayName}} 发布了新的{{.ContentType}}: <a href='{{.QuestionUrl}}'>{{.QuestionTitle}}</a><br><small> 标签类别: ({{.Tags}})</small><br><small><b>{{.Tip}}</b></small><br><p style='font-size:small;-webkit-text-size-adjust:none;color:#666;'>—<br>该邮件为系统自动发送, 请勿直接回复<br>了解<a href='https://ai.assetbun.com' rel='noopener' target='_blank'>点识成金<sup>AI</sup></a>与<a href='https://cloud.assetbun.com' rel='noopener' target='_blank'>资产包子云盘</a>或 <a href='{{.UnsubscribeUrl}}' rel='noopener' target='_blank'>取消订阅</a></p>"
     pass_reset:
       title:
         other: "[{{.SiteName}}AI 与 资产包子云盘] 重置密码"
@@ -518,9 +519,13 @@ backend:
 # The following fields are used for interface presentation(Front-end)
 ui:
   how_to_format:
-    title: 如何排版
+    title: 基础排版
     desc: >-
       <ul class="mb-0"><li><p class="mb-2">添加链接</p><pre class="mb-2"><code>&lt;https://url.com&gt;<br/><br/>[标题](https://url.com)</code></pre></li><li><p class="mb-2">段落之间使用空行分隔</p></li><li><p class="mb-2"><em>_斜体_</em> 或者 **<strong>粗体</strong>**</p></li><li><p class="mb-2">使用 4 个空格缩进代码</p></li><li><p class="mb-2">在行首添加 <code>&gt;</code> 表示引用</p></li><li><p class="mb-2">反引号进行转义 <code>`像 _这样_`</code></p></li><li><p class="mb-2">使用 <code>```</code> 创建代码块</p><pre class="mb-0"><code>```<br/>这是代码块<br/>```</code></pre></li></ul>
+  formula_to_format:
+    title: 数学公式
+    desc: >-
+      <ul class="mb-0"> <li> <p class="mb-2">使用<code>$</code>将公式嵌入行内$E = mc^2$</p> <pre class="mb-0"><code>$E = mc^2$</code></pre> </li> <li> <p class="mb-2">使用<code>$$</code>将公式独立成行$$E = mc^2$$</p> <pre class="mb-0"><code>$$E = mc^2$$</code></pre> </li> <li> <p class="mb-2">上标使用<code>^</code>下标使用<code>_</code>$x_i^2$</p> <pre class="mb-0"><code>$x_i^2$</code></pre> </li> <li> <p class="mb-2">使用<code>\frac{分子}{分母}</code>表示分数$\frac{1}{2}$</p> <pre class="mb-0"><code>$\frac{1}{2}$</code></pre> </li> <li> <p class="mb-2">使用<code>\sqrt[n]{表达式}</code>对表达式开n次方$\sqrt[3]{x}$</p> <pre class="mb-0"><code>$\sqrt[3]{x}$</code></pre> </li> <li> <p class="mb-2">使用<code>\int_{下限}^{上限} f(x)dx</code>表示积分$\int_0^\infty e^{-x}dx$</p> <pre class="mb-0"><code>$\int_0^\infty e^{-x}dx$</code></pre> </li> <li> <p class="mb-2">使用<code>\sum_{i=1}^{n} a_i</code>表示求和$\sum_{i=1}^{n} a_i$</p> <pre class="mb-0"><code>$\sum_{i=1}^{n} a_i$</code></pre> </li> <li> <p class="mb-2">使用<code>\begin{matrix} ... \end{matrix}</code>求矩阵$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$</p> <pre class="mb-0">// 元素之间用&分隔,每行结束用\\<br/><code>$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$</code></pre> </li> <li> <p class="mb-2">使用<code>\times</code>($\times$)<code>\div</code>($\div$)<code>\pm</code>($\pm$)显示运算字符$a \times b \div c \pm d$</p> <pre class="mb-0">$a \times b \div c \pm d$</code></pre> </li></ul>
   pagination:
     prev: 上一页
     next: 下一页
@@ -1004,6 +1009,7 @@ ui:
     nav:
       profile: 我的资料
       notification: 通知
+      email_notification: 邮件通知
       account: 账号
       interface: 界面
     profile:
@@ -1037,17 +1043,69 @@ ui:
         label: 位置
         placeholder: "城市，国家"
     notification:
-      heading: 邮件通知
+      title: 通知
+      heading: 平台通知
+      email_heading: 邮件通知
       turn_on: 开启
       inbox:
         label: 收件箱通知
-        description: 你的提问有新的回复，评论，邀请回复和其他。
+        description: 你的主题有新的回复，评论，邀请回复和其他。
+      all_new_subject:
+        label: 所有新发布的主题
+        description: 获取所有新发布的主题通知。每周最多有50个主题。
+      all_email_new_subject:
+        label: 选择需要邮件通知的主题类型
+        description: 选取的主题类型将通过邮件通知您。
+        placeholder: 请选择主题类型
+        displayText: 个主题类型
       all_new_question:
-        label: 所有新问题
-        description: 获取所有新问题的通知。每周最多有50个问题。
-      all_new_question_for_following_tags:
-        label: 所有关注标签的新问题
-        description: 获取关注的标签下新问题通知。
+        title: 非积分问题
+        label: 所有新发布的非积分问题
+        description: 获取所有新发布的非积分问题通知。每周最多有50个非积分问题。
+      all_new_score_question:
+        title: 积分问题
+        label: 所有新发布的积分问题
+        description: 获取所有新发布的积分问题通知。每周最多有50个积分问题。
+      all_new_article:
+        title: 非积分文章
+        label: 所有新发布的非积分文章
+        description: 获取所有新发布的非积分文章通知。每周最多有50个非积分文章。
+      all_new_score_article:
+        title: 积分文章
+        label: 所有新发布的积分文章
+        description: 获取所有新发布的积分文章通知。每周最多有50个积分文章。
+      all_new_bounty:
+        title: 项目需求
+        label: 所有新发布的项目需求
+        description: 获取所有新发布的项目需求通知。每周最多有50个项目需求。
+      all_new_assetbun:
+        title: 非积分云盘资源
+        label: 所有新发布的非积分云盘资源
+        description: 获取所有新发布的非积分云盘资源通知。每周最多有50个非积分云盘资源。
+      all_new_score_assetbun:
+        title: 积分云盘资源
+        label: 所有新发布的积分云盘资源
+        description: 获取所有新发布的积分云盘资源通知。每周最多有50个积分云盘资源。
+      all_new_pic:
+        title: 非积分图片
+        label: 所有新发布的非积分图片
+        description: 获取所有新发布的非积分图片通知。每周最多有50个非积分图片。
+      all_new_score_pic:
+        title: 积分图片
+        label: 所有新发布的积分图片
+        description: 获取所有新发布的积分图片通知。每周最多有50个积分图片。
+      all_new_subject_for_following_tags:
+        title: 关注标签的新主题
+        label: 所有关注标签的新主题
+        description: 获取关注的标签下新主题通知。
+      all_new_none_score_subject_for_following_tags:
+        title: 关注标签的非积分新主题
+        label: 所有关注标签的非积分新主题
+        description: 获取关注的标签下非积分新主题通知。
+      all_new_score_subject_for_following_tags:
+        title: 关注标签的积分新主题
+        label: 所有关注标签的积分新主题
+        description: 获取关注的标签下积分新主题通知。
     account:
       heading: 账号
       change_email_btn: 更改邮箱

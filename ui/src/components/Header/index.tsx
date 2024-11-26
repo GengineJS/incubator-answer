@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { FC, memo, useState, useEffect } from 'react';
+import { FC, memo, useState, useEffect, useRef } from 'react';
 import {
   Navbar,
   Container,
@@ -57,6 +57,8 @@ import {
 } from '@/common/constants';
 import {
   closeNavbarIfOpen,
+  getAssetBunLoginHost,
+  getTargetRootAssetBunHost,
   iframeManager,
   isAssetBunPageType,
 } from '@/common/functions';
@@ -109,6 +111,55 @@ const Header: FC = () => {
       : `/search?q=${encodeURIComponent(searchStr)}`;
     navigate(searchUrl);
   };
+
+  // 如果登录了，并且它是资产包子云盘的page type就要跳转
+  const hasOpened = useRef(false);
+  useEffect(() => {
+    if (
+      isAssetBun &&
+      user.e_mail &&
+      user.mail_status === 1 &&
+      !hasOpened.current
+    ) {
+      hasOpened.current = true;
+      const loginState = localStorage.getItem('loginState');
+      if (loginState && loginState === 'true') {
+        localStorage.removeItem('loginState');
+        return;
+      }
+      // 获取当前 URL 中的 redirect 参数
+      const urlParams = new URLSearchParams(window.location.search);
+      // 资产包子云盘的重定向
+      const redirect = urlParams.get('ab_redirect');
+      iframeManager.onLoaded(() => {
+        iframeManager.postMsg(
+          {
+            email: user.e_mail!,
+            password: '',
+            type: IframeMsgType.IS_LOGIN,
+          },
+          (code: number) => {
+            if (code === 10) {
+              logout().then(() => {
+                clearUserStore();
+                window.open(getAssetBunLoginHost(), '_self');
+              });
+              return;
+            }
+
+            // 构建新的 URL
+            let targetUrl = getTargetRootAssetBunHost();
+            if (redirect && redirect !== '/login') {
+              const decodedRedirect = decodeURIComponent(redirect);
+              targetUrl = `${targetUrl}${decodedRedirect}`;
+            }
+
+            window.open(targetUrl, '_self');
+          },
+        );
+      });
+    }
+  }, [isAssetBun, user.e_mail, user.mail_status]);
 
   const handleLogout = async (evt) => {
     evt.preventDefault();

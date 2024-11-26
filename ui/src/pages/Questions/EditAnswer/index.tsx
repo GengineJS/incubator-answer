@@ -18,7 +18,7 @@
  */
 
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
-import { Row, Col, Form, Button, Card } from 'react-bootstrap';
+import { Row, Col, Form, Button } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -29,7 +29,7 @@ import { handleFormError, scrollToDocTop } from '@/utils';
 import { usePageTags, usePromptWithUnload } from '@/hooks';
 import { useCaptchaPlugin, useRenderHtmlPlugin } from '@/utils/pluginKit';
 import { pathFactory } from '@/router/pathFactory';
-import { Editor, EditorRef, Icon, htmlRender } from '@/components';
+import { Editor, EditorRef, Icon, htmlRender, FormatPanel } from '@/components';
 import type * as Type from '@/common/interface';
 import {
   useQueryAnswerInfo,
@@ -324,19 +324,7 @@ const Index = () => {
             </div>
           </Form>
         </Col>
-        <Col className="page-right-side mt-4 mt-xl-0">
-          <Card>
-            <Card.Header>
-              {t('title', { keyPrefix: 'how_to_format' })}
-            </Card.Header>
-            <Card.Body
-              className="fmt small"
-              dangerouslySetInnerHTML={{
-                __html: t('desc', { keyPrefix: 'how_to_format' }),
-              }}
-            />
-          </Card>
-        </Col>
+        <FormatPanel />
       </Row>
     </div>
   );

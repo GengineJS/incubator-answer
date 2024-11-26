@@ -83,6 +83,10 @@ func (qr *questionRepo) AddQuestion(ctx context.Context, question *entity.Questi
 	return
 }
 
+func (qr *questionRepo) GetData() *data.Data {
+	return qr.data
+}
+
 // RemoveQuestion delete question
 func (qr *questionRepo) RemoveQuestion(ctx context.Context, id string) (err error) {
 	id = uid.DeShortID(id)

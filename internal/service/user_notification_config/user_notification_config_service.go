@@ -75,13 +75,60 @@ func (us *UserNotificationConfigService) UpdateUserNotificationConfig(
 		return err
 	}
 	err = us.userNotificationConfigRepo.Save(ctx,
-		us.convertToEntity(ctx, req.UserID, constant.AllNewQuestionSource, req.NotificationConfig.AllNewQuestion))
+		us.convertToEntity(ctx, req.UserID, constant.AllNewSubjectSource, req.NotificationConfig.AllNewQuestion))
 	if err != nil {
 		return err
 	}
 	err = us.userNotificationConfigRepo.Save(ctx,
-		us.convertToEntity(ctx, req.UserID, constant.AllNewQuestionForFollowingTagsSource,
-			req.NotificationConfig.AllNewQuestionForFollowingTags))
+		us.convertToEntity(ctx, req.UserID, constant.AllEmailNewQuestionSource, req.NotificationConfig.AllEmailNewQuestion))
+	if err != nil {
+		return err
+	}
+	err = us.userNotificationConfigRepo.Save(ctx,
+		us.convertToEntity(ctx, req.UserID, constant.AllEmailNewScoreQuestionSource, req.NotificationConfig.AllEmailNewScoreQuestion))
+	if err != nil {
+		return err
+	}
+	err = us.userNotificationConfigRepo.Save(ctx,
+		us.convertToEntity(ctx, req.UserID, constant.AllEmailNewArticleSource, req.NotificationConfig.AllEmailNewArticle))
+	if err != nil {
+		return err
+	}
+	err = us.userNotificationConfigRepo.Save(ctx,
+		us.convertToEntity(ctx, req.UserID, constant.AllEmailNewScoreArticleSource, req.NotificationConfig.AllEmailNewScoreArticle))
+	if err != nil {
+		return err
+	}
+	err = us.userNotificationConfigRepo.Save(ctx,
+		us.convertToEntity(ctx, req.UserID, constant.AllEmailNewBountySource, req.NotificationConfig.AllEmailNewBounty))
+	if err != nil {
+		return err
+	}
+	err = us.userNotificationConfigRepo.Save(ctx,
+		us.convertToEntity(ctx, req.UserID, constant.AllEmailNewAssetbunSource, req.NotificationConfig.AllEmailNewAssetbun))
+	if err != nil {
+		return err
+	}
+	err = us.userNotificationConfigRepo.Save(ctx,
+		us.convertToEntity(ctx, req.UserID, constant.AllEmailNewScoreAssetbunSource, req.NotificationConfig.AllEmailNewScoreAssetbun))
+	if err != nil {
+		return err
+	}
+	err = us.userNotificationConfigRepo.Save(ctx,
+		us.convertToEntity(ctx, req.UserID, constant.AllNewSubjectForFollowingTagsSource,
+			req.NotificationConfig.AllNewSubjectForFollowingTags))
+	if err != nil {
+		return err
+	}
+	err = us.userNotificationConfigRepo.Save(ctx,
+		us.convertToEntity(ctx, req.UserID, constant.AllEmailNewSubjectForFollowingTagsSource,
+			req.NotificationConfig.AllEmailNewSubjectForFollowingTags))
+	if err != nil {
+		return err
+	}
+	err = us.userNotificationConfigRepo.Save(ctx,
+		us.convertToEntity(ctx, req.UserID, constant.AllEmailNewSubjectScoreForFollowingTagsSource,
+			req.NotificationConfig.AllEmailNewSubjectScoreForFollowingTags))
 	if err != nil {
 		return err
 	}
@@ -91,8 +138,14 @@ func (us *UserNotificationConfigService) UpdateUserNotificationConfig(
 // SetDefaultUserNotificationConfig set default user notification config for user register
 func (us *UserNotificationConfigService) SetDefaultUserNotificationConfig(ctx context.Context, userIDs []string) (
 	err error) {
-	return us.userNotificationConfigRepo.Add(ctx, userIDs,
-		string(constant.InboxSource), `[{"key":"email","enable":true}]`)
+	channels := `[{"key":"email","enable":true}]`
+	err = us.userNotificationConfigRepo.Add(ctx, userIDs,
+		string(constant.InboxSource), channels)
+	err = us.userNotificationConfigRepo.Add(ctx, userIDs,
+		string(constant.AllEmailNewScoreQuestionSource), channels)
+	err = us.userNotificationConfigRepo.Add(ctx, userIDs,
+		string(constant.AllEmailNewBountySource), channels)
+	return err
 }
 
 func (us *UserNotificationConfigService) convertToEntity(ctx context.Context, userID string,

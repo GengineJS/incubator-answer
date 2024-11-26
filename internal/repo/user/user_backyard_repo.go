@@ -117,7 +117,7 @@ func (ur *userAdminRepo) GetUserInfo(ctx context.Context, userID string) (user *
 	if !exist {
 		return
 	}
-	err = tryToDecorateUserInfoFromUserCenter(ctx, ur.data, user)
+	err = tryToDecorateUserInfoFromUserCenter(ctx, ur.data.DB, user)
 	if err != nil {
 		return nil, false, err
 	}
@@ -136,7 +136,7 @@ func (ur *userAdminRepo) GetUserInfoByEmail(ctx context.Context, email string) (
 	if !exist {
 		return
 	}
-	err = tryToDecorateUserInfoFromUserCenter(ctx, ur.data, user)
+	err = tryToDecorateUserInfoFromUserCenter(ctx, ur.data.DB, user)
 	if err != nil {
 		return nil, false, err
 	}

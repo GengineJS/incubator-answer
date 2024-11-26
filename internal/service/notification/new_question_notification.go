@@ -21,24 +21,29 @@ package notification
 
 import (
 	"context"
-	"strings"
-	"time"
-
 	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/base/translator"
+	"github.com/apache/incubator-answer/internal/entity"
+	"github.com/apache/incubator-answer/internal/repo/user"
 	"github.com/apache/incubator-answer/internal/schema"
+	"github.com/apache/incubator-answer/internal/service/export"
 	"github.com/apache/incubator-answer/pkg/display"
 	"github.com/apache/incubator-answer/pkg/token"
 	"github.com/apache/incubator-answer/plugin"
 	"github.com/jinzhu/copier"
 	"github.com/segmentfault/pacman/i18n"
 	"github.com/segmentfault/pacman/log"
+	"strings"
+	"time"
+	"xorm.io/xorm"
 )
 
 type NewQuestionSubscriber struct {
 	UserID             string                      `json:"user_id"`
 	Channels           schema.NotificationChannels `json:"channels"`
 	NotificationSource constant.NotificationSource `json:"notification_source"`
+	ContentType        entity.QuestionType
+	ScoreAction        entity.ScoreAction
 }
 
 func (ns *ExternalNotificationService) handleNewQuestionNotification(ctx context.Context,
@@ -49,7 +54,7 @@ func (ns *ExternalNotificationService) handleNewQuestionNotification(ctx context
 		return err
 	}
 	log.Debugf("get subscribers %d for question %s", len(subscribers), msg.NewQuestionTemplateRawData.QuestionID)
-
+	rawData := msg.NewQuestionTemplateRawData
 	for _, subscriber := range subscribers {
 		for _, channel := range subscriber.Channels {
 			if !channel.Enable {
@@ -57,13 +62,20 @@ func (ns *ExternalNotificationService) handleNewQuestionNotification(ctx context
 			}
 			switch channel.Key {
 			case constant.EmailChannel:
-				ns.sendNewQuestionNotificationEmail(ctx, subscriber.UserID, &schema.NewQuestionTemplateRawData{
-					QuestionTitle:   msg.NewQuestionTemplateRawData.QuestionTitle,
-					QuestionID:      msg.NewQuestionTemplateRawData.QuestionID,
-					UnsubscribeCode: token.GenerateToken(),
-					Tags:            msg.NewQuestionTemplateRawData.Tags,
-					TagIDs:          msg.NewQuestionTemplateRawData.TagIDs,
-				})
+				if rawData.ContentType&subscriber.ContentType == rawData.ContentType && ((rawData.Score > 0 && subscriber.ScoreAction&entity.ScoreAction_IS == entity.ScoreAction_IS) ||
+					(rawData.Score == 0 && subscriber.ScoreAction&entity.ScoreAction_NOT == entity.ScoreAction_NOT)) {
+					ns.sendNewQuestionNotificationEmail(ctx, subscriber.UserID, false, &schema.NewQuestionTemplateRawData{
+						QuestionTitle:   rawData.QuestionTitle,
+						QuestionID:      rawData.QuestionID,
+						Score:           rawData.Score,
+						ContentType:     rawData.ContentType,
+						DisplayName:     rawData.DisplayName,
+						UnsubscribeCode: token.GenerateToken(),
+						Tags:            rawData.Tags,
+						TagSlugs:        rawData.TagSlugs,
+						TagIDs:          rawData.TagIDs,
+					})
+				}
 			}
 		}
 	}
@@ -72,9 +84,104 @@ func (ns *ExternalNotificationService) handleNewQuestionNotification(ctx context
 	return nil
 }
 
+func (ns *ExternalNotificationService) addSubscribersFromSource(ctx context.Context, sourceType constant.NotificationSource, subscribersMapping map[string][]*NewQuestionSubscriber) error {
+	notificationConfigs, err := ns.userNotificationConfigRepo.GetBySource(ctx, sourceType)
+	if err != nil {
+		log.Errorf("failed to get notification configs by source: %v", err)
+		return err
+	}
+	for _, notificationConfig := range notificationConfigs {
+		if ns.checkSendNewQuestionNotificationEmailLimit(ctx, notificationConfig.UserID) {
+			continue
+		}
+		var contentType entity.QuestionType
+		var scoreAction entity.ScoreAction
+		switch sourceType {
+		case constant.AllNewSubjectSource:
+			contentType = entity.TypeQuestion | entity.TypeAiPic | entity.TypeBounty | entity.TypeArticle | entity.TypeAssetBun
+			scoreAction = entity.ScoreAction_ALL
+			break
+		case constant.AllEmailNewQuestionSource:
+			contentType = entity.TypeQuestion
+			scoreAction = entity.ScoreAction_NOT
+			break
+		case constant.AllEmailNewScoreQuestionSource:
+			contentType = entity.TypeQuestion
+			scoreAction = entity.ScoreAction_IS
+			break
+		case constant.AllEmailNewArticleSource:
+			contentType = entity.TypeArticle
+			scoreAction = entity.ScoreAction_NOT
+			break
+		case constant.AllEmailNewScoreArticleSource:
+			contentType = entity.TypeArticle
+			scoreAction = entity.ScoreAction_IS
+			break
+		case constant.AllEmailNewBountySource:
+			contentType = entity.TypeBounty
+			scoreAction = entity.ScoreAction_ALL
+			break
+		case constant.AllEmailNewAssetbunSource:
+			contentType = entity.TypeAssetBun
+			scoreAction = entity.ScoreAction_NOT
+			break
+		case constant.AllEmailNewScoreAssetbunSource:
+			contentType = entity.TypeAssetBun
+			scoreAction = entity.ScoreAction_IS
+			break
+		}
+		subscriber := &NewQuestionSubscriber{
+			UserID:             notificationConfig.UserID,
+			Channels:           schema.NewNotificationChannelsFormJson(notificationConfig.Channels),
+			NotificationSource: sourceType,
+			ContentType:        contentType,
+			ScoreAction:        scoreAction,
+		}
+		subscribersMapping[notificationConfig.UserID] = append(subscribersMapping[notificationConfig.UserID], subscriber)
+	}
+	return nil
+}
+
+// 获取用户订阅者信息，并根据通知源分类
+func (ns *ExternalNotificationService) addUserTagsSubscribers(ctx context.Context, followerIDs []string, source constant.NotificationSource, subscribersMapping map[string][]*NewQuestionSubscriber) error {
+	userNotificationConfigs, err := ns.userNotificationConfigRepo.GetByUsersAndSource(ctx, followerIDs, source)
+	if err != nil {
+		log.Errorf("failed to get user notification configs for source %s: %v", source, err)
+		return err
+	}
+	var contentType entity.QuestionType
+	var scoreAction entity.ScoreAction
+	switch source {
+	case constant.AllNewSubjectForFollowingTagsSource:
+		contentType = entity.TypeQuestion | entity.TypeAiPic | entity.TypeBounty | entity.TypeArticle | entity.TypeAssetBun
+		scoreAction = entity.ScoreAction_ALL
+		break
+	case constant.AllEmailNewSubjectForFollowingTagsSource:
+		contentType = entity.TypeQuestion | entity.TypeAiPic | entity.TypeBounty | entity.TypeArticle | entity.TypeAssetBun
+		scoreAction = entity.ScoreAction_NOT
+		break
+	case constant.AllEmailNewSubjectScoreForFollowingTagsSource:
+		contentType = entity.TypeQuestion | entity.TypeAiPic | entity.TypeBounty | entity.TypeArticle | entity.TypeAssetBun
+		scoreAction = entity.ScoreAction_IS
+		break
+	}
+	for _, userNotificationConfig := range userNotificationConfigs {
+		subscriber := &NewQuestionSubscriber{
+			UserID:             userNotificationConfig.UserID,
+			Channels:           schema.NewNotificationChannelsFormJson(userNotificationConfig.Channels),
+			NotificationSource: source,
+			ContentType:        contentType,
+			ScoreAction:        scoreAction,
+		}
+		subscribersMapping[userNotificationConfig.UserID] = append(subscribersMapping[userNotificationConfig.UserID], subscriber)
+	}
+
+	return nil
+}
+
 func (ns *ExternalNotificationService) getNewQuestionSubscribers(ctx context.Context, msg *schema.ExternalNotificationMsg) (
 	subscribers []*NewQuestionSubscriber, err error) {
-	subscribersMapping := make(map[string]*NewQuestionSubscriber)
+	subscribersMapping := make(map[string][]*NewQuestionSubscriber)
 
 	// 1. get all this new question's tags followers
 	tagsFollowerIDs := make([]string, 0)
@@ -82,7 +189,7 @@ func (ns *ExternalNotificationService) getNewQuestionSubscribers(ctx context.Con
 	for _, tagID := range msg.NewQuestionTemplateRawData.TagIDs {
 		userIDs, err := ns.followRepo.GetFollowUserIDs(ctx, tagID)
 		if err != nil {
-			log.Error(err)
+			log.Errorf("failed to get followers for tag %s: %v", tagID, err)
 			continue
 		}
 		for _, userID := range userIDs {
@@ -93,46 +200,48 @@ func (ns *ExternalNotificationService) getNewQuestionSubscribers(ctx context.Con
 			tagsFollowerIDs = append(tagsFollowerIDs, userID)
 		}
 	}
-	userNotificationConfigs, err := ns.userNotificationConfigRepo.GetByUsersAndSource(
-		ctx, tagsFollowerIDs, constant.AllNewQuestionForFollowingTagsSource)
-	if err != nil {
-		return nil, err
+
+	sources := []struct {
+		sourceType constant.NotificationSource
+	}{
+		{constant.AllNewSubjectForFollowingTagsSource},
+		{constant.AllEmailNewSubjectForFollowingTagsSource},
+		{constant.AllEmailNewSubjectScoreForFollowingTagsSource},
 	}
-	for _, userNotificationConfig := range userNotificationConfigs {
-		if _, ok := subscribersMapping[userNotificationConfig.UserID]; ok {
-			continue
-		}
-		subscribersMapping[userNotificationConfig.UserID] = &NewQuestionSubscriber{
-			UserID:             userNotificationConfig.UserID,
-			Channels:           schema.NewNotificationChannelsFormJson(userNotificationConfig.Channels),
-			NotificationSource: constant.AllNewQuestionForFollowingTagsSource,
+	for _, source := range sources {
+		err = ns.addUserTagsSubscribers(ctx, tagsFollowerIDs, source.sourceType, subscribersMapping)
+		if err != nil {
+			return nil, err
 		}
 	}
-	log.Debugf("get %d subscribers from tags", len(subscribersMapping))
 
 	// 2. get all new question's followers
-	notificationConfigs, err := ns.userNotificationConfigRepo.GetBySource(ctx, constant.AllNewQuestionSource)
-	if err != nil {
-		return nil, err
+	sources = []struct {
+		sourceType constant.NotificationSource
+	}{
+		{constant.AllNewSubjectSource},
+		{constant.AllEmailNewQuestionSource},
+		{constant.AllEmailNewScoreQuestionSource},
+		{constant.AllEmailNewArticleSource},
+		{constant.AllEmailNewScoreArticleSource},
+		{constant.AllEmailNewBountySource},
+		{constant.AllEmailNewAssetbunSource},
+		{constant.AllEmailNewScoreAssetbunSource},
+		// {constant.AllEmailNewSubjectForFollowingTagsSource},
+		// {constant.AllEmailNewSubjectScoreForFollowingTagsSource},
 	}
-	for _, notificationConfig := range notificationConfigs {
-		if _, ok := subscribersMapping[notificationConfig.UserID]; ok {
-			continue
-		}
-		if ns.checkSendNewQuestionNotificationEmailLimit(ctx, notificationConfig.UserID) {
-			continue
-		}
-		subscribersMapping[notificationConfig.UserID] = &NewQuestionSubscriber{
-			UserID:             notificationConfig.UserID,
-			Channels:           schema.NewNotificationChannelsFormJson(notificationConfig.Channels),
-			NotificationSource: constant.AllNewQuestionSource,
+
+	for _, source := range sources {
+		err = ns.addSubscribersFromSource(ctx, source.sourceType, subscribersMapping)
+		if err != nil {
+			return nil, err
 		}
 	}
 
 	// 3. remove question owner
 	delete(subscribersMapping, msg.NewQuestionTemplateRawData.QuestionAuthorUserID)
-	for _, subscriber := range subscribersMapping {
-		subscribers = append(subscribers, subscriber)
+	for _, subscriberList := range subscribersMapping {
+		subscribers = append(subscribers, subscriberList...)
 	}
 	log.Debugf("get %d subscribers from all new question config", len(subscribers))
 	return subscribers, nil
@@ -160,9 +269,9 @@ func (ns *ExternalNotificationService) checkSendNewQuestionNotificationEmailLimi
 	return false
 }
 
-func (ns *ExternalNotificationService) sendNewQuestionNotificationEmail(ctx context.Context,
-	userID string, rawData *schema.NewQuestionTemplateRawData) {
-	userInfo, exist, err := ns.userRepo.GetByUserID(ctx, userID)
+func SendNewQuestionNotificationEmail(ctx context.Context, DB *xorm.Engine, emailService *export.EmailService,
+	userID string, isAudit bool, rawData *schema.NewQuestionTemplateRawData) {
+	userInfo, exist, err := user.GetByUserID(ctx, DB, userID)
 	if err != nil {
 		log.Error(err)
 		return
@@ -175,7 +284,7 @@ func (ns *ExternalNotificationService) sendNewQuestionNotificationEmail(ctx cont
 	if len(userInfo.Language) > 0 {
 		ctx = context.WithValue(ctx, constant.AcceptLanguageFlag, i18n.Language(userInfo.Language))
 	}
-	title, body, err := ns.emailService.NewQuestionTemplate(ctx, rawData)
+	title, body, err := emailService.NewQuestionTemplate(ctx, rawData)
 	if err != nil {
 		log.Error(err)
 		return
@@ -186,12 +295,29 @@ func (ns *ExternalNotificationService) sendNewQuestionNotificationEmail(ctx cont
 		Email:      userInfo.EMail,
 		UserID:     userID,
 		NotificationSources: []constant.NotificationSource{
-			constant.AllNewQuestionSource,
-			constant.AllNewQuestionForFollowingTagsSource,
+			constant.AllNewSubjectSource,
+			constant.AllNewSubjectForFollowingTagsSource,
+			constant.AllEmailNewQuestionSource,
+			constant.AllEmailNewScoreQuestionSource,
+			constant.AllEmailNewArticleSource,
+			constant.AllEmailNewScoreArticleSource,
+			constant.AllEmailNewBountySource,
+			constant.AllEmailNewAssetbunSource,
+			constant.AllEmailNewScoreAssetbunSource,
+			constant.AllEmailNewSubjectForFollowingTagsSource,
+			constant.AllEmailNewSubjectScoreForFollowingTagsSource,
 		},
 	}
-	ns.emailService.SendAndSaveCodeWithTime(
+	if isAudit {
+		title += "[UNAUDITED]"
+	}
+	emailService.SendAndSaveCodeWithTime(
 		ctx, userInfo.EMail, title, body, rawData.UnsubscribeCode, codeContent.ToJSONString(), 1*24*time.Hour)
+}
+
+func (ns *ExternalNotificationService) sendNewQuestionNotificationEmail(ctx context.Context,
+	userID string, isAudit bool, rawData *schema.NewQuestionTemplateRawData) {
+	SendNewQuestionNotificationEmail(ctx, ns.data.DB, ns.emailService, userID, isAudit, rawData)
 }
 
 func (ns *ExternalNotificationService) syncNewQuestionNotificationToPlugin(ctx context.Context,

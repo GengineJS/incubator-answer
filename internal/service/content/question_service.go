@@ -22,10 +22,11 @@ package content
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/apache/incubator-answer/internal/service/assetbun"
 	"math"
 	"strings"
 	"time"
+
+	"github.com/apache/incubator-answer/internal/service/assetbun"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/base/handler"
@@ -430,13 +431,63 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 		RevisionID:       revisionID,
 	})
 
-	if question.Status == entity.QuestionStatusAvailable {
-		qs.externalNotificationQueueService.Send(ctx,
-			schema.CreateNewQuestionNotificationMsg(question.ID, question.Title, question.UserID, tags))
-	}
+	// 发送邮件
+	qs.SendQuestionNotifyEmail(ctx, &schema.QuestionEmailSend{
+		ID:   question.ID,
+		Tags: req.Tags,
+	})
 
 	questionInfo, err = qs.GetQuestion(ctx, question.ID, question.UserID, req.QuestionPermission)
 	return
+}
+
+// SendQuestionNotifyEmail 发送审核或通知邮件
+func (qs *QuestionService) SendQuestionNotifyEmail(ctx context.Context, req *schema.QuestionEmailSend) error {
+	question, has, err := qs.questionRepo.GetQuestion(ctx, req.ID)
+	if err != nil {
+		return err
+	}
+	if !has {
+		return nil
+	}
+	tagNameList := make([]string, 0)
+	for _, tag := range req.Tags {
+		tag.SlugName = strings.ReplaceAll(tag.SlugName, " ", "-")
+		tagNameList = append(tagNameList, tag.SlugName)
+	}
+	tags, _ := qs.tagCommon.GetTagListByNames(ctx, tagNameList)
+	user, _, _ := qs.userRepo.GetByUserID(ctx, question.UserID)
+	if question.Status == entity.QuestionStatusAvailable {
+		question.Show = entity.QuestionShow
+		qs.questionRepo.UpdateQuestion(ctx, question, []string{"show"})
+		qs.externalNotificationQueueService.Send(ctx,
+			schema.CreateNewQuestionNotificationMsg(question.ID, question.Title, question.UserID, question.Score, entity.QuestionType(question.ContentType), user.DisplayName, tags))
+	} else {
+		// 发给管理员审核
+		go func() {
+			adminUsers, err := qs.userRepo.GetAdminUsers(ctx)
+			if err != nil {
+				log.Error("Failed to get admin users: %v", err)
+			}
+			rawData := &schema.NewQuestionTemplateRawData{
+				QuestionTitle:   question.Title,
+				QuestionID:      question.ID,
+				Score:           question.Score,
+				ContentType:     entity.QuestionType(question.ContentType),
+				DisplayName:     user.DisplayName,
+				UnsubscribeCode: token.GenerateToken(),
+			}
+			for _, tag := range tags {
+				rawData.Tags = append(rawData.Tags, tag.DisplayName) // tag.SlugName
+				rawData.TagSlugs = append(rawData.TagSlugs, tag.SlugName)
+				rawData.TagIDs = append(rawData.TagIDs, tag.ID)
+			}
+			for _, admin_user := range adminUsers {
+				notification.SendNewQuestionNotificationEmail(ctx, qs.questionRepo.GetData().DB, qs.emailService, admin_user.ID, true, rawData)
+			}
+		}()
+	}
+	return nil
 }
 
 // OperationQuestion
@@ -1500,6 +1551,7 @@ func (qs *QuestionService) AdminQuestionPage(
 		item.CreateTime = info.CreatedAt.Unix()
 		item.UpdateTime = info.PostUpdateTime.Unix()
 		item.EditTime = info.UpdatedAt.Unix()
+		item.ContentType = info.ContentType
 		list = append(list, item)
 		userIds = append(userIds, info.UserID)
 	}

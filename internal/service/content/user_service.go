@@ -99,6 +99,14 @@ func NewUserService(userRepo usercommon.UserRepo,
 	}
 }
 
+func (us *UserService) GetAllUserIDs(ctx context.Context) ([]string, error) {
+	return us.userRepo.GetAllUserIDs(ctx)
+}
+
+func (us *UserService) GetAllUser(ctx context.Context) []*entity.User {
+	return us.userRepo.GetAllUsers(ctx)
+}
+
 func (us *UserService) GetUserScore(ctx context.Context, userID string) (score int) {
 	score, _ = us.assetbunRepo.GetScore(ctx, userID)
 	return score

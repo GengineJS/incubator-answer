@@ -73,6 +73,11 @@ type ReopenQuestionReq struct {
 	UserID     string `json:"-"`
 }
 
+type QuestionEmailSend struct {
+	ID   string     `validate:"required" json:"id"`
+	Tags []*TagItem `validate:"required,dive" json:"tags"`
+}
+
 type QuestionAdd struct {
 	// question title
 	Title string `validate:"required,notblank,gte=6,lte=150" json:"title"`
@@ -278,6 +283,7 @@ type AdminQuestionInfo struct {
 	ID               string         `json:"id"`
 	Title            string         `json:"title"`
 	VoteCount        int            `json:"vote_count"`
+	ContentType      int            `json:"content_type"`
 	Show             int            `json:"show"`
 	Pin              int            `json:"pin"`
 	AnswerCount      int            `json:"answer_count"`

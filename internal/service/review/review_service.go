@@ -28,6 +28,7 @@ import (
 	"github.com/apache/incubator-answer/internal/entity"
 	"github.com/apache/incubator-answer/internal/schema"
 	answercommon "github.com/apache/incubator-answer/internal/service/answer_common"
+	"github.com/apache/incubator-answer/internal/service/assetbun"
 	"github.com/apache/incubator-answer/internal/service/notice_queue"
 	"github.com/apache/incubator-answer/internal/service/object_info"
 	questioncommon "github.com/apache/incubator-answer/internal/service/question_common"
@@ -55,6 +56,7 @@ type ReviewRepo interface {
 
 // ReviewService user service
 type ReviewService struct {
+	assetBunRepo                     assetbun.AssetBunRepo
 	reviewRepo                       ReviewRepo
 	objectInfoService                *object_info.ObjService
 	userCommon                       *usercommon.UserCommon
@@ -81,6 +83,7 @@ func NewReviewService(
 	tagCommon *tagcommon.TagCommonService,
 	notificationQueueService notice_queue.NotificationQueueService,
 	siteInfoService siteinfo_common.SiteInfoCommonService,
+	assetBunRepo assetbun.AssetBunRepo,
 ) *ReviewService {
 	return &ReviewService{
 		reviewRepo:                       reviewRepo,
@@ -94,6 +97,7 @@ func NewReviewService(
 		tagCommon:                        tagCommon,
 		notificationQueueService:         notificationQueueService,
 		siteInfoService:                  siteInfoService,
+		assetBunRepo:                     assetBunRepo,
 	}
 }
 
@@ -170,8 +174,14 @@ func (cs *ReviewService) getReviewContentAuthorInfo(ctx context.Context, userID 
 // call plugin to review
 func (cs *ReviewService) callPluginToReview(ctx context.Context, userID, objectID string,
 	reviewContent *plugin.ReviewContent) (reviewStatus plugin.ReviewStatus) {
-	// As default, no need review
-	reviewStatus = plugin.ReviewStatusApproved
+	abUser := cs.assetBunRepo.GetUser(ctx, userID)
+	user, _, _ := cs.userRepo.GetByUserID(ctx, userID)
+	// As default, need review
+	reviewStatus = plugin.ReviewStatusNeedReview
+	if abUser != nil && (abUser.AuditFree || user.IsAdmin) {
+		reviewStatus = plugin.ReviewStatusApproved
+	}
+
 	objectID = uid.DeShortID(objectID)
 
 	r := &entity.Review{
@@ -256,8 +266,11 @@ func (cs *ReviewService) updateObjectStatus(ctx context.Context, review *entity.
 			if err != nil {
 				log.Errorf("get question tags failed, err: %v", err)
 			}
+			user, _, _ := cs.userRepo.GetByUserID(ctx, questionInfo.UserID)
+			questionInfo.Show = entity.QuestionShow
+			cs.questionRepo.UpdateQuestion(ctx, questionInfo, []string{"show"})
 			cs.externalNotificationQueueService.Send(ctx,
-				schema.CreateNewQuestionNotificationMsg(questionInfo.ID, questionInfo.Title, questionInfo.UserID, tags))
+				schema.CreateNewQuestionNotificationMsg(questionInfo.ID, questionInfo.Title, questionInfo.UserID, questionInfo.Score, entity.QuestionType(questionInfo.ContentType), user.DisplayName, tags))
 		}
 		userQuestionCount, err := cs.questionRepo.GetUserQuestionCount(ctx, questionInfo.UserID, 0)
 		if err != nil {

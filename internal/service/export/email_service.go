@@ -23,16 +23,18 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/apache/incubator-answer/pkg/display"
 	"mime"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/apache/incubator-answer/pkg/display"
+
 	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/base/handler"
 	"github.com/apache/incubator-answer/internal/base/reason"
 	"github.com/apache/incubator-answer/internal/base/translator"
+	"github.com/apache/incubator-answer/internal/entity"
 	"github.com/apache/incubator-answer/internal/schema"
 	"github.com/apache/incubator-answer/internal/service/config"
 	"github.com/apache/incubator-answer/internal/service/siteinfo_common"
@@ -303,18 +305,66 @@ func (es *EmailService) NewQuestionTemplate(ctx context.Context, raw *schema.New
 	if err != nil {
 		return
 	}
+	lang := handler.GetLangByCtx(ctx)
+	currScore := raw.Score
+	scoreTemplate := &schema.ScoreTemplateData{
+		Score: currScore,
+		Money: float32(currScore) / 10.0,
+	}
+	var contentTitle string
+	tip := ""
+	switch raw.ContentType {
+	case entity.TypeQuestion:
+		if currScore > 0 {
+			contentTitle = translator.Tr(lang, constant.EmailQuestionScoreContentType)
+		} else {
+			contentTitle = translator.Tr(lang, constant.EmailQuestionContentType)
+		}
+		tip = translator.TrWithData(lang, constant.EmailAcceptGetScore, scoreTemplate)
+	case entity.TypeArticle:
+		if currScore > 0 {
+			contentTitle = translator.Tr(lang, constant.EmailArticleScoreContentType)
+		} else {
+			contentTitle = translator.Tr(lang, constant.EmailArticleContentType)
+		}
+		tip = translator.TrWithData(lang, constant.EmailPayScoreUnlock, scoreTemplate)
+	case entity.TypeAiPic:
+		break
+	case entity.TypeBounty:
+		contentTitle = translator.Tr(lang, constant.EmailBountyContentType)
+		tip = translator.TrWithData(lang, constant.EmailAcceptGetScore, scoreTemplate)
+	case entity.TypeAssetBun:
+		if currScore > 0 {
+			contentTitle = translator.Tr(lang, constant.EmailAssetBunScoreContentType)
+		} else {
+			contentTitle = translator.Tr(lang, constant.EmailAssetBunContentType)
+		}
+		tip = translator.TrWithData(lang, constant.EmailPayScoreAssetUnlock, scoreTemplate)
+	}
+	qTitle := raw.QuestionTitle
+	if currScore > 0 {
+		qTitle = fmt.Sprintf("%s %d%s(%.1f¥)", qTitle, currScore,
+			translator.Tr(lang, "email_tpl.integral"), float64(currScore)/10.0)
+	} else {
+		tip = ""
+	}
+
 	templateData := &schema.NewQuestionTemplateData{
 		SiteName:       siteInfo.Name,
-		QuestionTitle:  raw.QuestionTitle,
+		QuestionTitle:  qTitle,
+		Score:          currScore,
+		Money:          float32(currScore) / 10.0,
+		ContentType:    contentTitle,
+		Tip:            tip,
+		DisplayName:    raw.DisplayName,
 		Tags:           strings.Join(raw.Tags, ", "),
 		UnsubscribeUrl: fmt.Sprintf("%s/users/unsubscribe?code=%s", siteInfo.SiteUrl, raw.UnsubscribeCode),
 	}
 	templateData.QuestionUrl = display.QuestionURL(
 		seoInfo.Permalink, siteInfo.SiteUrl, raw.QuestionID, raw.QuestionTitle)
 
-	lang := handler.GetLangByCtx(ctx)
-	title = translator.TrWithData(lang, constant.EmailTplKeyNewQuestionTitle, templateData)
-	body = translator.TrWithData(lang, constant.EmailTplKeyNewQuestionBody, templateData)
+	title = translator.TrWithData(lang, constant.EmailTplKeyNewContentTitle, templateData)
+	body = translator.TrWithData(lang, constant.EmailTplKeyNewContentBody, templateData)
 	return title, body, nil
 }
 

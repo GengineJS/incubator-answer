@@ -22,6 +22,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/apache/incubator-answer/internal/base/handler"
 	"github.com/apache/incubator-answer/internal/base/middleware"
@@ -132,6 +133,11 @@ func (cc *ConnectorController) ConnectorRedirect(connector plugin.Connector) (fn
 			return
 		}
 		log.Debugf("connector received: %+v", userInfo)
+		// 第三方登录可能就没有displayname，应该把username作为displayname
+		displayName := strings.TrimSpace(userInfo.DisplayName)
+		if displayName == "" {
+			displayName = userInfo.Username
+		}
 		u := &schema.ExternalLoginUserInfoCache{
 			Provider:    connector.ConnectorSlugName(),
 			ExternalID:  userInfo.ExternalID,

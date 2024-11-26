@@ -30,6 +30,9 @@ export interface FormProps {
   formData: Type.FormDataType | null;
   refreshConfig?: FormKit['refreshConfig'];
   hiddenSubmit?: boolean;
+  multiple?: boolean;
+  placeholder?: string;
+  displayText?: string;
   onChange?: (data: Type.FormDataType) => void;
   onSubmit?: (e: React.FormEvent) => void;
 }
@@ -44,12 +47,15 @@ export interface JSONSchema {
   required?: string[];
   properties: {
     [key: string]: {
-      type: 'string' | 'boolean' | 'number';
+      type: 'string' | 'boolean' | 'number' | 'null';
       title: string;
       description?: string;
       enum?: Array<string | boolean | number>;
       enumNames?: string[];
       default?: string | boolean | number | any[];
+      multiple?: boolean;
+      placeholder?: string;
+      displayText?: string;
     };
   };
 }

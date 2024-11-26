@@ -27,6 +27,7 @@ import (
 	"github.com/apache/incubator-answer/internal/entity"
 	"github.com/apache/incubator-answer/internal/service/user_notification_config"
 	"github.com/segmentfault/pacman/errors"
+	"xorm.io/xorm"
 )
 
 // userNotificationConfigRepo notification repository
@@ -42,21 +43,35 @@ func NewUserNotificationConfigRepo(data *data.Data) user_notification_config.Use
 }
 
 // Add add notification config
-func (ur *userNotificationConfigRepo) Add(ctx context.Context, userIDs []string, source, channels string) (err error) {
+func Add(ctx context.Context, DB *xorm.Engine, userIDs []string, source, channels string) (err error) {
 	var configs []*entity.UserNotificationConfig
 	for _, userID := range userIDs {
-		configs = append(configs, &entity.UserNotificationConfig{
-			UserID:   userID,
-			Source:   source,
-			Channels: channels,
-			Enabled:  true,
-		})
+		existingConfig := &entity.UserNotificationConfig{}
+		has, err := DB.Context(ctx).Where("user_id = ? AND source = ?", userID, source).Get(existingConfig)
+		if err != nil {
+			return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+		}
+		if !has {
+			configs = append(configs, &entity.UserNotificationConfig{
+				UserID:   userID,
+				Source:   source,
+				Channels: channels,
+				Enabled:  true,
+			})
+		}
 	}
-	_, err = ur.data.DB.Context(ctx).Insert(configs)
-	if err != nil {
-		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	if len(configs) > 0 {
+		_, err = DB.Context(ctx).Insert(configs)
+		if err != nil {
+			return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+		}
 	}
 	return nil
+}
+
+// Add add notification config
+func (ur *userNotificationConfigRepo) Add(ctx context.Context, userIDs []string, source, channels string) (err error) {
+	return Add(ctx, ur.data.DB, userIDs, source, channels)
 }
 
 // Save save notification config, if existed, update, if not exist, insert

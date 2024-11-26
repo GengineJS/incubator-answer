@@ -149,7 +149,8 @@ func (a *AnswerAPIRouter) RegisterUnAuthAnswerAPIRouter(r *gin.RouterGroup) {
 	r.GET("/personal/user/info", a.userController.GetOtherUserInfoByUsername)
 	r.GET("/user/ranking", a.userController.UserRanking)
 	r.GET("/user/staff", a.userController.UserStaff)
-
+	r.GET("/user/notify/default", a.userController.ApplyDefaultNotifyConfig)
+	r.POST("/question/sendmail", a.questionController.SendMail)
 	// answer
 	r.GET("/answer/info", a.answerController.Get)
 	r.GET("/answer/page", a.answerController.AnswerList)

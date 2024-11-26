@@ -2,12 +2,14 @@ package assetbun
 
 import (
 	"context"
+
 	"github.com/apache/incubator-answer/internal/service/notice_queue"
 )
 
 type AssetBunRepo interface {
 	SyncUsers(ctx context.Context)
 	GetScore(ctx context.Context, userID string) (int, error)
+	GetUser(ctx context.Context, userID string) *Users
 	// 获取当前用户赚取积分时可得到的真实积分，因为有平台服务费
 	GetRealPublishScore(ctx context.Context, userID string, score int) int
 	// 获取当前用户下载积分时付出的真实积分，因为用户可能是VIP

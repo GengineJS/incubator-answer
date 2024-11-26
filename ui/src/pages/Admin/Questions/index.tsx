@@ -172,7 +172,11 @@ const Questions: FC = () => {
 
                 <td className="text-end">
                   <Action
-                    itemData={{ id: li.id, answer_count: li.answer_count }}
+                    itemData={{
+                      content_type: li.content_type,
+                      id: li.id,
+                      answer_count: li.answer_count,
+                    }}
                     refreshList={refreshList}
                     curFilter={curFilter}
                     show={li.show}

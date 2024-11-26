@@ -359,6 +359,17 @@ func (qc *QuestionController) QuestionPage(ctx *gin.Context) {
 	handler.HandleResponse(ctx, nil, pager.NewPageModel(total, questions))
 }
 
+// SendMail 当问题状态发生改变可以通过该方式发送通知邮件
+// @Router /answer/api/v1/question/sendmail [post]
+func (qc *QuestionController) SendMail(ctx *gin.Context) {
+	req := &schema.QuestionEmailSend{}
+	if handler.BindAndCheck(ctx, req) {
+		return
+	}
+	qc.questionService.SendQuestionNotifyEmail(ctx, req)
+	handler.HandleResponse(ctx, nil, nil)
+}
+
 // AddQuestion add question
 // @Summary add question
 // @Description add question

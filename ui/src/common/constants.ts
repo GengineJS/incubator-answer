@@ -35,6 +35,7 @@ export const SKELETON_SHOW_TIME = 1000;
 export const enum IframeMsgType {
   LOGIN,
   LOGOUT,
+  IS_LOGIN,
 }
 export const AUTH_IS_ASSET_BUN = 'isAssetBun';
 
@@ -693,6 +694,10 @@ export const targetAssetBunHomeUrl = [
 export const targetAssetBunRootUrl = [
   'http://localhost:5212',
   'https://cloud.assetbun.com',
+];
+export const assetBunLoginUrl = [
+  'http://localhost/users/login?page_type=1',
+  'https://ai.assetbun.com/users/login?page_type=1',
 ];
 export const PayContentType = [
   ContentType.QUESTION,
