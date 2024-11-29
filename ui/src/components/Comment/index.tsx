@@ -421,7 +421,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
                 )}
                 {item.is_ai ? (
                   <ImgViewer>
-                    <MathJaxArticle ref={null} html={item.parsed_text} />
+                    <MathJaxArticle small ref={null} html={item.parsed_text} />
                   </ImgViewer>
                 ) : (
                   <div

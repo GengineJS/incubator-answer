@@ -64,6 +64,11 @@ const mainImgFunc =
       fragColor = vec4(col,1.0);\n\
   }';
 const mainImgRegex = /void\s+mainImage\s*\(([^)]*)\)\s*\{[^]*\}/g;
+function containsMainFunction(code) {
+  // 正则表达式匹配 void main() { ... }
+  const regex = /void\s+main\s*\(\s*\)\s*\{[\s\S]*?\}/g;
+  return regex.test(code);
+}
 function unescapeHtmlEntities(escapedHtml) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(escapedHtml, 'text/html');
@@ -109,10 +114,13 @@ function appendGlslEditorResources(cssUrl, scriptUrl, onLoadScript) {
   }
 }
 
-const MathJaxRenderer = ({ html, ref }) => {
+const MathJaxRenderer = ({ html, small = false, ref }) => {
   // 创建内部ref
   const internalRef = useRef(null);
-
+  let className = 'fmt text-break text-wrap mt-4';
+  if (small) {
+    className += ' small';
+  }
   // 使用React的useRef钩子来合并外部和内部的ref
   const articleRef = ref || internalRef;
   useEffect(() => {
@@ -149,7 +157,6 @@ const MathJaxRenderer = ({ html, ref }) => {
               // @ts-ignore
               if (node.classList.contains('language-shadertoy')) {
                 isShaderToy = true;
-                // codeInfo = convertToSingleStringLiteral(codeInfo);
                 if (!codeInfo.match(mainImgRegex)) {
                   codeInfo =
                     codeInfo.trim() === ''
@@ -157,6 +164,9 @@ const MathJaxRenderer = ({ html, ref }) => {
                       : `${codeInfo}
                     ${mainImgFunc}`;
                 }
+              } else if (!containsMainFunction(codeInfo)) {
+                // 如果glsl不包含main函数，就没必要通过editor解析了
+                return;
               }
               parentNode.removeChild(node);
 
@@ -196,7 +206,7 @@ const MathJaxRenderer = ({ html, ref }) => {
       <MathJax>
         <article
           ref={articleRef}
-          className="fmt text-break text-wrap mt-4"
+          className={className}
           dangerouslySetInnerHTML={{ __html: html }}
         />
       </MathJax>
