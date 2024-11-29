@@ -450,21 +450,21 @@ func (qs *QuestionService) SendQuestionNotifyEmail(ctx context.Context, req *sch
 	if !has {
 		return nil
 	}
-	tagNameList := make([]string, 0)
-	for _, tag := range req.Tags {
-		tag.SlugName = strings.ReplaceAll(tag.SlugName, " ", "-")
-		tagNameList = append(tagNameList, tag.SlugName)
-	}
-	tags, _ := qs.tagCommon.GetTagListByNames(ctx, tagNameList)
-	user, _, _ := qs.userRepo.GetByUserID(ctx, question.UserID)
-	if question.Status == entity.QuestionStatusAvailable {
-		question.Show = entity.QuestionShow
-		qs.questionRepo.UpdateQuestion(ctx, question, []string{"show"})
-		qs.externalNotificationQueueService.Send(ctx,
-			schema.CreateNewQuestionNotificationMsg(question.ID, question.Title, question.UserID, question.Score, entity.QuestionType(question.ContentType), user.DisplayName, tags))
-	} else {
-		// 发给管理员审核
-		go func() {
+	go func() {
+		tagNameList := make([]string, 0)
+		for _, tag := range req.Tags {
+			tag.SlugName = strings.ReplaceAll(tag.SlugName, " ", "-")
+			tagNameList = append(tagNameList, tag.SlugName)
+		}
+		tags, _ := qs.tagCommon.GetTagListByNames(ctx, tagNameList)
+		user, _, _ := qs.userRepo.GetByUserID(ctx, question.UserID)
+		if question.Status == entity.QuestionStatusAvailable {
+			question.Show = entity.QuestionShow
+			qs.questionRepo.UpdateQuestion(ctx, question, []string{"show"})
+			qs.externalNotificationQueueService.Send(ctx,
+				schema.CreateNewQuestionNotificationMsg(question.ID, question.Title, question.UserID, question.Score, entity.QuestionType(question.ContentType), user.DisplayName, tags))
+		} else {
+			// 发给管理员审核
 			adminUsers, err := qs.userRepo.GetAdminUsers(ctx)
 			if err != nil {
 				log.Error("Failed to get admin users: %v", err)
@@ -485,8 +485,8 @@ func (qs *QuestionService) SendQuestionNotifyEmail(ctx context.Context, req *sch
 			for _, admin_user := range adminUsers {
 				notification.SendNewQuestionNotificationEmail(ctx, qs.questionRepo.GetData().DB, qs.emailService, admin_user.ID, true, rawData)
 			}
-		}()
-	}
+		}
+	}()
 	return nil
 }
 

@@ -146,14 +146,41 @@ const codeLanguageType = [
   'vhdl',
   'vbnet',
   'vb',
+  'shadertoy',
+  'glsl',
   'yaml',
   'yml',
 ];
+const mainImgFunc =
+  `void mainImage(out vec4 fragColor, in vec2 fragCoord) {\n` +
+  `    // Normalized pixel coordinates (from 0 to 1)\n` +
+  `    vec2 uv = fragCoord/iResolution.xy;\n\n` +
+  `    // Time varying pixel color\n` +
+  `    vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));\n\n` +
+  `    // Output to screen\n` +
+  `    fragColor = vec4(col,1.0);\n` +
+  `}`;
+const glslTemplate =
+  `#ifdef GL_ES\n` +
+  `  precision mediump float;\n` +
+  `#endif\n` +
+  `uniform vec2 u_resolution;\n` +
+  `uniform vec2 u_mouse;\n` +
+  `uniform float u_time;\n` +
+  `uniform vec4 u_date;\n` +
+  `uniform float u_delta;\n` +
+  `void main() {\n` +
+  `    vec2 st = gl_FragCoord.xy/u_resolution.xy;\n` +
+  `    st.x *= u_resolution.x/u_resolution.y;\n` +
+  `    vec3 color = vec3(0.);\n` +
+  `    color = vec3(st.x,st.y,abs(sin(u_time)));\n` +
+  `    gl_FragColor = vec4(color,1.0);\n` +
+  `}`;
 
+const mainImgRegex = /void\s+mainImage\s*\(([^)]*)\)\s*\{[^]*\}/g;
 let context: IEditorContext;
 const Code = () => {
   const { t } = useTranslation('translation', { keyPrefix: 'editor' });
-
   const item = {
     label: 'code',
     keyMap: ['Ctrl-k'],
@@ -172,7 +199,6 @@ const Code = () => {
   const SINGLELINEMAXLENGTH = 40;
   const addCode = (ctx) => {
     context = ctx;
-
     const { wrapText, editor } = context;
 
     const text = context.editor.getSelection();
@@ -212,7 +238,19 @@ const Code = () => {
       code.value.split('\n').length > 1 ||
       code.value.length >= SINGLELINEMAXLENGTH
     ) {
-      value = `\n\`\`\`${lang}\n${code.value}\n\`\`\`\n`;
+      let currLang = lang;
+      const lowerLang = lang.toLowerCase();
+      if (lowerLang === 'glsl' || lowerLang === 'shadertoy') {
+        currLang = lowerLang;
+        if (currLang === 'shadertoy' && !code.value.match(mainImgRegex)) {
+          setCode({
+            ...code,
+            value: `${code.value}
+          ${mainImgFunc}`,
+          });
+        }
+      }
+      value = `\n\`\`\`${currLang}\n${code.value}\n\`\`\`\n`;
     } else {
       value = `\`${code.value}\``;
     }
@@ -227,7 +265,6 @@ const Code = () => {
   };
   const onHide = () => setVisible(false);
   const onExited = () => context.editor?.focus();
-
   return (
     <ToolItem {...item} onClick={addCode}>
       <Modal
@@ -268,7 +305,26 @@ const Code = () => {
               options={codeLanguageType}
               value={lang}
               onChange={(e) => setLang(e.target.value)}
-              onSelect={(val) => setLang(val)}
+              onSelect={(val) => {
+                setLang(val);
+                const isEmptyCode = code.value.trim() === '';
+                if (val === 'shadertoy' && !code.value.match(mainImgRegex)) {
+                  setCode({
+                    value: isEmptyCode
+                      ? mainImgFunc
+                      : `${code.value}
+                    ${mainImgFunc}`,
+                    isInvalid: false,
+                    errorMsg: '',
+                  });
+                } else if (val === 'glsl' && isEmptyCode) {
+                  setCode({
+                    value: glslTemplate,
+                    isInvalid: false,
+                    errorMsg: '',
+                  });
+                }
+              }}
               placeholder={t('code.form.fields.language.placeholder')}
             />
           </Form.Group>

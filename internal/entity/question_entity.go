@@ -44,6 +44,19 @@ const (
 	TypeAiPic
 )
 
+// 创建一个映射表，将现有的枚举值映射到新的位标志值
+var ContentTypeToBitFlag = map[QuestionType]QuestionType{
+	TypeQuestion: 1 << 0, // 1 (00001)
+	TypeArticle:  1 << 1, // 2 (00010)
+	TypeAssetBun: 1 << 2, // 4 (00100)
+	TypeBounty:   1 << 3, // 8 (01000)
+	TypeAiPic:    1 << 4, // 16 (10000)
+}
+
+func GetContentTypeBitFlag(qt QuestionType) QuestionType {
+	return ContentTypeToBitFlag[qt]
+}
+
 type ScoreAction int
 
 const (

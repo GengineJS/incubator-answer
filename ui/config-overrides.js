@@ -126,6 +126,8 @@ module.exports = {
       new CopyWebpackPlugin({
         patterns: [
           { from: path.resolve(__dirname, './share.html'), to: path.resolve(__dirname, './build/static/share.html') }, // 从根目录拷贝share.html到build目录
+          { from: path.resolve(__dirname, './glslEditor.css'), to: path.resolve(__dirname, './build/static/glslEditor.css') },
+          { from: path.resolve(__dirname, './glslEditor.min.js'), to: path.resolve(__dirname, './build/static/glslEditor.min.js') }
         ],
       })
     );

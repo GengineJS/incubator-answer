@@ -21,6 +21,7 @@ const handleOpenPayScore = (t, navigate, user, question, path = '') => {
     );
   if (
     isPayType ||
+    !integral ||
     isModerator(question, user) ||
     question.buyer_user_ids.indexOf(user.id) !== -1
   ) {

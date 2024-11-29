@@ -55,6 +55,7 @@ func (ns *ExternalNotificationService) handleNewQuestionNotification(ctx context
 	}
 	log.Debugf("get subscribers %d for question %s", len(subscribers), msg.NewQuestionTemplateRawData.QuestionID)
 	rawData := msg.NewQuestionTemplateRawData
+	contentTypeBit := entity.GetContentTypeBitFlag(rawData.ContentType)
 	for _, subscriber := range subscribers {
 		for _, channel := range subscriber.Channels {
 			if !channel.Enable {
@@ -62,7 +63,7 @@ func (ns *ExternalNotificationService) handleNewQuestionNotification(ctx context
 			}
 			switch channel.Key {
 			case constant.EmailChannel:
-				if rawData.ContentType&subscriber.ContentType == rawData.ContentType && ((rawData.Score > 0 && subscriber.ScoreAction&entity.ScoreAction_IS == entity.ScoreAction_IS) ||
+				if contentTypeBit&subscriber.ContentType == contentTypeBit && ((rawData.Score > 0 && subscriber.ScoreAction&entity.ScoreAction_IS == entity.ScoreAction_IS) ||
 					(rawData.Score == 0 && subscriber.ScoreAction&entity.ScoreAction_NOT == entity.ScoreAction_NOT)) {
 					ns.sendNewQuestionNotificationEmail(ctx, subscriber.UserID, false, &schema.NewQuestionTemplateRawData{
 						QuestionTitle:   rawData.QuestionTitle,
@@ -98,35 +99,39 @@ func (ns *ExternalNotificationService) addSubscribersFromSource(ctx context.Cont
 		var scoreAction entity.ScoreAction
 		switch sourceType {
 		case constant.AllNewSubjectSource:
-			contentType = entity.TypeQuestion | entity.TypeAiPic | entity.TypeBounty | entity.TypeArticle | entity.TypeAssetBun
+			contentType = entity.GetContentTypeBitFlag(entity.TypeQuestion) |
+				entity.GetContentTypeBitFlag(entity.TypeAiPic) |
+				entity.GetContentTypeBitFlag(entity.TypeBounty) |
+				entity.GetContentTypeBitFlag(entity.TypeArticle) |
+				entity.GetContentTypeBitFlag(entity.TypeAssetBun)
 			scoreAction = entity.ScoreAction_ALL
 			break
 		case constant.AllEmailNewQuestionSource:
-			contentType = entity.TypeQuestion
+			contentType = entity.GetContentTypeBitFlag(entity.TypeQuestion)
 			scoreAction = entity.ScoreAction_NOT
 			break
 		case constant.AllEmailNewScoreQuestionSource:
-			contentType = entity.TypeQuestion
+			contentType = entity.GetContentTypeBitFlag(entity.TypeQuestion)
 			scoreAction = entity.ScoreAction_IS
 			break
 		case constant.AllEmailNewArticleSource:
-			contentType = entity.TypeArticle
+			contentType = entity.GetContentTypeBitFlag(entity.TypeArticle)
 			scoreAction = entity.ScoreAction_NOT
 			break
 		case constant.AllEmailNewScoreArticleSource:
-			contentType = entity.TypeArticle
+			contentType = entity.GetContentTypeBitFlag(entity.TypeArticle)
 			scoreAction = entity.ScoreAction_IS
 			break
 		case constant.AllEmailNewBountySource:
-			contentType = entity.TypeBounty
+			contentType = entity.GetContentTypeBitFlag(entity.TypeBounty)
 			scoreAction = entity.ScoreAction_ALL
 			break
 		case constant.AllEmailNewAssetbunSource:
-			contentType = entity.TypeAssetBun
+			contentType = entity.GetContentTypeBitFlag(entity.TypeAssetBun)
 			scoreAction = entity.ScoreAction_NOT
 			break
 		case constant.AllEmailNewScoreAssetbunSource:
-			contentType = entity.TypeAssetBun
+			contentType = entity.GetContentTypeBitFlag(entity.TypeAssetBun)
 			scoreAction = entity.ScoreAction_IS
 			break
 		}
@@ -153,15 +158,27 @@ func (ns *ExternalNotificationService) addUserTagsSubscribers(ctx context.Contex
 	var scoreAction entity.ScoreAction
 	switch source {
 	case constant.AllNewSubjectForFollowingTagsSource:
-		contentType = entity.TypeQuestion | entity.TypeAiPic | entity.TypeBounty | entity.TypeArticle | entity.TypeAssetBun
+		contentType = entity.GetContentTypeBitFlag(entity.TypeQuestion) |
+			entity.GetContentTypeBitFlag(entity.TypeAiPic) |
+			entity.GetContentTypeBitFlag(entity.TypeBounty) |
+			entity.GetContentTypeBitFlag(entity.TypeArticle) |
+			entity.GetContentTypeBitFlag(entity.TypeAssetBun)
 		scoreAction = entity.ScoreAction_ALL
 		break
 	case constant.AllEmailNewSubjectForFollowingTagsSource:
-		contentType = entity.TypeQuestion | entity.TypeAiPic | entity.TypeBounty | entity.TypeArticle | entity.TypeAssetBun
+		contentType = entity.GetContentTypeBitFlag(entity.TypeQuestion) |
+			entity.GetContentTypeBitFlag(entity.TypeAiPic) |
+			entity.GetContentTypeBitFlag(entity.TypeBounty) |
+			entity.GetContentTypeBitFlag(entity.TypeArticle) |
+			entity.GetContentTypeBitFlag(entity.TypeAssetBun)
 		scoreAction = entity.ScoreAction_NOT
 		break
 	case constant.AllEmailNewSubjectScoreForFollowingTagsSource:
-		contentType = entity.TypeQuestion | entity.TypeAiPic | entity.TypeBounty | entity.TypeArticle | entity.TypeAssetBun
+		contentType = entity.GetContentTypeBitFlag(entity.TypeQuestion) |
+			entity.GetContentTypeBitFlag(entity.TypeAiPic) |
+			entity.GetContentTypeBitFlag(entity.TypeBounty) |
+			entity.GetContentTypeBitFlag(entity.TypeArticle) |
+			entity.GetContentTypeBitFlag(entity.TypeAssetBun)
 		scoreAction = entity.ScoreAction_IS
 		break
 	}
