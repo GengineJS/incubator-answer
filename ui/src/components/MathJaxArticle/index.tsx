@@ -1,7 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import/no-extraneous-dependencies,import/order
 import { MathJaxContext, MathJax } from 'better-react-mathjax';
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+import hljs from 'highlight.js/lib/core'; // 引入 core 模块
+// eslint-disable-next-line import/no-extraneous-dependencies
+import cpp from 'highlight.js/lib/languages/cpp';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import 'highlight.js/styles/default.css';
+
 // math jax
 export const config = {
   loader: { load: ['[tex]/html'] },
@@ -125,80 +133,89 @@ const MathJaxRenderer = ({ html, small = false, ref }) => {
   const articleRef = ref || internalRef;
   useEffect(() => {
     if (articleRef.current) {
-      const glslNodes = articleRef.current.querySelectorAll('.language-glsl');
+      const codeNodes = articleRef.current.querySelectorAll('pre code');
+      Array.from(codeNodes).forEach((node) => {
+        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        const className = node.className || '';
+        const isShadertoy = className.includes('language-shadertoy');
+        const isGlsl = className.includes('language-glsl');
+        const languageMatch = className.match(/language-(\w+)/);
+        const language = languageMatch ? languageMatch[1] : '';
+        // @ts-ignore
+        const parentNode = node.parentNode!;
+        parentNode.style.padding = '0';
+        if (isShadertoy || isGlsl) {
+          const glslNodes = [node];
+          const htmlTag = document.querySelector('html') as HTMLHtmlElement;
+          const theme = htmlTag.getAttribute('data-bs-theme');
+          let currTheme = '';
+          if (theme !== 'light') {
+            currTheme = 'monokai';
+          }
 
-      // 获取所有类名为'language-shadertoy'的节点
-      const shadertoyNodes = articleRef.current.querySelectorAll(
-        '.language-shadertoy',
-      );
+          appendGlslEditorResources(
+            '/static/glslEditor.css',
+            '/static/glslEditor.min.js',
+            function onload() {
+              // eslint-disable-next-line @typescript-eslint/no-shadow
+              glslNodes.forEach((node, index, array) => {
+                // @ts-ignore
+                let codeInfo = unescapeHtmlEntities(node.innerHTML);
 
-      // 将两个NodeList合并为一个
-      const languageGlslNodes = Array.from(glslNodes).concat(
-        Array.from(shadertoyNodes),
-      );
-      if (languageGlslNodes.length) {
-        const htmlTag = document.querySelector('html') as HTMLHtmlElement;
-        const theme = htmlTag.getAttribute('data-bs-theme');
-        let currTheme = '';
-        if (theme !== 'light') {
-          currTheme = 'monokai';
-        }
-        // 使用函数，传入glslEditor.css和glslEditor.min.js的路径
-        appendGlslEditorResources(
-          '/static/glslEditor.css',
-          '/static/glslEditor.min.js',
-          function onload() {
-            languageGlslNodes.forEach((node, index, array) => {
-              // @ts-ignore
-              let codeInfo = unescapeHtmlEntities(node.innerHTML);
-              // @ts-ignore
-              const parentNode = node.parentNode!;
-              let isShaderToy = false;
-              // @ts-ignore
-              if (node.classList.contains('language-shadertoy')) {
-                isShaderToy = true;
-                if (!codeInfo.match(mainImgRegex)) {
-                  codeInfo =
-                    codeInfo.trim() === ''
-                      ? mainImgFunc
-                      : `${codeInfo}
+                if (isShadertoy) {
+                  if (!codeInfo.match(mainImgRegex)) {
+                    codeInfo =
+                      codeInfo.trim() === ''
+                        ? mainImgFunc
+                        : `${codeInfo}
                     ${mainImgFunc}`;
+                  }
+                } else if (!containsMainFunction(codeInfo)) {
+                  hljs.registerLanguage(language, cpp);
+                  // 如果glsl不包含main函数，就没必要通过editor解析了
+                  hljs.highlightBlock(node as HTMLElement);
+                  return;
                 }
-              } else if (!containsMainFunction(codeInfo)) {
-                // 如果glsl不包含main函数，就没必要通过editor解析了
-                return;
-              }
-              parentNode.removeChild(node);
-
-              const rect = parentNode.getBoundingClientRect();
-              const { width } = rect;
-              // @ts-ignore
-              // eslint-disable-next-line no-new
-              new GlslEditor(parentNode, {
-                canvas_size: width / 3,
-                theme: currTheme,
-                canvas_follow: true,
-                // canvas_draggable: true,
-                multipleBuffers: true,
-                watchHash: true,
-                fileDrops: false,
-                frag_footer: isShaderToy ? postFunction : '',
-                frag_header: isShaderToy ? preFunction : '',
-                frag: codeInfo,
-                menu: false,
-              });
-              const isLast = index === array.length - 1;
-              if (isLast && theme === 'light') {
-                const elements =
-                  articleRef.current.querySelectorAll('.ge_editor');
-                elements.forEach((elem) => {
-                  elem.style.backgroundColor = '#ffffff';
+                parentNode.removeChild(node);
+                if (theme === 'light') {
+                  parentNode.style.border = `1px solid #ded7d7`;
+                  parentNode.style.backgroundColor = '#f7f7f7';
+                }
+                const rect = parentNode.getBoundingClientRect();
+                const { width } = rect;
+                // @ts-ignore
+                // eslint-disable-next-line no-new
+                new GlslEditor(parentNode, {
+                  canvas_size: width / 3,
+                  theme: currTheme,
+                  canvas_follow: true,
+                  multipleBuffers: true,
+                  watchHash: true,
+                  fileDrops: false,
+                  frag_footer: isShadertoy ? postFunction : '',
+                  frag_header: isShadertoy ? preFunction : '',
+                  frag: codeInfo,
+                  autofocus: false,
+                  menu: false,
                 });
-              }
-            });
-          },
-        );
-      }
+
+                const isLast = index === array.length - 1;
+                if (isLast && theme === 'light') {
+                  const elements =
+                    articleRef.current.querySelectorAll('.ge_editor');
+                  elements.forEach((elem) => {
+                    elem.style.backgroundColor = '#ffffff';
+                  });
+                }
+              });
+            },
+          );
+        } else {
+          hljs.registerLanguage(language || 'undefined', cpp);
+          hljs.highlightBlock(node as HTMLElement);
+        }
+      });
     }
   }, [html, articleRef]);
   return (

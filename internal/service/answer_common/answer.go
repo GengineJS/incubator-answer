@@ -49,6 +49,8 @@ type AnswerRepo interface {
 	UpdateAnswerStatus(ctx context.Context, answerID string, status int) (err error)
 	GetAnswerCount(ctx context.Context) (count int64, err error)
 	RemoveAllUserAnswer(ctx context.Context, userID string) (err error)
+	CalculatedContribution(ctx context.Context, status int, aid string)
+	GetBuyers(ctx context.Context, qid string) ([]entity.QuestionBuyer, error)
 }
 
 // AnswerCommon user service
@@ -114,6 +116,11 @@ func (as *AnswerCommon) ShowFormat(ctx context.Context, data *entity.Answer) *sc
 	info.UpdateUserID = data.LastEditUserID
 	info.Status = data.Status
 	info.MemberActions = make([]*schema.PermissionMemberAction, 0)
+	buyers, _ := as.answerRepo.GetBuyers(ctx, info.QuestionID)
+	info.BuyerUserIds = make([]string, len(buyers))
+	for j, buyer := range buyers {
+		info.BuyerUserIds[j] = buyer.UserID
+	}
 	return &info
 }
 

@@ -22,6 +22,7 @@ package entity
 import (
 	"encoding/json"
 	"github.com/segmentfault/pacman/log"
+	"strconv"
 
 	"github.com/apache/incubator-answer/pkg/converter"
 )
@@ -57,6 +58,16 @@ func (c *Config) GetIntValue() int {
 		log.Warnf("config value is empty, key: %s, value: %s", c.Key, c.Value)
 	}
 	return converter.StringToInt(c.Value)
+}
+
+func (c *Config) GetFloatValue() float32 {
+	if len(c.Value) == 0 {
+		log.Warnf("config value is empty, key: %s, value: %s", c.Key, c.Value)
+	}
+	float64Value, _ := strconv.ParseFloat(c.Value, 32)
+
+	// 将 float64 转换为 float32
+	return float32(float64Value)
 }
 
 // GetArrayStringValue get array string value

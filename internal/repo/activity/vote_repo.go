@@ -254,8 +254,8 @@ func (vr *VoteRepo) setActivityRankToZeroIfUserReachLimit(ctx context.Context, s
 		} else {
 			// If user rank is lower than 1 after this action, then user rank will be set to 1 only.
 			userCurrentScore := userInfoMapping[activity.ActivityUserID].Rank
-			if userCurrentScore+activity.Rank < 1 {
-				activity.Rank = 1 - userCurrentScore
+			if float32(userCurrentScore)+activity.Rank < 1 {
+				activity.Rank = float32(1 - userCurrentScore)
 			}
 		}
 	}
@@ -274,7 +274,7 @@ func (vr *VoteRepo) changeUserRank(ctx context.Context, session *xorm.Session,
 			continue
 		}
 		if err = vr.userRankRepo.ChangeUserRank(ctx, session,
-			activity.ActivityUserID, user.Rank, activity.Rank); err != nil {
+			activity.ActivityUserID, user.Rank, int(activity.Rank)); err != nil {
 			log.Error(err)
 			return err
 		}
@@ -325,7 +325,7 @@ func (vr *VoteRepo) saveActivitiesAvailable(session *xorm.Session, op *schema.Vo
 		if exist {
 			bean := &entity.Activity{
 				Cancelled: entity.ActivityAvailable,
-				Rank:      activity.Rank,
+				Rank:      int(activity.Rank),
 				HasRank:   activity.HasRank(),
 			}
 			session.Where("id = ?", existsActivity.ID)
@@ -340,7 +340,7 @@ func (vr *VoteRepo) saveActivitiesAvailable(session *xorm.Session, op *schema.Vo
 				UserID:           activity.ActivityUserID,
 				TriggerUserID:    converter.StringToInt64(activity.TriggerUserID),
 				ActivityType:     activity.ActivityType,
-				Rank:             activity.Rank,
+				Rank:             int(activity.Rank),
 				HasRank:          activity.HasRank(),
 				Cancelled:        entity.ActivityAvailable,
 			}

@@ -23,6 +23,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/segmentfault/pacman/log"
+	"strconv"
 	"time"
 	"xorm.io/builder"
 
@@ -322,6 +323,13 @@ func (ar *AnswerActivityRepo) sendAcceptAnswerNotification(
 		if act.ActivityUserID != op.QuestionUserID {
 			msg.ObjectType = constant.AnswerObjectType
 			msg.NotificationAction = constant.NotificationAcceptAnswer
+			if act.Rank > 0 {
+				msg.NotificationAction = constant.NotificationAcceptRankAnswer
+				msg.Type = schema.NotificationInboxTypePosts
+				msg.ExtraInfo = map[string]string{
+					"Rank": strconv.Itoa(act.Rank),
+				}
+			}
 			ar.notificationQueueService.Send(ctx, msg)
 		}
 	}
@@ -342,6 +350,13 @@ func (ar *AnswerActivityRepo) sendCancelAcceptAnswerNotification(
 			msg.ObjectType = constant.AnswerObjectType
 		}
 		if msg.TriggerUserID != msg.ReceiverUserID {
+			if act.Rank > 0 {
+				msg.NotificationAction = constant.NotificationCancelAcceptRankAnswer
+				msg.Type = schema.NotificationInboxTypePosts
+				msg.ExtraInfo = map[string]string{
+					"Rank": strconv.Itoa(act.Rank),
+				}
+			}
 			ar.notificationQueueService.Send(ctx, msg)
 		}
 	}

@@ -23,7 +23,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/apache/incubator-answer/internal/base/translator"
 	"github.com/apache/incubator-answer/internal/repo/assetbun"
+	"github.com/apache/incubator-answer/internal/service/config"
+	"github.com/apache/incubator-answer/internal/service/notice_queue"
+	usercommon "github.com/apache/incubator-answer/internal/service/user_common"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -48,8 +53,11 @@ import (
 
 // questionRepo question repository
 type questionRepo struct {
-	data         *data.Data
-	uniqueIDRepo unique.UniqueIDRepo
+	data                     *data.Data
+	uniqueIDRepo             unique.UniqueIDRepo
+	configService            *config.ConfigService
+	userRepo                 usercommon.UserRepo
+	notificationQueueService notice_queue.NotificationQueueService
 }
 
 func (qr *questionRepo) SyncABTags(ctx context.Context) {
@@ -60,10 +68,92 @@ func (qr *questionRepo) SyncABTags(ctx context.Context) {
 func NewQuestionRepo(
 	data *data.Data,
 	uniqueIDRepo unique.UniqueIDRepo,
+	configService *config.ConfigService,
+	userRepo usercommon.UserRepo,
+	notificationQueueService notice_queue.NotificationQueueService,
 ) questioncommon.QuestionRepo {
 	return &questionRepo{
-		data:         data,
-		uniqueIDRepo: uniqueIDRepo,
+		data:                     data,
+		uniqueIDRepo:             uniqueIDRepo,
+		configService:            configService,
+		userRepo:                 userRepo,
+		notificationQueueService: notificationQueueService,
+	}
+}
+
+func (qr *questionRepo) CalculatedContribution(ctx context.Context, status int, qid string) {
+	question, has, err := qr.GetQuestion(ctx, qid)
+	if err != nil {
+		return
+	}
+	if !has {
+		return
+	}
+	// TODO: 先把AssetBun类型排除,后续有需要再加吧
+	if question.ContentType == int(entity.TypeAssetBun) || question.Status == entity.QuestionStatusPending {
+		return
+	}
+	score := question.Score
+	var cfg *entity.Config
+	lang := handler.GetLangByCtx(ctx)
+	var contentTypeStr string
+	if int(entity.TypeBounty) == question.ContentType {
+		contentTypeStr = translator.Tr(lang, constant.EmailBountyContentType)
+	}
+	if score > 0 {
+		cfg, _ = qr.configService.GetConfigByKey(ctx, constant.RankSubjectScoreContributeKey)
+		switch question.ContentType {
+		case int(entity.TypeQuestion):
+			contentTypeStr = translator.Tr(lang, constant.EmailQuestionScoreContentType)
+		case int(entity.TypeArticle):
+			contentTypeStr = translator.Tr(lang, constant.EmailArticleScoreContentType)
+		case int(entity.TypeAssetBun):
+			contentTypeStr = translator.Tr(lang, constant.EmailAssetBunScoreContentType)
+		}
+	} else {
+		cfg, _ = qr.configService.GetConfigByKey(ctx, constant.RankSubjectContributeKey)
+		switch question.ContentType {
+		case int(entity.TypeQuestion):
+			contentTypeStr = translator.Tr(lang, constant.EmailQuestionContentType)
+		case int(entity.TypeArticle):
+			contentTypeStr = translator.Tr(lang, constant.EmailArticleContentType)
+		case int(entity.TypeAssetBun):
+			contentTypeStr = translator.Tr(lang, constant.EmailAssetBunContentType)
+		}
+	}
+	var isAdd bool
+	var action string
+	switch status {
+	case entity.QuestionStatusReOpen:
+		isAdd = true
+		action = constant.NotificationReOpenSubject
+	case entity.QuestionStatusRecover:
+		isAdd = true
+		action = constant.NotificationRecoverSubject
+	case entity.QuestionStatusAvailable:
+		isAdd = true
+		action = constant.NotificationAddSubject
+	case entity.QuestionStatusClosed:
+		isAdd = false
+		action = constant.NotificationClosedSubject
+	case entity.QuestionStatusDeleted:
+		isAdd = false
+		action = constant.NotificationDeleteSubject
+	}
+	contribute := cfg.GetIntValue()
+	if contribute > 0 {
+		user, _, _ := qr.userRepo.GetByUserID(ctx, question.UserID)
+		if isAdd {
+			user.Rank += contribute
+			qr.userRepo.UpdateInfo(ctx, user)
+		} else {
+			user.Rank -= contribute
+			qr.userRepo.UpdateInfo(ctx, user)
+		}
+		notice_queue.OperateCustomNotifySend(ctx, qr.notificationQueueService, constant.QuestionObjectType, false, question.UserID, qid, question.UserID, question.Title, action, map[string]string{
+			"ContentType": contentTypeStr,
+			"Rank":        strconv.Itoa(contribute),
+		})
 	}
 }
 

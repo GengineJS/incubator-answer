@@ -367,7 +367,7 @@ func (s *SiteInfoService) UpdatePrivilegesConfig(ctx context.Context, req *schem
 
 	// update site info that user choose which privilege level
 	if req.Level == schema.PrivilegeLevelCustom {
-		privilegeMap := make(map[string]int)
+		privilegeMap := make(map[string]float32)
 		for _, privilege := range req.CustomPrivileges {
 			privilegeMap[privilege.Key] = privilege.Value
 		}
@@ -401,7 +401,7 @@ func (s *SiteInfoService) UpdatePrivilegesConfig(ctx context.Context, req *schem
 
 	// update privilege in config
 	for _, privilege := range choosePrivileges {
-		err = s.configService.UpdateConfig(ctx, privilege.Key, fmt.Sprintf("%d", privilege.Value))
+		err = s.configService.UpdateConfig(ctx, privilege.Key, fmt.Sprintf("%.3f", privilege.Value))
 		if err != nil {
 			return err
 		}

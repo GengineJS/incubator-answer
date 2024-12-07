@@ -248,19 +248,57 @@ func (vs *VoteService) getActivities(ctx context.Context, op *schema.VoteOperati
 	var actions []string
 	switch op.ObjectType {
 	case constant.QuestionObjectType:
+		question, _, _ := vs.questionRepo.GetQuestion(ctx, op.ObjectID)
+		isScore := question.Score > 0
+		votedUp := constant.RankSubjectUpVotedKey
+		votedDown := constant.RankSubjectDownVotedKey
+		if isScore {
+			votedUp = constant.RankSubjectScoreUpVotedKey
+			votedDown = constant.RankSubjectScoreDownVotedKey
+		}
 		if op.VoteUp {
-			actions = []string{activity_type.QuestionVoteUp, activity_type.QuestionVotedUp}
+			actions = []string{activity_type.QuestionVoteUp, votedUp}
 		} else {
-			actions = []string{activity_type.QuestionVoteDown, activity_type.QuestionVotedDown}
+			actions = []string{activity_type.QuestionVoteDown, votedDown}
 		}
 	case constant.AnswerObjectType:
+		answer, _, _ := vs.answerRepo.GetAnswer(ctx, op.ObjectID)
+		question, _, _ := vs.questionRepo.GetQuestion(ctx, answer.QuestionID)
+		isAI := answer.IsAI
+		isScore := question.Score > 0
+		votedUp := constant.RankSubjectAnswerUpVotedKey
+		votedDown := constant.RankSubjectAnswerDownVotedKey
+		if isAI {
+			votedUp = constant.RankSubjectAnswerAIUpVotedKey
+			votedDown = constant.RankSubjectAnswerAIDownVotedKey
+			if isScore {
+				votedUp = constant.RankSubjectAnswerScoreAIUpVotedKey
+				votedDown = constant.RankSubjectAnswerScoreAIDownVotedKey
+			}
+		} else if isScore {
+			votedUp = constant.RankSubjectAnswerScoreUpVotedKey
+			votedDown = constant.RankSubjectAnswerScoreDownVotedKey
+		}
 		if op.VoteUp {
-			actions = []string{activity_type.AnswerVoteUp, activity_type.AnswerVotedUp}
+			actions = []string{activity_type.AnswerVoteUp, votedUp}
 		} else {
-			actions = []string{activity_type.AnswerVoteDown, activity_type.AnswerVotedDown}
+			actions = []string{activity_type.AnswerVoteDown, votedDown}
 		}
 	case constant.CommentObjectType:
-		actions = []string{activity_type.CommentVoteUp}
+		comment, _, _ := vs.commentCommonRepo.GetComment(ctx, op.ObjectID)
+		question, _, _ := vs.questionRepo.GetQuestion(ctx, comment.QuestionID)
+		isAI := comment.IsAI
+		isScore := question.Score > 0
+		voteUp := constant.RankSubjectCommentUpVoteKey
+		if isAI {
+			voteUp = constant.RankSubjectCommentAIUpVoteKey
+			if isScore {
+				voteUp = constant.RankSubjectCommentScoreAIUpVoteKey
+			}
+		} else if isScore {
+			voteUp = constant.RankSubjectCommentScoreUpVoteKey
+		}
+		actions = []string{voteUp}
 	}
 
 	for _, action := range actions {
@@ -270,7 +308,8 @@ func (vs *VoteService) getActivities(ctx context.Context, op *schema.VoteOperati
 			log.Warnf("get config by key error: %v", err)
 			continue
 		}
-		t.ActivityType, t.Rank = cfg.ID, cfg.GetIntValue()
+		floatVal := cfg.GetFloatValue()
+		t.ActivityType, t.Rank = cfg.ID, floatVal
 
 		if strings.Contains(action, "voted") {
 			t.ActivityUserID = op.ObjectCreatorUserID

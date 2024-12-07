@@ -10,7 +10,6 @@ import (
 	"github.com/apache/incubator-answer/internal/entity"
 	"github.com/apache/incubator-answer/internal/repo/unique"
 	"github.com/apache/incubator-answer/internal/repo/user_notification_config"
-	"github.com/apache/incubator-answer/internal/schema"
 	"github.com/apache/incubator-answer/internal/service/assetbun"
 	"github.com/apache/incubator-answer/internal/service/notice_queue"
 	"github.com/apache/incubator-answer/pkg/htmltext"
@@ -46,36 +45,16 @@ type assetBunRepo struct {
 }
 
 func (ab *assetBunRepo) OperateScoreNotifySendFollow(ctx context.Context, queue notice_queue.NotificationQueueService, sendUID string, qid string, recUID string, title string, action string, pay int, getPoint int) {
-	queue.Send(ctx, &schema.NotificationMsg{
-		TriggerUserID:       sendUID,
-		ObjectID:            qid,
-		ReceiverUserID:      recUID,
-		Type:                1,
-		Title:               title,
-		ObjectType:          constant.QuestionObjectType,
-		NotificationAction:  action,
-		NoNeedPushAllFollow: false,
-		ExtraInfo: map[string]string{
-			"Integral": strconv.Itoa(int(getPoint)),
-			"Pay":      strconv.Itoa(int(pay)),
-		},
+	notice_queue.OperateCustomNotifySend(ctx, queue, constant.QuestionObjectType, true, sendUID, qid, recUID, title, action, map[string]string{
+		"Integral": strconv.Itoa(int(getPoint)),
+		"Pay":      strconv.Itoa(int(pay)),
 	})
 }
 
 func (ab *assetBunRepo) OperateScoreNotifySend(ctx context.Context, queue notice_queue.NotificationQueueService, sendUID string, qid string, recUID string, title string, action string, pay int, getPoint int) {
-	queue.Send(ctx, &schema.NotificationMsg{
-		TriggerUserID:       sendUID,
-		ObjectID:            qid,
-		ReceiverUserID:      recUID,
-		Type:                1,
-		Title:               title,
-		ObjectType:          constant.QuestionObjectType,
-		NotificationAction:  action,
-		NoNeedPushAllFollow: true,
-		ExtraInfo: map[string]string{
-			"Integral": strconv.Itoa(int(getPoint)),
-			"Pay":      strconv.Itoa(int(pay)),
-		},
+	notice_queue.OperateCustomNotifySend(ctx, queue, constant.QuestionObjectType, false, sendUID, qid, recUID, title, action, map[string]string{
+		"Integral": strconv.Itoa(int(getPoint)),
+		"Pay":      strconv.Itoa(int(pay)),
 	})
 }
 
@@ -233,6 +212,10 @@ func createRefFile(ctx context.Context, engine *xorm.Engine, user *assetbun.User
 
 // 同步Answer用户数据到AssetBun
 func SyncUserToAB(ctx context.Context, engine *xorm.Engine, user *entity.User) {
+	has, err := engine.Where("e_mail = ?", user.EMail).Get(user)
+	if err != nil || !has {
+		return
+	}
 	// 从UserSync表中获取用户
 	userSync := new(assetbun.Users)
 	userSync.ID = user.ID

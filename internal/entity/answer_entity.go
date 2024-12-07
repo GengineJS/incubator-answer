@@ -27,9 +27,14 @@ const (
 	AnswerSearchOrderByVote    = "vote"
 	AnswerSearchOrderByTimeAsc = "created"
 
-	AnswerStatusAvailable = 1
-	AnswerStatusDeleted   = 10
-	AnswerStatusPending   = 11
+	AnswerStatusAvailable    = 1
+	AnswerStatusDeleted      = 10
+	AnswerStatusPending      = 11
+	AnswerStatusRecover      = 20
+	AnswerStatusAccepted     = 30
+	AnswerStatusUnAccepted   = 31
+	AnswerStatusAIAccepted   = 32
+	AnswerStatusAIUnAccepted = 33
 )
 
 var AdminAnswerSearchStatus = map[string]int{

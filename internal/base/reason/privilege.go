@@ -47,4 +47,47 @@ const (
 	RankTagAuditLabel                  = "privilege.rank_tag_audit_label"
 	RankTagEditWithoutReviewLabel      = "privilege.rank_tag_edit_without_review_label"
 	RankTagSynonymLabel                = "privilege.rank_tag_synonym_label"
+	// 发布相关
+	RankSubjectContributeLabel      = "privilege.rank_subject_contribute_label"
+	RankSubjectScoreContributeLabel = "privilege.rank_subject_score_contribute_label"
+	// 当主题回复被采纳时，主题的作者能获取的贡献值
+	RankSubjectAcceptLabel = "privilege.rank_subject_accept_label"
+	// 当主题AI回复被采纳时，主题的作者能获取的贡献值
+	RankSubjectAIAcceptLabel = "privilege.rank_subject_ai_accept_label"
+	// 当积分主题回复被采纳时，主题的作者能获取的贡献值
+	RankSubjectScoreAcceptLabel = "privilege.rank_subject_score_accept_label"
+	// 当积分主题AI回复被采纳时，主题的作者能获取的贡献值
+	RankSubjectScoreAIAcceptLabel          = "privilege.rank_subject_score_ai_accept_label"
+	RankSubjectAcceptedLabel               = "privilege.rank_subject_accepted_label"
+	RankSubjectAIAcceptedLabel             = "privilege.rank_subject_ai_accepted_label"
+	RankSubjectScoreAcceptedLabel          = "privilege.rank_subject_score_accepted_label"
+	RankSubjectAIScoreAcceptedLabel        = "privilege.rank_subject_ai_score_accepted_label"
+	RankSubjectAnswerLabel                 = "privilege.rank_subject_answer_label"
+	RankSubjectScoreAnswerLabel            = "privilege.rank_subject_score_answer_label"
+	RankSubjectAIAnswerLabel               = "privilege.rank_subject_ai_answer_label"
+	RankSubjectAIScoreAnswerLabel          = "privilege.rank_subject_ai_score_answer_label"
+	RankSubjectScoreAIAcceptedGetLabel     = "privilege.rank_subject_score_ai_accepted_get_label"
+	RankSubjectUpVotedLabel                = "privilege.rank_subject_up_vote_label"
+	RankSubjectDownVotedLabel              = "privilege.rank_subject_down_vote_label"
+	RankSubjectScoreUpVotedLabel           = "privilege.rank_subject_score_up_vote_label"              // 每个积分主题的点赞所获得的声望
+	RankSubjectScoreDownVotedLabel         = "privilege.rank_subject_score_down_vote_label"            // 每个积分主题的点踩所失去的声望
+	RankSubjectCollectLabel                = "privilege.rank_subject_collect_label"                    // 对主题的每次收藏所能获得的声望
+	RankSubjectScoreCollectLabel           = "privilege.rank_subject_score_collect_label"              // 对积分主题的每次收藏所能获得的声望
+	RankSubjectAnswerUpVotedLabel          = "privilege.rank_subject_answer_up_vote_label"             // 对主题回复的每个点赞能获取的声望
+	RankSubjectAnswerDownVotedLabel        = "privilege.rank_subject_answer_down_vote_label"           // 对主题回复的每个点踩会失去的声望
+	RankSubjectAnswerScoreUpVotedLabel     = "privilege.rank_subject_answer_score_up_vote_label"       // 对积分主题回复的每个点赞能获取的声望
+	RankSubjectAnswerScoreDownVotedLabel   = "privilege.rank_subject_answer_score_down_vote_label"     // 对积分主题回复的每个点踩会失去的声望
+	RankSubjectAnswerAIUpVotedLabel        = "privilege.rank_subject_answer_ai_up_vote_label"          // 对AI回复的每个点赞能获取的声望
+	RankSubjectAnswerAIDownVotedLabel      = "privilege.rank_subject_answer_ai_down_vote_label"        // 对AI回复的每个点踩会失去的声望
+	RankSubjectAnswerScoreAIUpVotedLabel   = "privilege.rank_subject_answer_score_ai_up_vote_label"    // 对积分主题AI回复的每个点赞能获取的声望
+	RankSubjectAnswerScoreAIDownVotedLabel = "privilege.rank_subject_answer_score_ai_down_vote_label"  // 对积分主题AI回复的每个点踩会失去的声望
+	RankSubjectCommentUpVoteLabel          = "privilege.rank_subject_comment_up_vote_label"            // 对主题评论的每个点赞能获取的声望
+	RankSubjectCommentDownVoteLabel        = "privilege.rank_subject_comment_down_vote_label"          // 对主题评论的每个点踩会失去的声望
+	RankSubjectCommentScoreUpVoteLabel     = "privilege.rank_subject_comment_score_up_vote_label"      // 对积分主题评论的每个点赞能获取的声望
+	RankSubjectCommentScoreDownVoteLabel   = "privilege.rank_subject_comment_score_down_vote_label"    // 对积分主题评论的每个点踩会失去的声望
+	RankSubjectCommentAIUpVoteLabel        = "privilege.rank_subject_comment_ai_up_vote_label"         // 对AI评论的每个点赞能获取的声望
+	RankSubjectCommentAIDownVoteLabel      = "privilege.rank_subject_comment_ai_down_vote_label"       // 对AI评论的每个点踩会失去的声望
+	RankSubjectCommentScoreAIUpVoteLabel   = "privilege.rank_subject_comment_score_ai_up_vote_label"   // 对积分主题AI评论的每个点赞能获取的声望
+	RankSubjectCommentScoreAIDownVoteLabel = "privilege.rank_subject_comment_score_ai_down_vote_label" // 对积分主题AI评论的每个点踩会失去的声望
+	RankScoreExchangeLabel                 = "privilege.rank_score_exchange_label"                     // 多少声望可以兑换1积分
 )

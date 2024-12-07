@@ -23,6 +23,8 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/apache/incubator-answer/internal/service/assetbun"
+	"github.com/apache/incubator-answer/internal/service/config"
+	"math"
 	"time"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
@@ -69,6 +71,7 @@ type AnswerService struct {
 	externalNotificationQueueService notice_queue.ExternalNotificationQueueService
 	activityQueueService             activity_queue.ActivityQueueService
 	reviewService                    *review.ReviewService
+	configService                    *config.ConfigService
 }
 
 func NewAnswerService(
@@ -89,6 +92,7 @@ func NewAnswerService(
 	externalNotificationQueueService notice_queue.ExternalNotificationQueueService,
 	activityQueueService activity_queue.ActivityQueueService,
 	reviewService *review.ReviewService,
+	configService *config.ConfigService,
 ) *AnswerService {
 	return &AnswerService{
 		answerRepo:                       answerRepo,
@@ -108,6 +112,7 @@ func NewAnswerService(
 		externalNotificationQueueService: externalNotificationQueueService,
 		activityQueueService:             activityQueueService,
 		reviewService:                    reviewService,
+		configService:                    configService,
 	}
 }
 
@@ -179,6 +184,7 @@ func (as *AnswerService) RemoveAnswer(ctx context.Context, req *schema.RemoveAns
 		OriginalObjectID: answerInfo.ID,
 		ActivityTypeKey:  constant.ActAnswerDeleted,
 	})
+	as.answerRepo.CalculatedContribution(ctx, entity.AnswerStatusDeleted, answerInfo.ID)
 	return
 }
 
@@ -217,6 +223,7 @@ func (as *AnswerService) RecoverAnswer(ctx context.Context, req *schema.RecoverA
 		OriginalObjectID: answerInfo.ID,
 		ActivityTypeKey:  constant.ActAnswerUndeleted,
 	})
+	as.answerRepo.CalculatedContribution(ctx, entity.AnswerStatusRecover, answerInfo.ID)
 	return nil
 }
 
@@ -300,6 +307,7 @@ func (as *AnswerService) Insert(ctx context.Context, req *schema.AnswerAddReq) (
 		OriginalObjectID: questionInfo.ID,
 		ActivityTypeKey:  constant.ActQuestionAnswered,
 	})
+	as.answerRepo.CalculatedContribution(ctx, entity.AnswerStatusAvailable, insertData.ID)
 	return insertData.ID, nil
 }
 
@@ -443,8 +451,37 @@ func (as *AnswerService) AcceptAnswer(ctx context.Context, req *schema.AcceptAns
 	if req.Score > 0 {
 		acceptUID := acceptedAnswerInfo.UserID
 		realScore := as.assetbun.GetRealPublishScore(ctx, acceptUID, req.Score)
-		as.assetbun.OffsetScore(ctx, acceptUID, realScore)
-		as.assetbun.OperateScoreNotifySend(ctx, as.notificationQueueService, questionInfo.UserID, questionInfo.ID, acceptUID, questionInfo.Title, constant.NotificationPayIntegral, questionInfo.Score, realScore)
+		// 能获取的积分百分比，因为如果用AI回复后被采纳，可能就没有积分收益
+		getRatio := 100.0
+		isAI := acceptedAnswerInfo.IsAI
+		if isAI {
+			scoreGet, _ := as.configService.GetConfigByKey(ctx, constant.RankSubjectScoreAIAcceptedGetKey)
+			getRatio = float64(scoreGet.GetIntValue())
+		}
+		getRatio /= 100.0
+		allotScore := realScore
+		if getRatio > 0 {
+			if questionInfo.UserID == acceptedAnswerInfo.UserID && !isAI {
+				as.assetbun.OffsetScore(ctx, questionInfo.UserID, req.Score)
+				as.assetbun.OperateScoreNotifySend(ctx, as.notificationQueueService, questionInfo.UserID, questionInfo.ID, questionInfo.UserID, questionInfo.Title, constant.NotificationAccpetedSelfIntegral, questionInfo.Score, req.Score)
+			} else {
+				if getRatio > 1 {
+					getRatio = 1
+				}
+				action := constant.NotificationAcceptedGetIntegral
+				if isAI {
+					action = constant.NotificationAIAcceptedGetIntegral
+				}
+				allotScore = int(math.Round(float64(realScore) * getRatio))
+				as.assetbun.OffsetScore(ctx, acceptUID, allotScore)
+				as.assetbun.OperateScoreNotifySend(ctx, as.notificationQueueService, req.UserID, questionInfo.ID, acceptUID, questionInfo.Title, action, questionInfo.Score, allotScore)
+			}
+		}
+		backScore := realScore - allotScore
+		if backScore > 0 {
+			as.assetbun.OffsetScore(ctx, questionInfo.UserID, backScore)
+			as.assetbun.OperateScoreNotifySend(ctx, as.notificationQueueService, req.UserID, questionInfo.ID, questionInfo.UserID, questionInfo.Title, constant.NotificationAIAcceptedIntegral, questionInfo.Score, backScore)
+		}
 	}
 	as.updateAnswerRank(ctx, req.UserID, questionInfo, acceptedAnswerInfo, oldAnswerInfo)
 	return nil

@@ -665,6 +665,15 @@ export enum ContentType {
   AIPIC,
 }
 
+export const I18nContentType = [
+  'question',
+  'question',
+  'article',
+  'assetbun',
+  'bounty',
+  'aipic',
+];
+
 export const QueryContentTypeFromStr = {
   questions: ContentType.QUESTION,
   articles: ContentType.ARTICLE,

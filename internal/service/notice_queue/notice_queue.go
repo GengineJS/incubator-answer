@@ -21,7 +21,6 @@ package notice_queue
 
 import (
 	"context"
-
 	"github.com/apache/incubator-answer/internal/schema"
 	"github.com/segmentfault/pacman/log"
 )
@@ -66,4 +65,21 @@ func NewNotificationQueueService() NotificationQueueService {
 	ns.Queue = make(chan *schema.NotificationMsg, 128)
 	ns.working()
 	return ns
+}
+
+func OperateCustomNotifySend(ctx context.Context, queue NotificationQueueService, objType string, pushFollows bool, sendUID string, qid string, recUID string, title string, action string, extraInfo map[string]string) {
+	// 创建NotificationMsg结构体
+	msg := &schema.NotificationMsg{
+		TriggerUserID:       sendUID,
+		ObjectID:            qid,
+		ReceiverUserID:      recUID,
+		Type:                1,
+		Title:               title,
+		ObjectType:          objType,
+		NotificationAction:  action,
+		NoNeedPushAllFollow: !pushFollows,
+		ExtraInfo:           extraInfo, // 使用传入的extraInfo
+	}
+	// 发送通知
+	queue.Send(ctx, msg)
 }

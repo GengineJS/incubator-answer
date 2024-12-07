@@ -21,7 +21,6 @@ package review
 
 import (
 	"context"
-
 	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/base/pager"
 	"github.com/apache/incubator-answer/internal/base/reason"
@@ -269,6 +268,7 @@ func (cs *ReviewService) updateObjectStatus(ctx context.Context, review *entity.
 			user, _, _ := cs.userRepo.GetByUserID(ctx, questionInfo.UserID)
 			questionInfo.Show = entity.QuestionShow
 			cs.questionRepo.UpdateQuestion(ctx, questionInfo, []string{"show"})
+			cs.questionRepo.CalculatedContribution(ctx, entity.QuestionStatusAvailable, questionInfo.ID)
 			cs.externalNotificationQueueService.Send(ctx,
 				schema.CreateNewQuestionNotificationMsg(questionInfo.ID, questionInfo.Title, questionInfo.UserID, questionInfo.Score, entity.QuestionType(questionInfo.ContentType), user.DisplayName, tags))
 		}
@@ -296,6 +296,9 @@ func (cs *ReviewService) updateObjectStatus(ctx context.Context, review *entity.
 		}
 		if err := cs.answerRepo.UpdateAnswerStatus(ctx, answerInfo.ID, answerInfo.Status); err != nil {
 			return err
+		}
+		if isApprove {
+			cs.answerRepo.CalculatedContribution(ctx, entity.AnswerStatusAvailable, answerInfo.ID)
 		}
 		questionInfo, exist, err := cs.questionRepo.GetQuestion(ctx, answerInfo.QuestionID)
 		if err != nil {

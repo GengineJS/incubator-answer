@@ -37,7 +37,10 @@ import {
 import { useQuestionList } from '@/services';
 import * as Type from '@/common/interface';
 import { userCenter, floppyNavigation, Storage } from '@/utils';
-import { QUESTIONS_ORDER_STORAGE_KEY } from '@/common/constants';
+import {
+  I18nContentType,
+  QUESTIONS_ORDER_STORAGE_KEY,
+} from '@/common/constants';
 import {
   QUESTION_ORDER_KEYS,
   TYPE_ORDER_KEYS,
@@ -66,7 +69,9 @@ const Questions: FC = () => {
   reqParams.content_type = getUrlQuestionType();
   const { data: listData, isLoading: listLoading } = useQuestionList(reqParams);
   const isIndexPage = useMatch('/');
-  let pageTitle = t('questions', { keyPrefix: 'page_title' });
+  let pageTitle = t(I18nContentType[reqParams.content_type], {
+    keyPrefix: 'page_title',
+  });
   let slogan = '';
   const { siteInfo } = siteInfoStore();
   if (isIndexPage) {

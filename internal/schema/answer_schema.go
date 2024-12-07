@@ -121,6 +121,7 @@ type AnswerInfo struct {
 	AIReplied      bool              `json:"ai_replied"`
 	// MemberActions
 	MemberActions []*PermissionMemberAction `json:"member_actions"`
+	BuyerUserIds  []string                  `json:"buyer_user_ids"`
 }
 
 type AdminAnswerInfo struct {

@@ -113,6 +113,142 @@ backend:
       other: 编辑标签描述无需审核
     rank_tag_synonym_label:
       other: 管理标签同义词
+    rank_subject_contribute_label:
+      other: 发布任何主题时会获取的贡献值
+    rank_subject_score_contribute_label:
+      other: 发布任何积分主题时会获取的贡献值
+    rank_subject_accept_label:
+      other: 当主题回复被采纳时，主题的作者能获取的贡献值
+    rank_subject_score_accept_label:
+      other: 当积分主题回复被采纳时，主题的作者能获取的贡献值
+    rank_subject_ai_accept_label:
+      other: 当主题AI回复被采纳时，主题的作者能获取的贡献值
+    rank_subject_score_ai_accept_label:
+      other: 当积分主题AI回复被采纳时，主题的作者能获取的贡献值
+    rank_subject_accepted_label:
+      other: 主题回复被采纳时会获取的贡献值
+    rank_subject_ai_accepted_label:
+      other: AI主题回复被采纳时会获取的贡献值
+    rank_subject_score_accepted_label:
+      other: 积分主题回复被采纳时会获取的贡献值
+    rank_subject_ai_score_accepted_label:
+      other: AI回复积分主题被采纳时会获取的贡献值
+    rank_subject_answer_label:
+      other: 回复主题时会获取的贡献值
+    rank_subject_score_answer_label:
+      other: 回复积分主题时会获取的贡献值
+    rank_subject_ai_answer_label:
+      other: AI回复主题时会获取的贡献值
+    rank_subject_ai_score_answer_label:
+      other: AI回复积分主题时会获取的贡献值
+    rank_subject_score_ai_accepted_get_label:
+      other: AI回复积分主题被采纳时会获取的积分百分比
+    rank_subject_up_vote_label:
+      other: 主题点赞可以获得的声望值
+    rank_subject_down_vote_label:
+      other: 主题点踩会失去的声望值
+    rank_subject_score_up_vote_label:
+      other: 每个积分主题的点赞所获得的声望
+    rank_subject_score_down_vote_label:
+      other: 每个积分主题的点踩所失去的声望
+    rank_subject_collect_label:
+      other: 对主题的每次收藏所能获得的声望
+    rank_subject_score_collect_label:
+      other: 对积分主题的每次收藏所能获得的声望
+    rank_subject_answer_up_vote_label:
+      other: 对主题回复的每个点赞能获取的声望
+    rank_subject_answer_down_vote_label:
+      other: 对主题回复的每个点踩会失去的声望
+    rank_subject_answer_score_up_vote_label:
+      other: 对积分主题回复的每个点赞能获取的声望
+    rank_subject_answer_score_down_vote_label:
+      other: 对积分主题回复的每个点踩会失去的声望
+    rank_subject_answer_ai_up_vote_label:
+      other: 对AI回复的每个点赞能获取的声望
+    rank_subject_answer_ai_down_vote_label:
+      other: 对AI回复的每个点踩会失去的声望
+    rank_subject_answer_score_ai_up_vote_label:
+      other: 对积分主题AI回复的每个点赞能获取的声望
+    rank_subject_answer_score_ai_down_vote_label:
+      other: 对积分主题AI回复的每个点踩会失去的声望
+    rank_subject_comment_up_vote_label:
+      other: 对主题评论的每个点赞能获取的声望
+    rank_subject_comment_down_vote_label:
+      other: 对主题评论的每个点踩会失去的声望
+    rank_subject_comment_score_up_vote_label:
+      other: 对积分主题评论的每个点赞能获取的声望
+    rank_subject_comment_score_down_vote_label:
+      other: 对积分主题评论的每个点踩会失去的声望
+    rank_subject_comment_ai_up_vote_label:
+      other: 对AI评论的每个点赞能获取的声望
+    rank_subject_comment_ai_down_vote_label:
+      other: 对AI评论的每个点踩会失去的声望
+    rank_subject_comment_score_ai_up_vote_label:
+      other: 对积分主题AI评论的每个点赞能获取的声望
+    rank_subject_comment_score_ai_down_vote_label:
+      other: 对积分主题AI评论的每个点踩会失去的声望
+    rank_score_exchange_label:
+      other: 多少声望可以兑换1积分
+    rank_article_contribute_label:
+      other: 发布文章时会获取的贡献值
+    rank_article_score_contribute_label:
+      other: 发布积分文章时会获取的贡献值
+    rank_article_accepted_label:
+      other: 文章被采纳时会获取的贡献值
+    rank_article_score_accepted_label:
+      other: 积分文章回复被采纳时会获取的贡献值
+    rank_article_ai_score_accepted_label:
+      other: 积分文章AI回复被采纳时会获取的贡献值
+    rank_article_answer_label:
+      other: 回复文章时会获取的贡献值
+    rank_article_score_answer_label:
+      other: 回复积分文章时会获取的贡献值
+    rank_article_ai_answer_label:
+      other: AI回复文章时会获取的贡献值
+    rank_article_ai_score_answer_label:
+      other: AI回复积分文章时会获取的贡献值
+    rank_article_score_ai_accepted_get_label:
+      other: AI回复积分文章被采纳时会获取的积分百分比
+
+    rank_assetbun_contribute_label:
+      other: 发布云盘资源时会获取的贡献值
+    rank_assetbun_score_contribute_label:
+      other: 发布积分云盘资源时会获取的贡献值
+    rank_assetbun_accepted_label:
+      other: 云盘资源回复被采纳时会获取的贡献值
+    rank_assetbun_score_accepted_label:
+      other: 积分云盘资源回复被采纳时会获取的贡献值
+    rank_assetbun_ai_score_accepted_label:
+      other: 积分云盘资源ai回复被采纳时会获取的贡献值
+    rank_assetbun_answer_label:
+      other: 云盘资源回复时会获取的贡献值
+    rank_assetbun_score_answer_label:
+      other: 积分云盘资源回复时会获取的贡献值
+    rank_assetbun_ai_answer_label:
+      other: AI回复云盘资源时会获取的贡献值
+    rank_assetbun_ai_score_answer_label:
+      other: AI回复积分云盘资源时会获取的贡献值
+    rank_assetbun_score_ai_accepted_get_label:
+      other: AI回复积分云盘资源时会获取的积分百分比
+
+    rank_bounty_contribute_label:
+      other: 发布项目需求时会获取的贡献值
+    rank_bounty_accepted_label:
+      other: 项目需求回复被采纳时会获取的贡献值
+    rank_bounty_score_accepted_label:
+      other: 积分项目需求被采纳时会获取的贡献值
+    rank_bounty_ai_score_accepted_label:
+      other: 积分项目需求ai回复被采纳时会获取的贡献值
+    rank_bounty_answer_label:
+      other: 回复项目需求时会获取的贡献值
+    rank_bounty_score_answer_label:
+      other: 回复积分项目需求时会获取的贡献值
+    rank_bounty_ai_answer_label:
+      other: AI回复项目需求时会获取的贡献值
+    rank_bounty_ai_score_answer_label:
+      other: AI回复积分项目需求时会获取的贡献值
+    rank_bounty_score_ai_accepted_get_label:
+      other: AI回复积分项目需求被采纳会获取的积分百分比
   email:
     other: 邮箱
   e_mail:
@@ -388,24 +524,58 @@ backend:
     action:
       update_question:
         other: 更新了问题
+      add_subject:
+        other: "发布了{{.ContentType}}并获取了+{{.Rank}}声望在"
+      add_answer:
+        other: "提交了{{.ContentType}}的回复并获得了+{{.Rank}}声望在"
+      add_ai_answer:
+        other: "提交了{{.ContentType}}的AI回复并获得了+{{.Rank}}声望在"
+      delete_answer:
+        other: "提交的{{.ContentType}}的回复被删除了并扣除了-{{.Rank}}声望在"
+      delete_ai_answer:
+        other: "提交的{{.ContentType}}的AI回复被删除了并扣除了-{{.Rank}}声望在"
+      closed_subject:
+        other: "的{{.ContentType}}被管理员关闭了并扣除了-{{.Rank}}声望在"
+      reopen_subject:
+        other: "的{{.ContentType}}被管理员重新上架了并获得了+{{.Rank}}声望在"
+      recover_subject:
+        other: "的{{.ContentType}}被删除后已重新恢复并获得了+{{.Rank}}声望在"
+      recover_answer:
+        other: "提交的{{.ContentType}}的回复被删除后已重新恢复并获得了+{{.Rank}}声望在"
+      ai_recover_answer:
+        other: "提交的{{.ContentType}}的AI回复被删除后已重新恢复并获得了+{{.Rank}}声望在"
+      delete_subject:
+        other: "删除了{{.ContentType}}并失去了-{{.Rank}}声望在"
       sub_integral:
-        other: "支付了{{.Integral}}积分在"
+        other: "支付了-{{.Integral}}积分在"
       add_integral:
-        other: "获得了{{.Integral}}积分在"
+        other: "获得了+{{.Integral}}积分在"
       pay_integral:
-        other: "支付了{{.Pay}}积分, 且您获得了{{.Integral}}积分在"
+        other: "支付了-{{.Pay}}积分, 且您获得了+{{.Integral}}积分在"
+      accepted_get_integral:
+        other: "采纳了您的回复, 且您获得了+{{.Integral}}积分在"
+      ai_accepted_get_integral:
+        other: "采纳了您的AI回复, 且您获得了+{{.Integral}}积分在"
+      accpeted_self_integral:
+        other: "采纳了自己的回复，为您返还了+{{.Integral}}积分在"
+      ai_accepted_integral:
+        other: "采纳了AI回复, 为您返还了+{{.Integral}}积分在"
       delete_back_integral:
-        other: "删除了帖子, 返还{{.Integral}}积分在"
+        other: "删除了帖子, 返还+{{.Integral}}积分在"
       update_sub_integral:
-        other: "更新了帖子的积分, 额外支付{{.Integral}}积分在"
+        other: "更新了帖子的积分, 额外支付-{{.Integral}}积分在"
       update_back_integral:
-        other: "更新了帖子的积分, 返还{{.Integral}}积分在"
+        other: "更新了帖子的积分, 返还+{{.Integral}}积分在"
       answer_the_question:
         other: 回复了问题
       update_answer:
         other: 更新了答案
       accept_answer:
         other: 采纳了答案
+      accept_rank_answer:
+        other: "采纳了答案，并获得+{{.Rank}}声望"
+      cancel_accept_rank_answer:
+        other: "把您的答案取消采纳, 并失去了-{{.Rank}}声望"
       comment_question:
         other: 评论了问题
       comment_answer:
@@ -531,7 +701,11 @@ ui:
     next: 下一页
   page_title:
     question: 问题
-    questions: 问题
+    questions: 主题
+    article: 文章
+    bounty: 项目需求
+    assetbun: 云盘资源
+    aipic: 图片
     tag: 标签
     tags: 标签
     tag_wiki: 标签维基
@@ -816,7 +990,7 @@ ui:
       newest: 最新
     button_follow: 关注
     button_following: 已关注
-    tag_label: 个问题
+    tag_label: 个主题
     search_placeholder: 通过标签名称过滤
     no_desc: 此标签无描述。
     more: 更多
@@ -1355,7 +1529,7 @@ ui:
     edit: 编辑
     save: 保存
     follow_tag_tip: 关注标签来筛选你的问题列表。
-    hot_questions: 热门问题
+    hot_questions: 热门主题
     all_questions: 全部问题
     score_payment: 积分付款解锁内容
     is_score_payment: 该帖子需要积分付款才可解锁，是否解锁?(如积分不足会自动跳转至积分充值界面)
@@ -1702,6 +1876,11 @@ ui:
         content: 被封禁的用户将无法登录。
     questions:
       page_title: 问题
+      question: 问题
+      article: 文章
+      bounty: 项目需求
+      assetbun: 云盘资源
+      aipic: 图片
       unlisted: 已隐藏
       post: 标题
       votes: 得票数

@@ -38,7 +38,7 @@ type Activity struct {
 	OriginalObjectID string    `xorm:"not null default 0 BIGINT(20) original_object_id"`
 	ActivityType     int       `xorm:"not null INT(11) activity_type"`
 	Cancelled        int       `xorm:"not null default 0 TINYINT(4) cancelled"`
-	Rank             int       `xorm:"not null default 0 INT(11) rank"`
+	Rank             int       `xorm:"not null default 0 FLOAT rank"`
 	HasRank          int       `xorm:"not null default 0 TINYINT(4) has_rank"`
 	RevisionID       int64     `xorm:"not null default 0 BIGINT(20) revision_id"`
 }

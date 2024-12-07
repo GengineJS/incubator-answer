@@ -57,7 +57,7 @@ type VoteActivity struct {
 	ActivityType   int
 	ActivityUserID string
 	TriggerUserID  string
-	Rank           int
+	Rank           float32
 }
 
 func (v *VoteActivity) HasRank() int {

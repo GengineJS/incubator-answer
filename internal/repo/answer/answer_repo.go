@@ -21,7 +21,14 @@ package answer
 
 import (
 	"context"
+	"fmt"
+	"github.com/apache/incubator-answer/internal/base/translator"
+	"github.com/apache/incubator-answer/internal/service/config"
+	"github.com/apache/incubator-answer/internal/service/notice_queue"
+	questioncommon "github.com/apache/incubator-answer/internal/service/question_common"
+	usercommon "github.com/apache/incubator-answer/internal/service/user_common"
 	"time"
+	"unicode/utf8"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/base/data"
@@ -42,10 +49,14 @@ import (
 
 // answerRepo answer repository
 type answerRepo struct {
-	data         *data.Data
-	uniqueIDRepo unique.UniqueIDRepo
-	userRankRepo rank.UserRankRepo
-	activityRepo activity_common.ActivityRepo
+	data                     *data.Data
+	uniqueIDRepo             unique.UniqueIDRepo
+	userRankRepo             rank.UserRankRepo
+	activityRepo             activity_common.ActivityRepo
+	questionRepo             questioncommon.QuestionRepo
+	configService            *config.ConfigService
+	userRepo                 usercommon.UserRepo
+	notificationQueueService notice_queue.NotificationQueueService
 }
 
 // NewAnswerRepo new repository
@@ -54,12 +65,130 @@ func NewAnswerRepo(
 	uniqueIDRepo unique.UniqueIDRepo,
 	userRankRepo rank.UserRankRepo,
 	activityRepo activity_common.ActivityRepo,
+	questionRepo questioncommon.QuestionRepo,
+	configService *config.ConfigService,
+	userRepo usercommon.UserRepo,
+	notificationQueueService notice_queue.NotificationQueueService,
 ) answercommon.AnswerRepo {
 	return &answerRepo{
-		data:         data,
-		uniqueIDRepo: uniqueIDRepo,
-		userRankRepo: userRankRepo,
-		activityRepo: activityRepo,
+		data:                     data,
+		uniqueIDRepo:             uniqueIDRepo,
+		userRankRepo:             userRankRepo,
+		activityRepo:             activityRepo,
+		questionRepo:             questionRepo,
+		configService:            configService,
+		userRepo:                 userRepo,
+		notificationQueueService: notificationQueueService,
+	}
+}
+
+func (qr *answerRepo) GetBuyers(ctx context.Context, qid string) ([]entity.QuestionBuyer, error) {
+	buyers := make([]entity.QuestionBuyer, 0)
+	err := qr.data.DB.Where("question_id = ?", qid).Find(&buyers)
+	if err != nil {
+		return nil, err
+	}
+	return buyers, nil
+}
+func truncateWithEllipsisForUTF8(s string, maxLength int) string {
+	if utf8.RuneCountInString(s) <= maxLength {
+		return s
+	}
+	if maxLength <= 3 {
+		return s[:maxLength]
+	}
+	runes := []rune(s)
+	return string(runes[:maxLength-3]) + "..."
+}
+func (ar *answerRepo) CalculatedContribution(ctx context.Context, status int, aid string) {
+	answer, has, err := ar.GetAnswer(ctx, aid)
+	question, has, err := ar.questionRepo.GetQuestion(ctx, uid.DeShortID(answer.QuestionID))
+	if err != nil {
+		return
+	}
+	if !has {
+		return
+	}
+	// TODO: 先把AssetBun类型排除,后续有需要再加吧
+	if question.ContentType == int(entity.TypeAssetBun) || answer.Status == entity.AnswerStatusPending || question.Status == entity.QuestionStatusPending {
+		return
+	}
+	score := question.Score
+	var cfg *entity.Config
+	lang := handler.GetLangByCtx(ctx)
+	var contentTypeStr string
+	if int(entity.TypeBounty) == question.ContentType {
+		contentTypeStr = translator.Tr(lang, constant.EmailBountyContentType)
+	}
+	isAI := answer.IsAI
+	if score > 0 {
+		if !isAI {
+			cfg, _ = ar.configService.GetConfigByKey(ctx, constant.RankSubjectScoreAnswerKey)
+		} else {
+			cfg, _ = ar.configService.GetConfigByKey(ctx, constant.RankSubjectAIScoreAnswerKey)
+		}
+		switch question.ContentType {
+		case int(entity.TypeQuestion):
+			contentTypeStr = translator.Tr(lang, constant.EmailQuestionScoreContentType)
+		case int(entity.TypeArticle):
+			contentTypeStr = translator.Tr(lang, constant.EmailArticleScoreContentType)
+		case int(entity.TypeAssetBun):
+			contentTypeStr = translator.Tr(lang, constant.EmailAssetBunScoreContentType)
+		}
+	} else {
+		if !isAI {
+			cfg, _ = ar.configService.GetConfigByKey(ctx, constant.RankSubjectAnswerKey)
+		} else {
+			cfg, _ = ar.configService.GetConfigByKey(ctx, constant.RankSubjectAIAnswerKey)
+		}
+		switch question.ContentType {
+		case int(entity.TypeQuestion):
+			contentTypeStr = translator.Tr(lang, constant.EmailQuestionContentType)
+		case int(entity.TypeArticle):
+			contentTypeStr = translator.Tr(lang, constant.EmailArticleContentType)
+		case int(entity.TypeAssetBun):
+			contentTypeStr = translator.Tr(lang, constant.EmailAssetBunContentType)
+		}
+	}
+	var isAdd bool
+	var action string
+	switch status {
+	case entity.AnswerStatusRecover:
+		isAdd = true
+		if !isAI {
+			action = constant.NotificationRecoverAnswer
+		} else {
+			action = constant.NotificationAIRecoverAnswer
+		}
+	case entity.AnswerStatusAvailable:
+		isAdd = true
+		if !isAI {
+			action = constant.NotificationAddAnswer
+		} else {
+			action = constant.NotificationAddAIAnswer
+		}
+	case entity.AnswerStatusDeleted:
+		isAdd = false
+		if !isAI {
+			action = constant.NotificationDeleteAnswer
+		} else {
+			action = constant.NotificationDeleteAIAnswer
+		}
+	}
+	contribute := cfg.GetIntValue()
+	if contribute > 0 {
+		user, _, _ := ar.userRepo.GetByUserID(ctx, answer.UserID)
+		if isAdd {
+			user.Rank += contribute
+			ar.userRepo.UpdateInfo(ctx, user)
+		} else {
+			user.Rank -= contribute
+			ar.userRepo.UpdateInfo(ctx, user)
+		}
+		notice_queue.OperateCustomNotifySend(ctx, ar.notificationQueueService, constant.AnswerObjectType, false, answer.UserID, aid, answer.UserID, answer.OriginalText, action, map[string]string{
+			"ContentType": contentTypeStr,
+			"Rank":        fmt.Sprintf("%f", contribute),
+		})
 	}
 }
 

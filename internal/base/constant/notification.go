@@ -25,9 +25,28 @@ const (
 	// NotificationSubIntegral sub integral
 	NotificationSubIntegral = "notification.action.sub_integral"
 	// NotificationSubIntegral add integral
-	NotificationAddIntegral = "notification.action.add_integral"
-	// NotificationSubIntegral pay integral
+	NotificationAddIntegral     = "notification.action.add_integral"
+	NotificationAddSubject      = "notification.action.add_subject"
+	NotificationAddAnswer       = "notification.action.add_answer"
+	NotificationAddAIAnswer     = "notification.action.add_ai_answer"
+	NotificationDeleteAnswer    = "notification.action.delete_answer"
+	NotificationDeleteAIAnswer  = "notification.action.delete_ai_answer"
+	NotificationRecoverAnswer   = "notification.action.recover_answer"
+	NotificationAIRecoverAnswer = "notification.action.ai_recover_answer"
+	NotificationClosedSubject   = "notification.action.closed_subject"
+	NotificationRecoverSubject  = "notification.action.recover_subject"
+	NotificationReOpenSubject   = "notification.action.reopen_subject"
+	NotificationDeleteSubject   = "notification.action.delete_subject"
+	// NotificationPayIntegral pay integral
 	NotificationPayIntegral = "notification.action.pay_integral"
+	// NotificationAcceptedGetIntegral 回复被采纳后可以获得的积分
+	NotificationAcceptedGetIntegral = "notification.action.accepted_get_integral"
+	// NotificationAIAcceptedGetIntegral ai的回复被采纳后可以获得的积分
+	NotificationAIAcceptedGetIntegral = "notification.action.ai_accepted_get_integral"
+	// NotificationAccpetedSelfIntegral 采纳自己的回复，并且不是AI回复，将返还积分
+	NotificationAccpetedSelfIntegral = "notification.action.accpeted_self_integral"
+	// NotificationAIAcceptedIntegral ai accepted integral
+	NotificationAIAcceptedIntegral = "notification.action.ai_accepted_integral"
 	// NotificationDeleteBackIntegral delete back integral
 	NotificationDeleteBackIntegral = "notification.action.delete_back_integral"
 	// NotificationUpdateSubIntegral update sub integral
@@ -44,6 +63,10 @@ const (
 	NotificationUpdateAnswer = "notification.action.update_answer"
 	// NotificationAcceptAnswer accept answer
 	NotificationAcceptAnswer = "notification.action.accept_answer"
+	// NotificationAcceptRankAnswer 采纳答案后，并获得了xx声望
+	NotificationAcceptRankAnswer = "notification.action.accept_rank_answer"
+	// NotificationCancelAcceptRankAnswer 采纳答案被取消了，并失去了xx声望
+	NotificationCancelAcceptRankAnswer = "notification.action.cancel_accept_rank_answer"
 	// NotificationUpVotedTheAnswer up voted the answer
 	NotificationUpVotedTheAnswer = "notification.action.up_voted_answer"
 	// NotificationDownVotedTheAnswer down voted the answer
@@ -118,5 +141,22 @@ var (
 		NotificationDeleteBackIntegral:     4,
 		NotificationUpdateSubIntegral:      4,
 		NotificationUpdateBackIntegral:     4,
+		NotificationAddSubject:             1,
+		NotificationClosedSubject:          1,
+		NotificationReOpenSubject:          1,
+		NotificationDeleteSubject:          1,
+		NotificationAddAnswer:              1,
+		NotificationAddAIAnswer:            1,
+		NotificationDeleteAnswer:           1,
+		NotificationDeleteAIAnswer:         1,
+		NotificationRecoverAnswer:          1,
+		NotificationAIRecoverAnswer:        1,
+		NotificationRecoverSubject:         1,
+		NotificationAcceptRankAnswer:       1,
+		NotificationCancelAcceptRankAnswer: 1,
+		NotificationAIAcceptedIntegral:     4,
+		NotificationAccpetedSelfIntegral:   4,
+		NotificationAIAcceptedGetIntegral:  4,
+		NotificationAcceptedGetIntegral:    4,
 	}
 )

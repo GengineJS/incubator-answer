@@ -21,9 +21,11 @@ package activity
 
 import (
 	"context"
+	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/schema"
-	"github.com/apache/incubator-answer/internal/service/activity_type"
+	answercommon "github.com/apache/incubator-answer/internal/service/answer_common"
 	"github.com/apache/incubator-answer/internal/service/config"
+	questioncommon "github.com/apache/incubator-answer/internal/service/question_common"
 	"github.com/segmentfault/pacman/log"
 )
 
@@ -37,16 +39,22 @@ type AnswerActivityRepo interface {
 type AnswerActivityService struct {
 	answerActivityRepo AnswerActivityRepo
 	configService      *config.ConfigService
+	questionRepo       questioncommon.QuestionRepo
+	answerRepo         answercommon.AnswerRepo
 }
 
 // NewAnswerActivityService new comment service
 func NewAnswerActivityService(
 	answerActivityRepo AnswerActivityRepo,
 	configService *config.ConfigService,
+	questionRepo questioncommon.QuestionRepo,
+	answerRepo answercommon.AnswerRepo,
 ) *AnswerActivityService {
 	return &AnswerActivityService{
 		answerActivityRepo: answerActivityRepo,
 		configService:      configService,
+		questionRepo:       questionRepo,
+		answerRepo:         answerRepo,
 	}
 }
 
@@ -90,8 +98,29 @@ func (as *AnswerActivityService) createAcceptAnswerOperationInfo(ctx context.Con
 func (as *AnswerActivityService) getActivities(ctx context.Context, op *schema.AcceptAnswerOperationInfo) (
 	activities []*schema.AcceptAnswerActivity) {
 	activities = make([]*schema.AcceptAnswerActivity, 0)
-
-	for _, action := range []string{activity_type.AnswerAccept, activity_type.AnswerAccepted} {
+	question, _, _ := as.questionRepo.GetQuestion(ctx, op.QuestionObjectID)
+	answer, _, _ := as.answerRepo.GetAnswer(ctx, op.AnswerObjectID)
+	isAI := answer.IsAI
+	score := question.Score
+	// 主题作者可以被分配的贡献值
+	acceptAction := constant.RankSubjectAcceptKey
+	// 回答问题的用户可以被分配的贡献值
+	acceptedAction := constant.RankSubjectAcceptedKey
+	if isAI {
+		if score > 0 {
+			acceptAction = constant.RankSubjectScoreAIAcceptKey
+			acceptedAction = constant.RankSubjectAIScoreAcceptedKey
+		} else {
+			acceptAction = constant.RankSubjectAIAcceptKey
+			acceptedAction = constant.RankSubjectAIAcceptedKey
+		}
+	} else {
+		if score > 0 {
+			acceptAction = constant.RankSubjectScoreAcceptKey
+			acceptedAction = constant.RankSubjectScoreAcceptedKey
+		}
+	}
+	for _, action := range []string{acceptAction, acceptedAction} {
 		t := &schema.AcceptAnswerActivity{}
 		cfg, err := as.configService.GetConfigByKey(ctx, action)
 		if err != nil {
@@ -100,7 +129,7 @@ func (as *AnswerActivityService) getActivities(ctx context.Context, op *schema.A
 		}
 		t.ActivityType, t.Rank = cfg.ID, cfg.GetIntValue()
 
-		if action == activity_type.AnswerAccept {
+		if action == acceptAction {
 			t.ActivityUserID = op.QuestionUserID
 			t.TriggerUserID = op.TriggerUserID
 			t.OriginalObjectID = op.QuestionObjectID // if activity is 'accept' means this question is accept the answer.

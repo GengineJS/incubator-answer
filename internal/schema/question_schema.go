@@ -340,6 +340,7 @@ type UserAnswerInfo struct {
 		UrlTitle string        `json:"url_title"`
 		Tags     []interface{} `json:"tags"`
 	} `json:"question_info"`
+	BuyerUserIds []string `json:"buyer_user_ids"`
 }
 
 type UserQuestionInfo struct {

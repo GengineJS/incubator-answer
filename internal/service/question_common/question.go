@@ -56,6 +56,7 @@ type QuestionRepo interface {
 	HandleQuestionBuy(ctx context.Context, buy *schema.HandleQuestionBuyReq) (err error)
 	UpdateQuestion(ctx context.Context, question *entity.Question, Cols []string) (err error)
 	GetQuestion(ctx context.Context, id string) (question *entity.Question, exist bool, err error)
+	CalculatedContribution(ctx context.Context, status int, qid string)
 	SyncABTags(ctx context.Context)
 	GetQuestionList(ctx context.Context, question *entity.Question) (questions []*entity.Question, err error)
 	GetQuestionPage(ctx context.Context, currType entity.QuestionType, page, pageSize int, tagIDs []string, userID, orderCond string, orderType string, inDays int, showHidden, showPending bool) (

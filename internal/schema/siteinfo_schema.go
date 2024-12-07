@@ -325,7 +325,7 @@ type UpdatePrivilegesConfigReq struct {
 var (
 	DefaultPrivilegeOptions      PrivilegeOptions
 	DefaultCustomPrivilegeOption *PrivilegeOption
-	privilegeOptionsLevelMapping = map[string][]int{
+	privilegeOptionsLevelMapping = map[string][]float32{
 		constant.RankQuestionAddKey:               {1, 1, 1},
 		constant.RankAnswerAddKey:                 {1, 1, 1},
 		constant.RankCommentAddKey:                {1, 1, 1},
@@ -348,6 +348,71 @@ var (
 		constant.RankTagAuditKey:                  {1, 2500, 5000},
 		constant.RankTagEditWithoutReviewKey:      {1, 10000, 20000},
 		constant.RankTagSynonymKey:                {1, 10000, 20000},
+		// 发布主题相关
+		constant.RankSubjectContributeKey:      {1, 1, 1},
+		constant.RankSubjectScoreContributeKey: {3, 3, 3},
+		constant.RankSubjectAcceptKey:          {1, 1, 1},
+		constant.RankSubjectAIAcceptKey:        {0, 0, 0},
+		constant.RankSubjectScoreAcceptKey:     {2, 2, 2},
+		constant.RankSubjectScoreAIAcceptKey:   {1, 1, 1},
+		constant.RankSubjectAcceptedKey:        {2, 2, 2},
+
+		constant.RankSubjectScoreAcceptedKey:      {5, 5, 5},
+		constant.RankSubjectAIScoreAcceptedKey:    {1, 1, 1},
+		constant.RankSubjectAnswerKey:             {1, 1, 1},
+		constant.RankSubjectScoreAnswerKey:        {2, 2, 2},
+		constant.RankSubjectAIAnswerKey:           {0, 0, 0},
+		constant.RankSubjectAIScoreAnswerKey:      {0, 0, 0},
+		constant.RankSubjectScoreAIAcceptedGetKey: {0, 0, 0},
+		constant.RankSubjectAIAcceptedKey:         {0, 0, 0},
+		// 对主题的每个点赞能获取多少声望
+		constant.RankSubjectUpVotedKey: {0.2, 0.2, 0.2},
+		// 对主题的每个点踩会失去多少声望
+		constant.RankSubjectDownVotedKey: {0.2, 0.2, 0.2},
+		// 对积分主题的每个点赞能获取多少声望
+		constant.RankSubjectScoreUpVotedKey: {0.3, 0.3, 0.3},
+		// 对积分主题的每个点踩会失去多少声望
+		constant.RankSubjectScoreDownVotedKey: {0.3, 0.3, 0.3},
+		// 每个主题的收藏能获得多少声望
+		constant.RankSubjectCollectKey: {0.5, 0.5, 0.5},
+		// 每个积分主题的收藏能获得多少声望
+		constant.RankSubjectScoreCollectKey: {1, 1, 1},
+
+		// 对主题回复的每个点赞能获取多少声望
+		constant.RankSubjectAnswerUpVotedKey: {0.2, 0.2, 0.2},
+		// 对主题回复的每个点踩会失去多少声望
+		constant.RankSubjectAnswerDownVotedKey: {0.2, 0.2, 0.2},
+		// 对积分主题回复的每个点赞能获取多少声望
+		constant.RankSubjectAnswerScoreUpVotedKey: {0.3, 0.3, 0.3},
+		// 对积分主题回复的每个点踩会失去多少声望
+		constant.RankSubjectAnswerScoreDownVotedKey: {0.3, 0.3, 0.3},
+		// 对AI回复的每个点赞能获取多少声望
+		constant.RankSubjectAnswerAIUpVotedKey: {0, 0, 0},
+		// 对AI回复的每个点踩会失去多少声望
+		constant.RankSubjectAnswerAIDownVotedKey: {0, 0, 0},
+		// 对积分主题AI回复的每个点赞能获取多少声望
+		constant.RankSubjectAnswerScoreAIUpVotedKey: {0, 0, 0},
+		// 对积分主题AI回复的每个点踩会失去多少声望
+		constant.RankSubjectAnswerScoreAIDownVotedKey: {0, 0, 0},
+
+		// 对主题评论的每个点赞能获取多少声望
+		constant.RankSubjectCommentUpVoteKey: {0.05, 0.05, 0.05},
+		// 对主题评论的每个点踩会失去多少声望
+		constant.RankSubjectCommentDownVoteKey: {0.05, 0.05, 0.05},
+		// 对积分主题评论的每个点赞能获取多少声望
+		constant.RankSubjectCommentScoreUpVoteKey: {0.1, 0.1, 0.1},
+		// 对积分主题评论的每个点踩会失去多少声望
+		constant.RankSubjectCommentScoreDownVoteKey: {0.1, 0.1, 0.1},
+		// 对AI评论的每个点赞能获取多少声望
+		constant.RankSubjectCommentAIUpVoteKey: {0, 0, 0},
+		// 对AI评论的每个点踩会失去多少声望
+		constant.RankSubjectCommentAIDownVoteKey: {0, 0, 0},
+		// 对积分主题AI评论的每个点赞能获取多少声望
+		constant.RankSubjectCommentScoreAIUpVoteKey: {0, 0, 0},
+		// 对积分主题AI评论的每个点踩会失去多少声望
+		constant.RankSubjectCommentScoreAIDownVoteKey: {0, 0, 0},
+		// 多少声望可以兑换1积分
+		constant.RankScoreExchangeKey: {50, 50, 50},
 	}
 )
 

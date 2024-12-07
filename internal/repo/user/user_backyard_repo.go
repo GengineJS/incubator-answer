@@ -22,6 +22,7 @@ package user
 import (
 	"context"
 	"encoding/json"
+	"github.com/apache/incubator-answer/internal/repo/assetbun"
 	"time"
 
 	"xorm.io/builder"
@@ -86,6 +87,7 @@ func (ur *userAdminRepo) AddUser(ctx context.Context, user *entity.User) (err er
 	if err != nil {
 		err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
+	assetbun.SyncUserToAB(ctx, ur.data.DB, user)
 	return
 }
 
@@ -94,6 +96,9 @@ func (ur *userAdminRepo) AddUsers(ctx context.Context, users []*entity.User) (er
 	_, err = ur.data.DB.Context(ctx).Insert(users)
 	if err != nil {
 		err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+	for _, user := range users {
+		assetbun.SyncUserToAB(ctx, ur.data.DB, user)
 	}
 	return
 }

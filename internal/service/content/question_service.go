@@ -163,7 +163,7 @@ func (qs *QuestionService) CloseQuestion(ctx context.Context, req *schema.CloseQ
 	if err != nil {
 		return err
 	}
-
+	qs.questionRepo.CalculatedContribution(ctx, entity.QuestionStatusClosed, questionInfo.ID)
 	qs.activityQueueService.Send(ctx, &schema.ActivityMsg{
 		UserID:           req.UserID,
 		ObjectID:         questionInfo.ID,
@@ -198,6 +198,7 @@ func (qs *QuestionService) ReopenQuestion(ctx context.Context, req *schema.Reope
 		OriginalObjectID: questionInfo.ID,
 		ActivityTypeKey:  constant.ActQuestionReopened,
 	})
+	qs.questionRepo.CalculatedContribution(ctx, entity.QuestionStatusReOpen, questionInfo.ID)
 	return nil
 }
 
@@ -430,13 +431,12 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 		ActivityTypeKey:  constant.ActQuestionAsked,
 		RevisionID:       revisionID,
 	})
-
+	qs.questionRepo.CalculatedContribution(ctx, question.Status, question.ID)
 	// 发送邮件
 	qs.SendQuestionNotifyEmail(ctx, &schema.QuestionEmailSend{
 		ID:   question.ID,
 		Tags: req.Tags,
 	})
-
 	questionInfo, err = qs.GetQuestion(ctx, question.ID, question.UserID, req.QuestionPermission)
 	return
 }
@@ -459,6 +459,7 @@ func (qs *QuestionService) SendQuestionNotifyEmail(ctx context.Context, req *sch
 		tags, _ := qs.tagCommon.GetTagListByNames(ctx, tagNameList)
 		user, _, _ := qs.userRepo.GetByUserID(ctx, question.UserID)
 		if question.Status == entity.QuestionStatusAvailable {
+			// qs.configService.GetConfigByKey(ctx, constant.RankSubjectContributeKey)
 			question.Show = entity.QuestionShow
 			qs.questionRepo.UpdateQuestion(ctx, question, []string{"show"})
 			qs.externalNotificationQueueService.Send(ctx,
@@ -650,6 +651,8 @@ func (qs *QuestionService) RemoveQuestion(ctx context.Context, req *schema.Remov
 		OriginalObjectID: questionInfo.ID,
 		ActivityTypeKey:  constant.ActQuestionDeleted,
 	})
+
+	qs.questionRepo.CalculatedContribution(ctx, entity.QuestionStatusDeleted, questionInfo.ID)
 	return nil
 }
 
@@ -773,6 +776,7 @@ func (qs *QuestionService) RecoverQuestion(ctx context.Context, req *schema.Ques
 		OriginalObjectID: questionInfo.ID,
 		ActivityTypeKey:  constant.ActQuestionUndeleted,
 	})
+	qs.questionRepo.CalculatedContribution(ctx, entity.QuestionStatusRecover, questionInfo.ID)
 	return nil
 }
 
