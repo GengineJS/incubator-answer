@@ -37,6 +37,7 @@ const initUser: UserInfoRes = {
   bio: '',
   bio_html: '',
   display_name: '',
+  rank_score: 0,
   location: '',
   website: '',
   status: 'normal',
