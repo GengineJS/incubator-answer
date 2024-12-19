@@ -25,6 +25,7 @@ const {
 const path = require("path");
 const i18nPath = path.resolve(__dirname, "../i18n");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 module.exports = {
   webpack: function(config, env) {
     addWebpackAlias({
@@ -129,6 +130,13 @@ module.exports = {
           { from: path.resolve(__dirname, './glslEditor.css'), to: path.resolve(__dirname, './build/static/glslEditor.css') },
           { from: path.resolve(__dirname, './glslEditor.min.js'), to: path.resolve(__dirname, './build/static/glslEditor.min.js') }
         ],
+      }),
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: true, // 添加这一行来移除所有的console.log
+          },
+        },
       })
     );
     // add i18n dir to ModuleScopePlugin allowedPaths
