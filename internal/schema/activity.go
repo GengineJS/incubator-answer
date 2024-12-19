@@ -110,3 +110,25 @@ type PassReviewActivity struct {
 	OriginalObjectID string `json:"original_object_id"`
 	RevisionID       string `json:"revision_id"`
 }
+
+// RankActivity rank activity
+type RankActivity struct {
+	ActivityType   int
+	ActivityUserID string
+	TriggerUserID  string
+	Rank           float32
+}
+
+// RankOperationInfo rank operation info
+type RankOperationInfo struct {
+	// operation object id
+	ObjectID string
+	// question answer comment
+	ObjectType string
+	// object owner user id
+	ObjectCreatorUserID string
+	// operation user id
+	OperatingUserID string
+	// vote activity info
+	Activities []*RankActivity
+}

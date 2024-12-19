@@ -52,7 +52,7 @@ type NotificationContent struct {
 	ReceiverUserID     string         `json:"-"` // receiver userid
 	UserInfo           *UserBasicInfo `json:"user_info,omitempty"`
 	ObjectInfo         ObjectInfo     `json:"object_info"`
-	Rank               int            `json:"rank"`
+	Rank               float32        `json:"rank"`
 	NotificationAction string         `json:"notification_action,omitempty"`
 	Type               int            `json:"-"` //	1 inbox 2 achievement
 	IsRead             bool           `json:"is_read"`

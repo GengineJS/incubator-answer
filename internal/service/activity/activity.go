@@ -46,6 +46,7 @@ import (
 // ActivityRepo activity repository
 type ActivityRepo interface {
 	GetObjectAllActivity(ctx context.Context, objectID string, showVote bool) (activityList []*entity.Activity, err error)
+	CreateRankOperationInfo(ctx context.Context, userID, objID string) *schema.RankOperationInfo
 }
 
 // ActivityService activity service

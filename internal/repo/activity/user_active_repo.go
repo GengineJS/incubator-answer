@@ -73,7 +73,7 @@ func (ar *UserActiveActivityRepo) UserActive(ctx context.Context, userID string)
 		ObjectID:         "0",
 		OriginalObjectID: "0",
 		ActivityType:     cfg.ID,
-		Rank:             cfg.GetIntValue(),
+		Rank:             cfg.GetFloatValue(),
 		HasRank:          1,
 	}
 
@@ -101,7 +101,7 @@ func (ar *UserActiveActivityRepo) UserActive(ctx context.Context, userID string)
 			return nil, nil
 		}
 
-		err = ar.userRankRepo.ChangeUserRank(ctx, session, addActivity.UserID, user.Rank, addActivity.Rank)
+		err = ar.userRankRepo.ChangeUserFloatRank(ctx, session, addActivity.UserID, addActivity.Rank)
 		if err != nil {
 			return nil, err
 		}

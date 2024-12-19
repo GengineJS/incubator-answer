@@ -135,6 +135,12 @@ export interface ModifyUserReq {
   website: string;
 }
 
+/** Exchange */
+export interface UserExchangeReq {
+  exchange_rank: number;
+  score: number;
+}
+
 enum RoleId {
   User = 1,
   Admin = 2,
@@ -152,6 +158,7 @@ export interface User {
 export interface UserInfoBase {
   id?: string;
   avatar: any;
+  rank_score: number;
   username: string;
   display_name: string;
   rank: number;

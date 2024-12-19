@@ -230,22 +230,25 @@ func (vs *VoteService) createVoteOperationInfo(ctx context.Context,
 	userID string, voteUp bool, objectInfo *schema.SimpleObjectInfo) *schema.VoteOperationInfo {
 	// warp vote operation
 	voteOperationInfo := &schema.VoteOperationInfo{
-		ObjectID:            objectInfo.ObjectID,
-		ObjectType:          objectInfo.ObjectType,
-		ObjectCreatorUserID: objectInfo.ObjectCreatorUserID,
-		OperatingUserID:     userID,
-		VoteUp:              voteUp,
-		VoteDown:            !voteUp,
+		RankOperationInfo: schema.RankOperationInfo{
+			ObjectID:            objectInfo.ObjectID,
+			ObjectType:          objectInfo.ObjectType,
+			ObjectCreatorUserID: objectInfo.ObjectCreatorUserID,
+			OperatingUserID:     userID,
+		},
+		VoteUp:   voteUp,
+		VoteDown: !voteUp,
 	}
 	voteOperationInfo.Activities = vs.getActivities(ctx, voteOperationInfo)
 	return voteOperationInfo
 }
 
 func (vs *VoteService) getActivities(ctx context.Context, op *schema.VoteOperationInfo) (
-	activities []*schema.VoteActivity) {
-	activities = make([]*schema.VoteActivity, 0)
+	activities []*schema.RankActivity) {
+	activities = make([]*schema.RankActivity, 0)
 
 	var actions []string
+	isVoteDown := false
 	switch op.ObjectType {
 	case constant.QuestionObjectType:
 		question, _, _ := vs.questionRepo.GetQuestion(ctx, op.ObjectID)
@@ -259,6 +262,7 @@ func (vs *VoteService) getActivities(ctx context.Context, op *schema.VoteOperati
 		if op.VoteUp {
 			actions = []string{activity_type.QuestionVoteUp, votedUp}
 		} else {
+			isVoteDown = true
 			actions = []string{activity_type.QuestionVoteDown, votedDown}
 		}
 	case constant.AnswerObjectType:
@@ -282,6 +286,7 @@ func (vs *VoteService) getActivities(ctx context.Context, op *schema.VoteOperati
 		if op.VoteUp {
 			actions = []string{activity_type.AnswerVoteUp, votedUp}
 		} else {
+			isVoteDown = true
 			actions = []string{activity_type.AnswerVoteDown, votedDown}
 		}
 	case constant.CommentObjectType:
@@ -289,26 +294,29 @@ func (vs *VoteService) getActivities(ctx context.Context, op *schema.VoteOperati
 		question, _, _ := vs.questionRepo.GetQuestion(ctx, comment.QuestionID)
 		isAI := comment.IsAI
 		isScore := question.Score > 0
-		voteUp := constant.RankSubjectCommentUpVoteKey
+		voteUp := constant.RankSubjectCommentUpVotedKey
 		if isAI {
-			voteUp = constant.RankSubjectCommentAIUpVoteKey
+			voteUp = constant.RankSubjectCommentAIUpVotedKey
 			if isScore {
-				voteUp = constant.RankSubjectCommentScoreAIUpVoteKey
+				voteUp = constant.RankSubjectCommentScoreAIUpVotedKey
 			}
 		} else if isScore {
-			voteUp = constant.RankSubjectCommentScoreUpVoteKey
+			voteUp = constant.RankSubjectCommentScoreUpVotedKey
 		}
-		actions = []string{voteUp}
+		actions = []string{activity_type.CommentVoteUp, voteUp}
 	}
 
 	for _, action := range actions {
-		t := &schema.VoteActivity{}
+		t := &schema.RankActivity{}
 		cfg, err := vs.configService.GetConfigByKey(ctx, action)
 		if err != nil {
 			log.Warnf("get config by key error: %v", err)
 			continue
 		}
 		floatVal := cfg.GetFloatValue()
+		if isVoteDown {
+			floatVal = -floatVal
+		}
 		t.ActivityType, t.Rank = cfg.ID, floatVal
 
 		if strings.Contains(action, "voted") {

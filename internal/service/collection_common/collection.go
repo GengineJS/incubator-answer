@@ -30,7 +30,7 @@ type CollectionRepo interface {
 	AddCollection(ctx context.Context, collection *entity.Collection) (err error)
 	RemoveCollection(ctx context.Context, id string) (err error)
 	UpdateCollection(ctx context.Context, collection *entity.Collection, cols []string) (err error)
-	GetCollection(ctx context.Context, id int) (collection *entity.Collection, exist bool, err error)
+	GetCollection(ctx context.Context, id string) (collection *entity.Collection, exist bool, err error)
 	GetCollectionList(ctx context.Context, collection *entity.Collection) (collectionList []*entity.Collection, err error)
 	GetOneByObjectIDAndUser(ctx context.Context, userId string, objectId string) (collection *entity.Collection, exist bool, err error)
 	SearchByObjectIDsAndUser(ctx context.Context, userId string, objectIds []string) (collectionList []*entity.Collection, err error)

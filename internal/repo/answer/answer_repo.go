@@ -23,10 +23,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/apache/incubator-answer/internal/base/translator"
+	"github.com/apache/incubator-answer/internal/repo/activity"
 	"github.com/apache/incubator-answer/internal/service/config"
 	"github.com/apache/incubator-answer/internal/service/notice_queue"
 	questioncommon "github.com/apache/incubator-answer/internal/service/question_common"
 	usercommon "github.com/apache/incubator-answer/internal/service/user_common"
+	"math"
 	"time"
 	"unicode/utf8"
 
@@ -37,7 +39,6 @@ import (
 	"github.com/apache/incubator-answer/internal/base/reason"
 	"github.com/apache/incubator-answer/internal/entity"
 	"github.com/apache/incubator-answer/internal/schema"
-	"github.com/apache/incubator-answer/internal/service/activity_common"
 	answercommon "github.com/apache/incubator-answer/internal/service/answer_common"
 	"github.com/apache/incubator-answer/internal/service/rank"
 	"github.com/apache/incubator-answer/internal/service/unique"
@@ -52,7 +53,6 @@ type answerRepo struct {
 	data                     *data.Data
 	uniqueIDRepo             unique.UniqueIDRepo
 	userRankRepo             rank.UserRankRepo
-	activityRepo             activity_common.ActivityRepo
 	questionRepo             questioncommon.QuestionRepo
 	configService            *config.ConfigService
 	userRepo                 usercommon.UserRepo
@@ -64,7 +64,6 @@ func NewAnswerRepo(
 	data *data.Data,
 	uniqueIDRepo unique.UniqueIDRepo,
 	userRankRepo rank.UserRankRepo,
-	activityRepo activity_common.ActivityRepo,
 	questionRepo questioncommon.QuestionRepo,
 	configService *config.ConfigService,
 	userRepo usercommon.UserRepo,
@@ -74,7 +73,6 @@ func NewAnswerRepo(
 		data:                     data,
 		uniqueIDRepo:             uniqueIDRepo,
 		userRankRepo:             userRankRepo,
-		activityRepo:             activityRepo,
 		questionRepo:             questionRepo,
 		configService:            configService,
 		userRepo:                 userRepo,
@@ -116,6 +114,7 @@ func (ar *answerRepo) CalculatedContribution(ctx context.Context, status int, ai
 	score := question.Score
 	var cfg *entity.Config
 	lang := handler.GetLangByCtx(ctx)
+	var rankKey string
 	var contentTypeStr string
 	if int(entity.TypeBounty) == question.ContentType {
 		contentTypeStr = translator.Tr(lang, constant.EmailBountyContentType)
@@ -123,9 +122,9 @@ func (ar *answerRepo) CalculatedContribution(ctx context.Context, status int, ai
 	isAI := answer.IsAI
 	if score > 0 {
 		if !isAI {
-			cfg, _ = ar.configService.GetConfigByKey(ctx, constant.RankSubjectScoreAnswerKey)
+			rankKey = constant.RankSubjectScoreAnswerKey
 		} else {
-			cfg, _ = ar.configService.GetConfigByKey(ctx, constant.RankSubjectAIScoreAnswerKey)
+			rankKey = constant.RankSubjectAIScoreAnswerKey
 		}
 		switch question.ContentType {
 		case int(entity.TypeQuestion):
@@ -137,9 +136,9 @@ func (ar *answerRepo) CalculatedContribution(ctx context.Context, status int, ai
 		}
 	} else {
 		if !isAI {
-			cfg, _ = ar.configService.GetConfigByKey(ctx, constant.RankSubjectAnswerKey)
+			rankKey = constant.RankSubjectAnswerKey
 		} else {
-			cfg, _ = ar.configService.GetConfigByKey(ctx, constant.RankSubjectAIAnswerKey)
+			rankKey = constant.RankSubjectAIAnswerKey
 		}
 		switch question.ContentType {
 		case int(entity.TypeQuestion):
@@ -175,6 +174,7 @@ func (ar *answerRepo) CalculatedContribution(ctx context.Context, status int, ai
 			action = constant.NotificationDeleteAIAnswer
 		}
 	}
+	cfg, _ = ar.configService.GetConfigByKey(ctx, rankKey)
 	contribute := cfg.GetIntValue()
 	if contribute > 0 {
 		user, _, _ := ar.userRepo.GetByUserID(ctx, answer.UserID)
@@ -184,10 +184,32 @@ func (ar *answerRepo) CalculatedContribution(ctx context.Context, status int, ai
 		} else {
 			user.Rank -= contribute
 			ar.userRepo.UpdateInfo(ctx, user)
+			contribute = -contribute
 		}
+		// warp rank operation
+		rankOperationInfo := &schema.RankOperationInfo{
+			ObjectID:            aid,
+			ObjectType:          constant.AnswerObjectType,
+			ObjectCreatorUserID: answer.UserID,
+			OperatingUserID:     answer.UserID,
+		}
+		rankOperationInfo.Activities = append(rankOperationInfo.Activities, &schema.RankActivity{
+			ActivityType:   cfg.ID,
+			ActivityUserID: answer.UserID,
+			TriggerUserID:  answer.UserID,
+			Rank:           float32(contribute),
+		})
+		session := activity.BeginSaveActivity(ar.data.DB)
+		if isAdd {
+			activity.SaveActivitiesAvailable(session, rankOperationInfo)
+		} else {
+			activities, _ := activity.GetExistActivity(ctx, ar.data.DB, rankOperationInfo)
+			activity.CancelActivities(session, activities)
+		}
+		activity.EndSaveActivity(session)
 		notice_queue.OperateCustomNotifySend(ctx, ar.notificationQueueService, constant.AnswerObjectType, false, answer.UserID, aid, answer.UserID, answer.OriginalText, action, map[string]string{
 			"ContentType": contentTypeStr,
-			"Rank":        fmt.Sprintf("%f", contribute),
+			"Rank":        fmt.Sprintf("%.2f", math.Abs(float64(contribute))),
 		})
 	}
 }

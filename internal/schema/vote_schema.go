@@ -36,28 +36,16 @@ type VoteResp struct {
 
 // VoteOperationInfo vote operation info
 type VoteOperationInfo struct {
-	// operation object id
-	ObjectID string
-	// question answer comment
-	ObjectType string
-	// object owner user id
-	ObjectCreatorUserID string
-	// operation user id
-	OperatingUserID string
+	RankOperationInfo
 	// vote up
 	VoteUp bool
 	// vote down
 	VoteDown bool
-	// vote activity info
-	Activities []*VoteActivity
 }
 
 // VoteActivity vote activity
 type VoteActivity struct {
-	ActivityType   int
-	ActivityUserID string
-	TriggerUserID  string
-	Rank           float32
+	RankActivity
 }
 
 func (v *VoteActivity) HasRank() int {

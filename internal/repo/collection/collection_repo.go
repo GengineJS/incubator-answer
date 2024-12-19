@@ -21,30 +21,121 @@ package collection
 
 import (
 	"context"
+	"fmt"
 	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/base/data"
 	"github.com/apache/incubator-answer/internal/base/handler"
 	"github.com/apache/incubator-answer/internal/base/pager"
 	"github.com/apache/incubator-answer/internal/base/reason"
+	"github.com/apache/incubator-answer/internal/base/translator"
 	"github.com/apache/incubator-answer/internal/entity"
+	"github.com/apache/incubator-answer/internal/repo/activity"
+	"github.com/apache/incubator-answer/internal/schema"
 	collectioncommon "github.com/apache/incubator-answer/internal/service/collection_common"
+	"github.com/apache/incubator-answer/internal/service/config"
+	"github.com/apache/incubator-answer/internal/service/notice_queue"
+	questioncommon "github.com/apache/incubator-answer/internal/service/question_common"
+	"github.com/apache/incubator-answer/internal/service/rank"
 	"github.com/apache/incubator-answer/internal/service/unique"
 	"github.com/apache/incubator-answer/pkg/uid"
 	"github.com/segmentfault/pacman/errors"
+	"math"
 	"xorm.io/xorm"
 )
 
 // collectionRepo collection repository
 type collectionRepo struct {
-	data         *data.Data
-	uniqueIDRepo unique.UniqueIDRepo
+	data                     *data.Data
+	uniqueIDRepo             unique.UniqueIDRepo
+	configService            *config.ConfigService
+	userRankRepo             rank.UserRankRepo
+	questionRepo             questioncommon.QuestionRepo
+	notificationQueueService notice_queue.NotificationQueueService
 }
 
 // NewCollectionRepo new repository
-func NewCollectionRepo(data *data.Data, uniqueIDRepo unique.UniqueIDRepo) collectioncommon.CollectionRepo {
+func NewCollectionRepo(data *data.Data,
+	uniqueIDRepo unique.UniqueIDRepo,
+	configService *config.ConfigService,
+	userRankRepo rank.UserRankRepo,
+	questionRepo questioncommon.QuestionRepo,
+	notificationQueueService notice_queue.NotificationQueueService) collectioncommon.CollectionRepo {
 	return &collectionRepo{
-		data:         data,
-		uniqueIDRepo: uniqueIDRepo,
+		data:                     data,
+		uniqueIDRepo:             uniqueIDRepo,
+		configService:            configService,
+		userRankRepo:             userRankRepo,
+		questionRepo:             questionRepo,
+		notificationQueueService: notificationQueueService,
+	}
+}
+
+func (cr *collectionRepo) CalculatedContribution(ctx context.Context, isAdd bool, collection *entity.Collection) {
+	question, _, _ := cr.questionRepo.GetQuestion(ctx, collection.ObjectID)
+	// 自己收藏自己就没有声望
+	if collection.UserID == question.UserID {
+		return
+	}
+	lang := handler.GetLangByCtx(ctx)
+	var contentTypeStr string
+	if int(entity.TypeBounty) == question.ContentType {
+		contentTypeStr = translator.Tr(lang, constant.EmailBountyContentType)
+	}
+	action := constant.RankSubjectCollectKey
+	if question.Score > 0 {
+		action = constant.RankSubjectScoreCollectKey
+		switch question.ContentType {
+		case int(entity.TypeQuestion):
+			contentTypeStr = translator.Tr(lang, constant.EmailQuestionScoreContentType)
+		case int(entity.TypeArticle):
+			contentTypeStr = translator.Tr(lang, constant.EmailArticleScoreContentType)
+		case int(entity.TypeAssetBun):
+			contentTypeStr = translator.Tr(lang, constant.EmailAssetBunScoreContentType)
+		}
+	} else {
+		switch question.ContentType {
+		case int(entity.TypeQuestion):
+			contentTypeStr = translator.Tr(lang, constant.EmailQuestionContentType)
+		case int(entity.TypeArticle):
+			contentTypeStr = translator.Tr(lang, constant.EmailArticleContentType)
+		case int(entity.TypeAssetBun):
+			contentTypeStr = translator.Tr(lang, constant.EmailAssetBunContentType)
+		}
+	}
+	cfg, _ := cr.configService.GetConfigByKey(ctx, action)
+	rankFloat := cfg.GetFloatValue()
+	notifyAction := constant.NotificationCollectSubject
+	if !isAdd {
+		rankFloat = -rankFloat
+		notifyAction = constant.NotificationCancelCollectSubject
+	}
+	if rankFloat != 0 {
+		// warp rank operation
+		rankOperationInfo := &schema.RankOperationInfo{
+			ObjectID:            question.ID,
+			ObjectType:          constant.QuestionObjectType,
+			ObjectCreatorUserID: question.UserID,
+			OperatingUserID:     collection.UserID,
+		}
+		rankOperationInfo.Activities = append(rankOperationInfo.Activities, &schema.RankActivity{
+			ActivityType:   cfg.ID,
+			ActivityUserID: question.UserID,
+			TriggerUserID:  collection.UserID,
+			Rank:           rankFloat,
+		})
+		session := activity.BeginSaveActivity(cr.data.DB)
+		cr.userRankRepo.ChangeUserFloatRank(ctx, session, question.UserID, rankFloat)
+		if isAdd {
+			activity.SaveActivitiesAvailable(session, rankOperationInfo)
+		} else {
+			activities, _ := activity.GetExistActivity(ctx, cr.data.DB, rankOperationInfo)
+			activity.CancelActivities(session, activities)
+		}
+		activity.EndSaveActivity(session)
+		notice_queue.OperateCustomNotifySend(ctx, cr.notificationQueueService, constant.QuestionObjectType, false, collection.UserID, question.ID, question.UserID, question.Title, notifyAction, map[string]string{
+			"ContentType": contentTypeStr,
+			"Rank":        fmt.Sprintf("%.2f", math.Abs(float64(rankFloat))),
+		})
 	}
 }
 
@@ -54,7 +145,6 @@ func (cr *collectionRepo) AddCollection(ctx context.Context, collection *entity.
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
-
 	_, err = cr.data.DB.Transaction(func(session *xorm.Session) (result any, err error) {
 		session = session.Context(ctx)
 		old := &entity.Collection{
@@ -77,15 +167,18 @@ func (cr *collectionRepo) AddCollection(ctx context.Context, collection *entity.
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
+	cr.CalculatedContribution(ctx, true, collection)
 	return nil
 }
 
 // RemoveCollection delete collection
 func (cr *collectionRepo) RemoveCollection(ctx context.Context, id string) (err error) {
+	currCollection, _, _ := cr.GetCollection(ctx, id)
 	_, err = cr.data.DB.Context(ctx).Where("id = ?", id).Delete(&entity.Collection{})
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
+	cr.CalculatedContribution(ctx, false, currCollection)
 	return nil
 }
 
@@ -96,7 +189,7 @@ func (cr *collectionRepo) UpdateCollection(ctx context.Context, collection *enti
 }
 
 // GetCollection get collection one
-func (cr *collectionRepo) GetCollection(ctx context.Context, id int) (collection *entity.Collection, exist bool, err error) {
+func (cr *collectionRepo) GetCollection(ctx context.Context, id string) (collection *entity.Collection, exist bool, err error) {
 	collection = &entity.Collection{}
 	exist, err = cr.data.DB.Context(ctx).ID(id).Get(collection)
 	if err != nil {

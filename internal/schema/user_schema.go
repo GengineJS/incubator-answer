@@ -113,7 +113,8 @@ func (r *UserLoginResp) ConvertFromUserEntity(userInfo *entity.User) {
 
 type GetCurrentLoginUserInfoResp struct {
 	*UserLoginResp
-	Avatar *AvatarInfo `json:"avatar"`
+	RankToScore float32     `json:"rank_score"`
+	Avatar      *AvatarInfo `json:"avatar"`
 }
 
 func (r *GetCurrentLoginUserInfoResp) ConvertFromUserEntity(userInfo *entity.User) {
@@ -256,6 +257,12 @@ type UpdateInfoRequest struct {
 	Location    string     `validate:"omitempty,gt=0,lte=100" json:"location"`
 	UserID      string     `json:"-"`
 	IsAdmin     bool       `json:"-"`
+}
+
+type UpdateExchangeRequest struct {
+	ExchangeRank float32 `validate:"omitempty,gt=0" json:"exchange_rank"`
+	Score        int     `validate:"omitempty,gt=0" json:"score"`
+	UserID       string  `json:"-"`
 }
 
 type AvatarInfo struct {

@@ -24,11 +24,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/apache/incubator-answer/internal/base/translator"
+	"github.com/apache/incubator-answer/internal/repo/activity"
 	"github.com/apache/incubator-answer/internal/repo/assetbun"
 	"github.com/apache/incubator-answer/internal/service/config"
 	"github.com/apache/incubator-answer/internal/service/notice_queue"
 	usercommon "github.com/apache/incubator-answer/internal/service/user_common"
-	"strconv"
+	"math"
 	"strings"
 	"time"
 	"unicode"
@@ -149,10 +150,31 @@ func (qr *questionRepo) CalculatedContribution(ctx context.Context, status int, 
 		} else {
 			user.Rank -= contribute
 			qr.userRepo.UpdateInfo(ctx, user)
+			contribute = -contribute
 		}
+		rankOperationInfo := &schema.RankOperationInfo{
+			ObjectID:            question.ID,
+			ObjectType:          constant.QuestionObjectType,
+			ObjectCreatorUserID: question.UserID,
+			OperatingUserID:     question.UserID,
+		}
+		rankOperationInfo.Activities = append(rankOperationInfo.Activities, &schema.RankActivity{
+			ActivityType:   cfg.ID,
+			ActivityUserID: question.UserID,
+			TriggerUserID:  question.UserID,
+			Rank:           float32(contribute),
+		})
+		session := activity.BeginSaveActivity(qr.data.DB)
+		if isAdd {
+			activity.SaveActivitiesAvailable(session, rankOperationInfo)
+		} else {
+			activities, _ := activity.GetExistActivity(ctx, qr.data.DB, rankOperationInfo)
+			activity.CancelActivities(session, activities)
+		}
+		activity.EndSaveActivity(session)
 		notice_queue.OperateCustomNotifySend(ctx, qr.notificationQueueService, constant.QuestionObjectType, false, question.UserID, qid, question.UserID, question.Title, action, map[string]string{
 			"ContentType": contentTypeStr,
-			"Rank":        strconv.Itoa(contribute),
+			"Rank":        fmt.Sprintf("%.2f", math.Abs(float64(contribute))),
 		})
 	}
 }

@@ -23,8 +23,6 @@ import (
 	"encoding/json"
 	"github.com/segmentfault/pacman/log"
 	"strconv"
-
-	"github.com/apache/incubator-answer/pkg/converter"
 )
 
 // Config config
@@ -57,7 +55,8 @@ func (c *Config) GetIntValue() int {
 	if len(c.Value) == 0 {
 		log.Warnf("config value is empty, key: %s, value: %s", c.Key, c.Value)
 	}
-	return converter.StringToInt(c.Value)
+	floatVal, _ := strconv.ParseFloat(c.Value, 64)
+	return int(floatVal)
 }
 
 func (c *Config) GetFloatValue() float32 {

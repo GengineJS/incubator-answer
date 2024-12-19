@@ -22,8 +22,10 @@ package activity
 import (
 	"context"
 	"fmt"
+	"github.com/apache/incubator-answer/internal/service/config"
 	"github.com/segmentfault/pacman/log"
 	"strconv"
+	"strings"
 	"time"
 	"xorm.io/builder"
 
@@ -47,6 +49,7 @@ type AnswerActivityRepo struct {
 	activityRepo             activity_common.ActivityRepo
 	userRankRepo             rank.UserRankRepo
 	notificationQueueService notice_queue.NotificationQueueService
+	configService            *config.ConfigService
 }
 
 // NewAnswerActivityRepo new repository
@@ -55,12 +58,14 @@ func NewAnswerActivityRepo(
 	activityRepo activity_common.ActivityRepo,
 	userRankRepo rank.UserRankRepo,
 	notificationQueueService notice_queue.NotificationQueueService,
+	configService *config.ConfigService,
 ) activity.AnswerActivityRepo {
 	return &AnswerActivityRepo{
 		data:                     data,
 		activityRepo:             activityRepo,
 		userRankRepo:             userRankRepo,
 		notificationQueueService: notificationQueueService,
+		configService:            configService,
 	}
 }
 
@@ -103,11 +108,20 @@ func (ar *AnswerActivityRepo) SaveCancelAcceptAnswerActivity(ctx context.Context
 		return err
 	}
 	var userIDs []string
+	triggerId := op.Activities[0].TriggerUserID
+	op.Activities = op.Activities[:0]
 	for _, act := range activities {
 		if act.Cancelled == entity.ActivityCancelled {
 			continue
 		}
 		userIDs = append(userIDs, act.UserID)
+		op.Activities = append(op.Activities, &schema.AcceptAnswerActivity{
+			ActivityType:     act.ActivityType,
+			ActivityUserID:   act.UserID,
+			TriggerUserID:    triggerId,
+			OriginalObjectID: act.OriginalObjectID,
+			Rank:             int(act.Rank),
+		})
 	}
 	if len(userIDs) == 0 {
 		return nil
@@ -181,7 +195,7 @@ func (ar *AnswerActivityRepo) saveActivitiesAvailable(session *xorm.Session, op 
 		if exist {
 			bean := &entity.Activity{
 				Cancelled: entity.ActivityAvailable,
-				Rank:      act.Rank,
+				Rank:      float32(act.Rank),
 				HasRank:   act.HasRank(),
 			}
 			session.Where("id = ?", existsActivity.ID)
@@ -195,7 +209,7 @@ func (ar *AnswerActivityRepo) saveActivitiesAvailable(session *xorm.Session, op 
 				UserID:           act.ActivityUserID,
 				TriggerUserID:    converter.StringToInt64(act.TriggerUserID),
 				ActivityType:     act.ActivityType,
-				Rank:             act.Rank,
+				Rank:             float32(act.Rank),
 				HasRank:          act.HasRank(),
 				Cancelled:        entity.ActivityAvailable,
 			}
@@ -271,7 +285,7 @@ func (ar *AnswerActivityRepo) rollbackUserRank(ctx context.Context, session *xor
 			continue
 		}
 		if err = ar.userRankRepo.ChangeUserRank(ctx, session,
-			act.UserID, user.Rank, -act.Rank); err != nil {
+			act.UserID, user.Rank, int(-act.Rank)); err != nil {
 			log.Error(err)
 			return err
 		}
@@ -300,6 +314,7 @@ func (ar *AnswerActivityRepo) getExistActivity(ctx context.Context, op *schema.A
 
 func (ar *AnswerActivityRepo) sendAcceptAnswerNotification(
 	ctx context.Context, op *schema.AcceptAnswerOperationInfo) {
+	isSend := false
 	for _, act := range op.Activities {
 		msg := &schema.NotificationMsg{
 			Type:           schema.NotificationTypeAchievement,
@@ -320,44 +335,66 @@ func (ar *AnswerActivityRepo) sendAcceptAnswerNotification(
 			ObjectID:       op.AnswerObjectID,
 			TriggerUserID:  op.TriggerUserID,
 		}
-		if act.ActivityUserID != op.QuestionUserID {
-			msg.ObjectType = constant.AnswerObjectType
-			msg.NotificationAction = constant.NotificationAcceptAnswer
-			if act.Rank > 0 {
-				msg.NotificationAction = constant.NotificationAcceptRankAnswer
-				msg.Type = schema.NotificationInboxTypePosts
-				msg.ExtraInfo = map[string]string{
-					"Rank": strconv.Itoa(act.Rank),
-				}
+		// if act.TriggerUserID != op.QuestionUserID {
+		msg.ObjectType = constant.AnswerObjectType
+		msg.NotificationAction = constant.NotificationAcceptAnswer
+		if act.Rank > 0 {
+			config, _ := ar.configService.GetConfigByID(ctx, act.ActivityType)
+			substr := "accepted"
+			msg.NotificationAction = constant.NotificationAcceptRankAnswer
+			if strings.Contains(config.Key, substr) {
+				msg.NotificationAction = constant.NotificationAcceptedRankAnswer
+			}
+			msg.Type = schema.NotificationInboxTypePosts
+			msg.ExtraInfo = map[string]string{
+				"Rank": strconv.Itoa(act.Rank),
 			}
 			ar.notificationQueueService.Send(ctx, msg)
+		} else {
+			if !isSend {
+				isSend = true
+				ar.notificationQueueService.Send(ctx, msg)
+			}
 		}
+		// }
 	}
 }
 
 func (ar *AnswerActivityRepo) sendCancelAcceptAnswerNotification(
 	ctx context.Context, op *schema.AcceptAnswerOperationInfo) {
+	isSend := false
 	for _, act := range op.Activities {
 		msg := &schema.NotificationMsg{
 			TriggerUserID:  act.TriggerUserID,
 			ReceiverUserID: act.ActivityUserID,
-			Type:           schema.NotificationTypeAchievement,
+			Type:           schema.NotificationInboxTypePosts,
 			ObjectID:       op.AnswerObjectID,
 		}
-		if act.ActivityUserID == op.QuestionObjectID {
-			msg.ObjectType = constant.QuestionObjectType
-		} else {
-			msg.ObjectType = constant.AnswerObjectType
-		}
-		if msg.TriggerUserID != msg.ReceiverUserID {
-			if act.Rank > 0 {
-				msg.NotificationAction = constant.NotificationCancelAcceptRankAnswer
-				msg.Type = schema.NotificationInboxTypePosts
-				msg.ExtraInfo = map[string]string{
-					"Rank": strconv.Itoa(act.Rank),
-				}
+		//if act.ActivityUserID == op.QuestionObjectID {
+		//	msg.ObjectType = constant.QuestionObjectType
+		//} else {
+		msg.ObjectType = constant.AnswerObjectType
+		// }
+		msg.NotificationAction = constant.NotificationCancelAcceptAnswer
+		// if msg.TriggerUserID != msg.ReceiverUserID {
+		if act.Rank > 0 {
+			config, _ := ar.configService.GetConfigByID(ctx, act.ActivityType)
+			substr := "accepted"
+			msg.NotificationAction = constant.NotificationCancelAcceptRankAnswer
+			if strings.Contains(config.Key, substr) {
+				msg.NotificationAction = constant.NotificationCancelAcceptedRankAnswer
+			}
+			msg.ExtraInfo = map[string]string{
+				"Rank": strconv.Itoa(act.Rank),
 			}
 			ar.notificationQueueService.Send(ctx, msg)
+		} else {
+			if !isSend {
+				isSend = true
+				ar.notificationQueueService.Send(ctx, msg)
+			}
 		}
+
 	}
+	// }
 }

@@ -500,7 +500,7 @@ func (as *AnswerService) updateAnswerRank(ctx context.Context, userID string,
 	}
 	if newAnswerInfo != nil {
 		err := as.answerActivityService.AcceptAnswer(ctx, userID, newAnswerInfo.ID,
-			questionInfo.ID, questionInfo.UserID, newAnswerInfo.UserID, newAnswerInfo.UserID == questionInfo.UserID)
+			questionInfo.ID, questionInfo.UserID, newAnswerInfo.UserID, newAnswerInfo.UserID == questionInfo.UserID && newAnswerInfo.UserID == userID)
 		if err != nil {
 			log.Error(err)
 		}

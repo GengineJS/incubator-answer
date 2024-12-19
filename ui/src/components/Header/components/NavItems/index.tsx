@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { FC, memo } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { Nav, Dropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -26,8 +26,14 @@ import type * as Type from '@/common/interface';
 import { Avatar, Icon } from '@/components';
 import { floppyNavigation } from '@/utils';
 import { userCenterStore } from '@/stores';
-import { isAssetBunPageType } from '@/common/functions';
+import {
+  getTargetRootAssetBunHost,
+  isAssetBunPageType,
+} from '@/common/functions';
 import { assetBunSearch } from '@/common/constants';
+import { RankToPointsModal } from '@/components/Header/components/NavItems/RankToScore';
+import { getLoggedUserInfo } from '@/services';
+import { useToast } from '@/hooks';
 
 interface Props {
   redDot: Type.NotificationStatus | undefined;
@@ -36,6 +42,14 @@ interface Props {
 }
 
 const Index: FC<Props> = ({ redDot, userInfo, logOut }) => {
+  const [modalShow, setModalShow] = useState(false);
+  const [validRankScore, setValidRankScore] = useState(false);
+  const Toast = useToast();
+
+  const handleShow = () => setModalShow(true);
+  const handleClose = () => setModalShow(false);
+
+  const handleExchange = () => {};
   const { t } = useTranslation();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigate = useNavigate();
@@ -47,6 +61,9 @@ const Index: FC<Props> = ({ redDot, userInfo, logOut }) => {
       navigate(href);
     }
   };
+  const handleRankToScore = () => {
+    handleShow();
+  };
   const isAssetBun = isAssetBunPageType();
   let inboxUrl = '/users/notifications/inbox';
   let achievementUrl = '/users/notifications/achievement';
@@ -54,8 +71,43 @@ const Index: FC<Props> = ({ redDot, userInfo, logOut }) => {
     inboxUrl += `?${assetBunSearch}`;
     achievementUrl += `?${assetBunSearch}`;
   }
+
+  const openRankScoreDialog = (isValid) => {
+    const params = new URLSearchParams(window.location.search);
+    const rank_score = params.get('rank_score');
+    if (rank_score && rank_score === 'true') {
+      // 从URL中移除rank_score参数
+      params.delete('rank_score');
+      const newUrl = params.values.length
+        ? `${window.location.pathname}?${params.toString()}`
+        : `${window.location.pathname}`;
+      window.history.replaceState(null, '', newUrl);
+      if (!isValid) {
+        Toast.onShow({
+          msg: t('invalid_rank_score', { keyPrefix: 'toast' }),
+          variant: 'warning',
+        });
+        return;
+      }
+      handleShow();
+    }
+  };
+  useEffect(() => {
+    getLoggedUserInfo().then((resp) => {
+      const rank_score_val = resp.rank_score;
+      const isValid = rank_score_val > 0;
+      setValidRankScore(isValid);
+      openRankScoreDialog(isValid);
+    });
+  }, []);
+
   return (
     <>
+      <RankToPointsModal
+        show={modalShow}
+        onHide={handleClose}
+        onExchange={handleExchange}
+      />
       <Nav className="flex-row">
         <Nav.Link
           as={NavLink}
@@ -130,6 +182,26 @@ const Index: FC<Props> = ({ redDot, userInfo, logOut }) => {
             }
             onClick={handleLinkClick}>
             {t('header.nav.setting')}
+          </Dropdown.Item>
+          <Dropdown.Divider />
+          <Dropdown.Item
+            onClick={() => {
+              const rootHost = getTargetRootAssetBunHost();
+              window.open(`${rootHost}/setting?verify=true`, '_blank');
+            }}>
+            {t('header.nav.realName')}
+          </Dropdown.Item>
+          {validRankScore && (
+            <Dropdown.Item onClick={handleRankToScore}>
+              {t('header.nav.rankToScore')}
+            </Dropdown.Item>
+          )}
+          <Dropdown.Item
+            onClick={() => {
+              const rootHost = getTargetRootAssetBunHost();
+              window.open(`${rootHost}/setting?extract=true`, '_blank');
+            }}>
+            {t('header.nav.withdrawal')}
           </Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Item href="/users/logout" onClick={(e) => logOut(e)}>

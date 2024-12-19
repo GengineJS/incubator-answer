@@ -396,21 +396,21 @@ var (
 		constant.RankSubjectAnswerScoreAIDownVotedKey: {0, 0, 0},
 
 		// 对主题评论的每个点赞能获取多少声望
-		constant.RankSubjectCommentUpVoteKey: {0.05, 0.05, 0.05},
+		constant.RankSubjectCommentUpVotedKey: {0.05, 0.05, 0.05},
 		// 对主题评论的每个点踩会失去多少声望
-		constant.RankSubjectCommentDownVoteKey: {0.05, 0.05, 0.05},
+		constant.RankSubjectCommentDownVotedKey: {0.05, 0.05, 0.05},
 		// 对积分主题评论的每个点赞能获取多少声望
-		constant.RankSubjectCommentScoreUpVoteKey: {0.1, 0.1, 0.1},
+		constant.RankSubjectCommentScoreUpVotedKey: {0.1, 0.1, 0.1},
 		// 对积分主题评论的每个点踩会失去多少声望
-		constant.RankSubjectCommentScoreDownVoteKey: {0.1, 0.1, 0.1},
+		constant.RankSubjectCommentScoreDownVotedKey: {0.1, 0.1, 0.1},
 		// 对AI评论的每个点赞能获取多少声望
-		constant.RankSubjectCommentAIUpVoteKey: {0, 0, 0},
+		constant.RankSubjectCommentAIUpVotedKey: {0, 0, 0},
 		// 对AI评论的每个点踩会失去多少声望
-		constant.RankSubjectCommentAIDownVoteKey: {0, 0, 0},
+		constant.RankSubjectCommentAIDownVotedKey: {0, 0, 0},
 		// 对积分主题AI评论的每个点赞能获取多少声望
-		constant.RankSubjectCommentScoreAIUpVoteKey: {0, 0, 0},
+		constant.RankSubjectCommentScoreAIUpVotedKey: {0, 0, 0},
 		// 对积分主题AI评论的每个点踩会失去多少声望
-		constant.RankSubjectCommentScoreAIDownVoteKey: {0, 0, 0},
+		constant.RankSubjectCommentScoreAIDownVotedKey: {0, 0, 0},
 		// 多少声望可以兑换1积分
 		constant.RankScoreExchangeKey: {50, 50, 50},
 	}

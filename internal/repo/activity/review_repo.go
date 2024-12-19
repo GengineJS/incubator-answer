@@ -77,7 +77,7 @@ func (ar *ReviewActivityRepo) Review(ctx context.Context, act *schema.PassReview
 		ObjectID:         act.ObjectID,
 		OriginalObjectID: act.OriginalObjectID,
 		ActivityType:     cfg.ID,
-		Rank:             cfg.GetIntValue(),
+		Rank:             cfg.GetFloatValue(),
 		HasRank:          1,
 		RevisionID:       converter.StringToInt64(act.RevisionID),
 	}
@@ -107,7 +107,7 @@ func (ar *ReviewActivityRepo) Review(ctx context.Context, act *schema.PassReview
 			return nil, nil
 		}
 
-		err = ar.userRankRepo.ChangeUserRank(ctx, session, addActivity.UserID, user.Rank, addActivity.Rank)
+		err = ar.userRankRepo.ChangeUserRank(ctx, session, addActivity.UserID, user.Rank, int(addActivity.Rank))
 		if err != nil {
 			return nil, err
 		}

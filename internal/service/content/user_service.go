@@ -24,6 +24,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/apache/incubator-answer/internal/service/assetbun"
+	"github.com/apache/incubator-answer/internal/service/config"
+	"github.com/apache/incubator-answer/internal/service/rank"
 	"time"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
@@ -66,6 +68,8 @@ type UserService struct {
 	userNotificationConfigService *user_notification_config.UserNotificationConfigService
 	questionService               *questioncommon.QuestionCommon
 	assetbunRepo                  assetbun.AssetBunRepo
+	configService                 *config.ConfigService
+	userRankRepo                  rank.UserRankRepo
 }
 
 func NewUserService(userRepo usercommon.UserRepo,
@@ -81,6 +85,8 @@ func NewUserService(userRepo usercommon.UserRepo,
 	userNotificationConfigService *user_notification_config.UserNotificationConfigService,
 	questionService *questioncommon.QuestionCommon,
 	aseetbunRepo assetbun.AssetBunRepo,
+	configService *config.ConfigService,
+	userRankRepo rank.UserRankRepo,
 ) *UserService {
 	return &UserService{
 		userCommonService:             userCommonService,
@@ -96,6 +102,8 @@ func NewUserService(userRepo usercommon.UserRepo,
 		userNotificationConfigService: userNotificationConfigService,
 		questionService:               questionService,
 		assetbunRepo:                  aseetbunRepo,
+		configService:                 configService,
+		userRankRepo:                  userRankRepo,
 	}
 }
 
@@ -142,6 +150,8 @@ func (us *UserService) GetUserInfoByUserID(ctx context.Context, token, userID st
 	resp.HavePassword = len(userInfo.Pass) > 0
 	resp.Score, _ = us.assetbunRepo.GetScore(ctx, userID)
 	resp.GroupInfo, _ = us.assetbunRepo.GetVIPInfo(ctx, userID)
+	config, _ := us.configService.GetConfigByKey(ctx, constant.RankScoreExchangeKey)
+	resp.RankToScore = config.GetFloatValue()
 	return resp, nil
 }
 
@@ -323,6 +333,19 @@ func (us *UserService) UserModifyPassword(ctx context.Context, req *schema.UserM
 	}
 
 	us.authService.RemoveTokensExceptCurrentUser(ctx, userInfo.ID, req.AccessToken)
+	return nil
+}
+
+func (us *UserService) UpdateExchange(ctx context.Context, req *schema.UpdateExchangeRequest) (err error) {
+	userInfo, exist, err := us.userRepo.GetByUserID(ctx, req.UserID)
+	if userInfo != nil && exist {
+		err = us.userRankRepo.UpdateExchange(ctx, req.UserID, req.ExchangeRank, req.Score)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
 	return nil
 }
 

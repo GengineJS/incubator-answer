@@ -84,11 +84,11 @@ backend:
     rank_question_vote_up_label:
       other: 点赞问题
     rank_answer_vote_up_label:
-      other: 点赞答案
+      other: 点赞回复
     rank_question_vote_down_label:
       other: 点踩问题
     rank_answer_vote_down_label:
-      other: 点踩答案
+      other: 点踩回复
     rank_invite_someone_to_answer_label:
       other: 邀请回复
     rank_tag_add_label:
@@ -171,21 +171,21 @@ backend:
       other: 对积分主题AI回复的每个点赞能获取的声望
     rank_subject_answer_score_ai_down_vote_label:
       other: 对积分主题AI回复的每个点踩会失去的声望
-    rank_subject_comment_up_vote_label:
+    rank_subject_comment_up_voted_label:
       other: 对主题评论的每个点赞能获取的声望
-    rank_subject_comment_down_vote_label:
+    rank_subject_comment_down_voted_label:
       other: 对主题评论的每个点踩会失去的声望
-    rank_subject_comment_score_up_vote_label:
+    rank_subject_comment_score_up_voted_label:
       other: 对积分主题评论的每个点赞能获取的声望
-    rank_subject_comment_score_down_vote_label:
+    rank_subject_comment_score_down_voted_label:
       other: 对积分主题评论的每个点踩会失去的声望
-    rank_subject_comment_ai_up_vote_label:
+    rank_subject_comment_ai_up_voted_label:
       other: 对AI评论的每个点赞能获取的声望
-    rank_subject_comment_ai_down_vote_label:
+    rank_subject_comment_ai_down_voted_label:
       other: 对AI评论的每个点踩会失去的声望
-    rank_subject_comment_score_ai_up_vote_label:
+    rank_subject_comment_score_ai_up_voted_label:
       other: 对积分主题AI评论的每个点赞能获取的声望
-    rank_subject_comment_score_ai_down_vote_label:
+    rank_subject_comment_score_ai_down_voted_label:
       other: 对积分主题AI评论的每个点踩会失去的声望
     rank_score_exchange_label:
       other: 多少声望可以兑换1积分
@@ -209,7 +209,6 @@ backend:
       other: AI回复积分文章时会获取的贡献值
     rank_article_score_ai_accepted_get_label:
       other: AI回复积分文章被采纳时会获取的积分百分比
-
     rank_assetbun_contribute_label:
       other: 发布云盘资源时会获取的贡献值
     rank_assetbun_score_contribute_label:
@@ -525,7 +524,11 @@ backend:
       update_question:
         other: 更新了问题
       add_subject:
-        other: "发布了{{.ContentType}}并获取了+{{.Rank}}声望在"
+        other: "发布了{{.ContentType}}并获得了+{{.Rank}}声望在"
+      collect_subject:
+        other: "收藏了{{.ContentType}}，您获得了+{{.Rank}}声望在"
+      cancel_collect_subject:
+        other: "取消收藏了{{.ContentType}}，您失去了-{{.Rank}}声望在"
       add_answer:
         other: "提交了{{.ContentType}}的回复并获得了+{{.Rank}}声望在"
       add_ai_answer:
@@ -585,23 +588,33 @@ backend:
       mention_you:
         other: 提到了你
       your_question_is_closed:
-        other: 你的问题已被关闭
+        other: 的问题已被关闭
       your_question_was_deleted:
-        other: 你的问题已被删除
+        other: 的问题已被删除
       your_answer_was_deleted:
-        other: 你的答案已被删除
+        other: 的答案已被删除
       your_comment_was_deleted:
-        other: 你的评论已被删除
+        other: 的评论已被删除
       up_voted_question:
-        other: 点赞问题
+        other: "点赞主题，并获得了+{{.Rank}}声望"
+      up_voted_cancel_question:
+        other: "取消点赞主题，并失去了-{{.Rank}}声望"
       down_voted_question:
-        other: 点踩问题
+        other: "点踩主题，并失去了-{{.Rank}}声望"
+      down_voted_cancel_question:
+        other: "取消点踩主题，并获得了+{{.Rank}}声望"
       up_voted_answer:
-        other: 点赞答案
+        other: "点赞回复，并获得了+{{.Rank}}声望"
+      up_voted_cancel_answer:
+        other: "取消点赞回复，并失去了-{{.Rank}}声望"
       down_voted_answer:
-        other: 点踩回复
+        other: "点踩回复，并失去了-{{.Rank}}声望"
+      down_voted_cancel_answer:
+        other: "取消点踩回复，并获得了+{{.Rank}}声望"
       up_voted_comment:
-        other: 点赞评论
+        other: "点赞评论，并获得了+{{.Rank}}声望"
+      up_voted_cancel_comment:
+        other: "取消点赞评论，并失去了-{{.Rank}}声望"
       invited_you_to_answer:
         other: 邀请你回复
   email_tpl:
@@ -748,7 +761,7 @@ ui:
       all: 全部
       posts: 帖子
       invites: 邀请
-      votes: 投票
+      votes: 点赞
       integrals: 积分
   suspended:
     title: 你的账号账号已被封禁
@@ -1075,6 +1088,9 @@ ui:
       user: 用户
       profile: 用户主页
       setting: 账号设置
+      rankToScore: 声望兑积分
+      realName: 实名认证
+      withdrawal: 积分提现
       logout: 退出
       admin: 后台管理
       review: 审查
@@ -1317,6 +1333,8 @@ ui:
       remove_success: 移除成功
   toast:
     update: 更新成功
+    rank_score_short: 积分兑换至少需要为1积分才可兑换
+    invalid_rank_score: 声望兑积分功能暂时关闭
     update_password: 密码更新成功。
     flag_success: 感谢标记。
     forbidden_operate_self: 禁止对自己执行操作
@@ -1430,6 +1448,16 @@ ui:
     tip_answer_deleted: 该回复已被删除
     undelete_title: 撤销删除本帖
     undelete_desc: 你确定你要撤销删除吗？
+  ranks:
+    exchange_confirm: 确认兑换积分?
+    modal_title: 声望兑积分
+    exchange_val: 兑换积分值
+    placeholder: 输入想兑换的积分值
+    confirm: 确认
+    close: 关闭
+    exchange: 兑换
+    content: "您有 {{rank}} 声望,最多可兑 {{maxScore}} 积分,兑换后剩余 {{remaining}} 声望"
+    content_confirm: "您有 {{rank}} 声望，兑换 {{currScore}} 积分后剩余 {{remaining}} 声望"
   btns:
     confirm: 确认
     cancel: 取消

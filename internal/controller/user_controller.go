@@ -475,6 +475,18 @@ func (uc *UserController) UserUpdateInfo(ctx *gin.Context) {
 	handler.HandleResponse(ctx, err, errFields)
 }
 
+// UpdateExchange 声望兑换积分的更新记录
+// @Router /answer/api/v1/user/exchange [put]
+func (uc *UserController) UpdateExchange(ctx *gin.Context) {
+	req := &schema.UpdateExchangeRequest{}
+	if handler.BindAndCheck(ctx, req) {
+		return
+	}
+	req.UserID = middleware.GetLoginUserIDFromContext(ctx)
+	err := uc.userService.UpdateExchange(ctx, req)
+	handler.HandleResponse(ctx, err, nil)
+}
+
 // UserUpdateInterface update user interface config
 // @Summary UserUpdateInterface update user interface config
 // @Description UserUpdateInterface update user interface config

@@ -52,6 +52,10 @@ type UserRankRepo interface {
 	CheckReachLimit(ctx context.Context, session *xorm.Session, userID string, maxDailyRank int) (reach bool, err error)
 	ChangeUserRank(ctx context.Context, session *xorm.Session,
 		userID string, userCurrentScore, deltaRank int) (err error)
+	ChangeFRankImmediate(ctx context.Context, userID string, deltaRank float32) (err error)
+	UpdateExchange(ctx context.Context, userID string, exchangeRank float32, score int) (err error)
+	ChangeUserFloatRank(ctx context.Context, session *xorm.Session, userID string, deltaRank float32) (err error)
+	GetUserFloatRank(ctx context.Context, session *xorm.Session, userID string) (rank float32)
 	TriggerUserRank(ctx context.Context, session *xorm.Session, userId string, rank int, activityType int) (isReachStandard bool, err error)
 	UserRankPage(ctx context.Context, userId string, page, pageSize int) (rankPage []*entity.Activity, total int64, err error)
 }

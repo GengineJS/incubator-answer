@@ -21,17 +21,19 @@ package rank
 
 import (
 	"context"
-
+	"fmt"
 	"github.com/apache/incubator-answer/internal/base/data"
 	"github.com/apache/incubator-answer/internal/base/pager"
 	"github.com/apache/incubator-answer/internal/base/reason"
 	"github.com/apache/incubator-answer/internal/entity"
+	"github.com/apache/incubator-answer/internal/service/assetbun"
 	"github.com/apache/incubator-answer/internal/service/config"
 	"github.com/apache/incubator-answer/internal/service/rank"
 	"github.com/apache/incubator-answer/plugin"
 	"github.com/jinzhu/now"
 	"github.com/segmentfault/pacman/errors"
 	"github.com/segmentfault/pacman/log"
+	"time"
 	"xorm.io/builder"
 	"xorm.io/xorm"
 )
@@ -40,13 +42,15 @@ import (
 type UserRankRepo struct {
 	data          *data.Data
 	configService *config.ConfigService
+	assetbunRepo  assetbun.AssetBunRepo
 }
 
 // NewUserRankRepo new repository
-func NewUserRankRepo(data *data.Data, configService *config.ConfigService) rank.UserRankRepo {
+func NewUserRankRepo(data *data.Data, configService *config.ConfigService, assetbunRepo assetbun.AssetBunRepo) rank.UserRankRepo {
 	return &UserRankRepo{
 		data:          data,
 		configService: configService,
+		assetbunRepo:  assetbunRepo,
 	}
 }
 
@@ -69,7 +73,7 @@ func (ur *UserRankRepo) CheckReachLimit(ctx context.Context, session *xorm.Sessi
 		MoreVal: now.EndOfDay(),
 	})
 
-	earned, err := session.SumInt(&entity.Activity{}, "`rank`")
+	earned, err := session.Sum(&entity.Activity{}, "`rank`")
 	if err != nil {
 		return false, err
 	}
@@ -94,6 +98,94 @@ func (ur *UserRankRepo) ChangeUserRank(
 	}
 
 	_, err = session.ID(userID).Incr("`rank`", deltaRank).Update(&entity.User{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// User entity的user model的rank是int类型(考虑到兼容性),这里直接操作float类型，为float rank作操作
+type User struct {
+	ID   string  `xorm:"not null pk autoincr BIGINT(20) id"`
+	Rank float32 `xorm:"not null default 0 FLOAT rank"`
+}
+
+// TableName user table name
+func (User) TableName() string {
+	return "user"
+}
+
+// GetUserFloatRank get user float rank
+func (ur *UserRankRepo) GetUserFloatRank(ctx context.Context, session *xorm.Session, userID string) (rank float32) {
+	var user User
+	// 根据 ID 查询
+	session.Where("id = ?", userID).Get(&user)
+	return user.Rank
+}
+
+func (ur *UserRankRepo) UpdateExchange(ctx context.Context, userID string, exchangeRank float32, score int) (err error) {
+	err = ur.ChangeFRankImmediate(ctx, userID, -exchangeRank)
+	if err != nil {
+		return err
+	}
+	err = ur.assetbunRepo.OffsetScore(ctx, userID, score)
+	if err != nil {
+		return err
+	}
+	exchange := entity.Exchange{
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Rank:      exchangeRank,
+		Score:     score,
+		UserID:    userID,
+	}
+
+	// 插入数据
+	_, err = ur.data.DB.Insert(&exchange)
+	if err != nil {
+		fmt.Println("Error inserting data:", err)
+		return err
+	}
+	return nil
+}
+
+func (ur *UserRankRepo) ChangeFRankImmediate(ctx context.Context, userID string, deltaRank float32) (err error) {
+	// 创建Session对象
+	session := ur.data.DB.NewSession()
+	defer session.Close()
+	// 开始事务
+	if err = session.Begin(); err != nil {
+		fmt.Println("Error starting transaction:", err)
+		return err
+	}
+	err = ur.ChangeUserFloatRank(ctx, session, userID, deltaRank)
+	if err != nil {
+		session.Rollback() // 如果出现错误，回滚事务
+		fmt.Println("Error updating user:", err)
+		return err
+	}
+	if err := session.Commit(); err != nil {
+		fmt.Println("Error committing transaction:", err)
+		return err
+	}
+	return nil
+}
+
+// ChangeUserFloatRank change user float rank
+func (ur *UserRankRepo) ChangeUserFloatRank(ctx context.Context, session *xorm.Session, userID string, deltaRank float32) (err error) {
+	// IMPORTANT: If user center enabled the rank agent, then we should not change user rank.
+	if plugin.RankAgentEnabled() || deltaRank == 0 {
+		return nil
+	}
+	userCurrentScore := ur.GetUserFloatRank(ctx, session, userID)
+	// If user rank is lower than 1 after this action, then user rank will be set to 1 only.
+	if deltaRank < 0 && userCurrentScore+deltaRank < 1 {
+		deltaRank = 1 - userCurrentScore
+	}
+	newRank := userCurrentScore + deltaRank
+
+	// 更新数据库
+	_, err = session.ID(userID).Cols("Rank").Update(&User{Rank: newRank})
 	if err != nil {
 		return err
 	}
@@ -203,7 +295,7 @@ func (ur *UserRankRepo) UserRankPage(ctx context.Context, userID string, page, p
 ) {
 	rankPage = make([]*entity.Activity, 0)
 
-	session := ur.data.DB.Context(ctx).Where(builder.Eq{"has_rank": 1}.And(builder.Eq{"cancelled": 0})).And(builder.Gt{"`rank`": 0})
+	session := ur.data.DB.Context(ctx).Where(builder.Eq{"has_rank": 1}.And(builder.Eq{"cancelled": 0})).And(builder.Neq{"`rank`": 0})
 	session.Desc("created_at")
 
 	cond := &entity.Activity{UserID: userID}

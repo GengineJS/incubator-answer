@@ -121,21 +121,21 @@ const (
 	RankSubjectAnswerScoreAIDownVotedKey = "rank.subject.answer_score_ai_down_voted"
 
 	// 对主题评论的每个点赞能获取多少声望
-	RankSubjectCommentUpVoteKey = "rank.subject.comment_up_vote"
+	RankSubjectCommentUpVotedKey = "rank.subject.comment_up_voted"
 	// 对主题评论的每个点踩会失去多少声望
-	RankSubjectCommentDownVoteKey = "rank.subject.comment_down_vote"
+	RankSubjectCommentDownVotedKey = "rank.subject.comment_down_voted"
 	// 对积分主题评论的每个点赞能获取多少声望
-	RankSubjectCommentScoreUpVoteKey = "rank.subject.comment_score_up_vote"
+	RankSubjectCommentScoreUpVotedKey = "rank.subject.comment_score_up_voted"
 	// 对积分主题评论的每个点踩会失去多少声望
-	RankSubjectCommentScoreDownVoteKey = "rank.subject.comment_score_down_vote"
+	RankSubjectCommentScoreDownVotedKey = "rank.subject.comment_score_down_voted"
 	// 对AI评论的每个点赞能获取多少声望
-	RankSubjectCommentAIUpVoteKey = "rank.subject.comment_ai_up_vote"
+	RankSubjectCommentAIUpVotedKey = "rank.subject.comment_ai_up_voted"
 	// 对AI评论的每个点踩会失去多少声望
-	RankSubjectCommentAIDownVoteKey = "rank.subject.comment_ai_down_vote"
+	RankSubjectCommentAIDownVotedKey = "rank.subject.comment_ai_down_voted"
 	// 对积分主题AI评论的每个点赞能获取多少声望
-	RankSubjectCommentScoreAIUpVoteKey = "rank.subject.comment_score_ai_up_vote"
+	RankSubjectCommentScoreAIUpVotedKey = "rank.subject.comment_score_ai_up_voted"
 	// 对积分主题AI评论的每个点踩会失去多少声望
-	RankSubjectCommentScoreAIDownVoteKey = "rank.subject.comment_score_ai_down_vote"
+	RankSubjectCommentScoreAIDownVotedKey = "rank.subject.comment_score_ai_down_voted"
 
 	// 多少声望可以兑换1积分
 	RankScoreExchangeKey = "rank.score.exchange"
@@ -208,21 +208,21 @@ var (
 		// 对积分主题AI回复的每个点踩会失去多少声望
 		{Label: reason.RankSubjectAnswerScoreAIDownVotedLabel, Key: RankSubjectAnswerScoreAIDownVotedKey},
 		// 对主题评论的每个点赞能获取多少声望
-		{Label: reason.RankSubjectCommentUpVoteLabel, Key: RankSubjectCommentUpVoteKey},
+		{Label: reason.RankSubjectCommentUpVoteLabel, Key: RankSubjectCommentUpVotedKey},
 		// 对主题评论的每个点踩会失去多少声望
-		{Label: reason.RankSubjectCommentDownVoteLabel, Key: RankSubjectCommentDownVoteKey},
+		{Label: reason.RankSubjectCommentDownVoteLabel, Key: RankSubjectCommentDownVotedKey},
 		// 对积分主题评论的每个点赞能获取多少声望
-		{Label: reason.RankSubjectCommentScoreUpVoteLabel, Key: RankSubjectCommentScoreUpVoteKey},
+		{Label: reason.RankSubjectCommentScoreUpVoteLabel, Key: RankSubjectCommentScoreUpVotedKey},
 		// 对积分主题评论的每个点踩会失去多少声望
-		{Label: reason.RankSubjectCommentScoreDownVoteLabel, Key: RankSubjectCommentScoreDownVoteKey},
+		{Label: reason.RankSubjectCommentScoreDownVoteLabel, Key: RankSubjectCommentScoreDownVotedKey},
 		// 对AI评论的每个点赞能获取多少声望
-		{Label: reason.RankSubjectCommentAIUpVoteLabel, Key: RankSubjectCommentAIUpVoteKey},
+		{Label: reason.RankSubjectCommentAIUpVoteLabel, Key: RankSubjectCommentAIUpVotedKey},
 		// 对AI评论的每个点踩会失去多少声望
-		{Label: reason.RankSubjectCommentAIDownVoteLabel, Key: RankSubjectCommentAIDownVoteKey},
+		{Label: reason.RankSubjectCommentAIDownVoteLabel, Key: RankSubjectCommentAIDownVotedKey},
 		// 对积分主题AI评论的每个点赞能获取多少声望
-		{Label: reason.RankSubjectCommentScoreAIUpVoteLabel, Key: RankSubjectCommentScoreAIUpVoteKey},
+		{Label: reason.RankSubjectCommentScoreAIUpVoteLabel, Key: RankSubjectCommentScoreAIUpVotedKey},
 		// 对积分主题AI评论的每个点踩会失去多少声望
-		{Label: reason.RankSubjectCommentScoreAIDownVoteLabel, Key: RankSubjectCommentScoreAIDownVoteKey},
+		{Label: reason.RankSubjectCommentScoreAIDownVoteLabel, Key: RankSubjectCommentScoreAIDownVotedKey},
 		// 多少声望可以兑换1积分
 		{Label: reason.RankScoreExchangeLabel, Key: RankScoreExchangeKey},
 	}

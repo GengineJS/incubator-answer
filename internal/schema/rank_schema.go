@@ -50,7 +50,7 @@ type GetRankPersonalPageResp struct {
 	// content
 	Content string `json:"content"`
 	// reputation
-	Reputation int `json:"reputation"`
+	Reputation float32 `json:"reputation"`
 	// rank type
 	RankType string `json:"rank_type"`
 }

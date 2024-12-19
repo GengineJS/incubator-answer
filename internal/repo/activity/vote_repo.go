@@ -22,16 +22,13 @@ package activity
 import (
 	"context"
 	"fmt"
-	"time"
-
 	"github.com/apache/incubator-answer/internal/service/content"
 	"github.com/segmentfault/pacman/log"
+	"math"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
-	"github.com/apache/incubator-answer/internal/service/notice_queue"
-	"github.com/apache/incubator-answer/pkg/converter"
-
 	"github.com/apache/incubator-answer/internal/base/pager"
+	"github.com/apache/incubator-answer/internal/service/notice_queue"
 	"github.com/apache/incubator-answer/internal/service/rank"
 	"github.com/apache/incubator-answer/pkg/obj"
 
@@ -101,7 +98,7 @@ func (vr *VoteRepo) Vote(ctx context.Context, op *schema.VoteOperationInfo) (err
 			return nil, err
 		}
 
-		sendInboxNotification, err = vr.saveActivitiesAvailable(session, op)
+		sendInboxNotification, err = vr.saveActivitiesAvailable(session, &op.RankOperationInfo)
 		if err != nil {
 			return nil, err
 		}
@@ -115,15 +112,16 @@ func (vr *VoteRepo) Vote(ctx context.Context, op *schema.VoteOperationInfo) (err
 	if err != nil {
 		return err
 	}
-
+	var rank float32
 	for _, activity := range op.Activities {
 		if activity.Rank == 0 {
 			continue
 		}
+		rank = activity.Rank
 		vr.sendAchievementNotification(ctx, activity.ActivityUserID, op.ObjectCreatorUserID, op.ObjectID)
 	}
-	if sendInboxNotification {
-		vr.sendVoteInboxNotification(ctx, op.OperatingUserID, op.ObjectCreatorUserID, op.ObjectID, op.VoteUp)
+	if sendInboxNotification && rank != 0 {
+		vr.sendVoteInboxNotification(ctx, op.OperatingUserID, op.ObjectCreatorUserID, op.ObjectID, float32(math.Abs(float64(rank))), op.VoteUp, false)
 	}
 	return nil
 }
@@ -170,12 +168,16 @@ func (vr *VoteRepo) CancelVote(ctx context.Context, op *schema.VoteOperationInfo
 	if err != nil {
 		return err
 	}
-
+	var rank float32
 	for _, activity := range activities {
 		if activity.Rank == 0 {
 			continue
 		}
+		rank = activity.Rank
 		vr.sendAchievementNotification(ctx, activity.UserID, op.ObjectCreatorUserID, op.ObjectID)
+	}
+	if rank != 0 {
+		vr.sendVoteInboxNotification(ctx, op.OperatingUserID, op.ObjectCreatorUserID, op.ObjectID, float32(math.Abs(float64(rank))), op.VoteUp, true)
 	}
 	return nil
 }
@@ -273,8 +275,8 @@ func (vr *VoteRepo) changeUserRank(ctx context.Context, session *xorm.Session,
 		if user == nil {
 			continue
 		}
-		if err = vr.userRankRepo.ChangeUserRank(ctx, session,
-			activity.ActivityUserID, user.Rank, int(activity.Rank)); err != nil {
+		if err = vr.userRankRepo.ChangeUserFloatRank(ctx, session,
+			activity.ActivityUserID, activity.Rank); err != nil {
 			log.Error(err)
 			return err
 		}
@@ -293,8 +295,8 @@ func (vr *VoteRepo) rollbackUserRank(ctx context.Context, session *xorm.Session,
 		if user == nil {
 			continue
 		}
-		if err = vr.userRankRepo.ChangeUserRank(ctx, session,
-			activity.UserID, user.Rank, -activity.Rank); err != nil {
+		if err = vr.userRankRepo.ChangeUserFloatRank(ctx, session,
+			activity.UserID, -activity.Rank); err != nil {
 			log.Error(err)
 			return err
 		}
@@ -306,103 +308,19 @@ func (vr *VoteRepo) rollbackUserRank(ctx context.Context, session *xorm.Session,
 // If activity not exist it will be created or else will be updated
 // If this activity is already exist, set activity rank to 0
 // So after this function, the activity rank will be correct for update user rank
-func (vr *VoteRepo) saveActivitiesAvailable(session *xorm.Session, op *schema.VoteOperationInfo) (newAct bool, err error) {
-	for _, activity := range op.Activities {
-		existsActivity := &entity.Activity{}
-		exist, err := session.
-			Where(builder.Eq{"object_id": op.ObjectID}).
-			And(builder.Eq{"user_id": activity.ActivityUserID}).
-			And(builder.Eq{"trigger_user_id": activity.TriggerUserID}).
-			And(builder.Eq{"activity_type": activity.ActivityType}).
-			Get(existsActivity)
-		if err != nil {
-			return false, err
-		}
-		if exist && existsActivity.Cancelled == entity.ActivityAvailable {
-			activity.Rank = 0
-			continue
-		}
-		if exist {
-			bean := &entity.Activity{
-				Cancelled: entity.ActivityAvailable,
-				Rank:      int(activity.Rank),
-				HasRank:   activity.HasRank(),
-			}
-			session.Where("id = ?", existsActivity.ID)
-			if _, err = session.Cols("`cancelled`", "`rank`", "`has_rank`").
-				Update(bean); err != nil {
-				return false, err
-			}
-		} else {
-			insertActivity := entity.Activity{
-				ObjectID:         op.ObjectID,
-				OriginalObjectID: op.ObjectID,
-				UserID:           activity.ActivityUserID,
-				TriggerUserID:    converter.StringToInt64(activity.TriggerUserID),
-				ActivityType:     activity.ActivityType,
-				Rank:             int(activity.Rank),
-				HasRank:          activity.HasRank(),
-				Cancelled:        entity.ActivityAvailable,
-			}
-			_, err = session.Insert(&insertActivity)
-			if err != nil {
-				return false, err
-			}
-			newAct = true
-		}
-	}
-	return newAct, nil
+func (vr *VoteRepo) saveActivitiesAvailable(session *xorm.Session, op *schema.RankOperationInfo) (newAct bool, err error) {
+	return SaveActivitiesAvailable(session, op)
 }
 
 // cancelActivities cancel activities
 // If this activity is already cancelled, set activity rank to 0
 // So after this function, the activity rank will be correct for update user rank
 func (vr *VoteRepo) cancelActivities(session *xorm.Session, activities []*entity.Activity) (err error) {
-	for _, activity := range activities {
-		t := &entity.Activity{}
-		exist, err := session.ID(activity.ID).Get(t)
-		if err != nil {
-			log.Error(err)
-			return err
-		}
-		if !exist {
-			log.Error(fmt.Errorf("%s activity not exist", activity.ID))
-			return fmt.Errorf("%s activity not exist", activity.ID)
-		}
-		//  If this activity is already cancelled, set activity rank to 0
-		if t.Cancelled == entity.ActivityCancelled {
-			activity.Rank = 0
-		}
-		if _, err = session.ID(activity.ID).Cols("cancelled", "cancelled_at").
-			Update(&entity.Activity{
-				Cancelled:   entity.ActivityCancelled,
-				CancelledAt: time.Now(),
-			}); err != nil {
-			log.Error(err)
-			return err
-		}
-	}
-	return nil
+	return CancelActivities(session, activities)
 }
 
 func (vr *VoteRepo) getExistActivity(ctx context.Context, op *schema.VoteOperationInfo) ([]*entity.Activity, error) {
-	var activities []*entity.Activity
-	for _, action := range op.Activities {
-		t := &entity.Activity{}
-		exist, err := vr.data.DB.Context(ctx).
-			Where(builder.Eq{"user_id": action.ActivityUserID}).
-			And(builder.Eq{"trigger_user_id": action.TriggerUserID}).
-			And(builder.Eq{"activity_type": action.ActivityType}).
-			And(builder.Eq{"object_id": op.ObjectID}).
-			Get(t)
-		if err != nil {
-			return nil, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
-		}
-		if exist {
-			activities = append(activities, t)
-		}
-	}
-	return activities, nil
+	return GetExistActivity(ctx, vr.data.DB, &op.RankOperationInfo)
 }
 
 func (vr *VoteRepo) countVoteUp(ctx context.Context, objectID, objectType string) (count int64) {
@@ -466,7 +384,7 @@ func (vr *VoteRepo) sendAchievementNotification(ctx context.Context, activityUse
 	vr.notificationQueueService.Send(ctx, msg)
 }
 
-func (vr *VoteRepo) sendVoteInboxNotification(ctx context.Context, triggerUserID, receiverUserID, objectID string, upvote bool) {
+func (vr *VoteRepo) sendVoteInboxNotification(ctx context.Context, triggerUserID, receiverUserID, objectID string, rank float32, upvote, isCancel bool) {
 	if triggerUserID == receiverUserID {
 		return
 	}
@@ -478,24 +396,42 @@ func (vr *VoteRepo) sendVoteInboxNotification(ctx context.Context, triggerUserID
 		Type:           schema.NotificationTypeInbox,
 		ObjectID:       objectID,
 		ObjectType:     objectType,
+		ExtraInfo: map[string]string{
+			"Rank": fmt.Sprintf("%.2f", rank),
+		},
 	}
 	if objectType == constant.QuestionObjectType {
 		if upvote {
 			msg.NotificationAction = constant.NotificationUpVotedTheQuestion
+			if isCancel {
+				msg.NotificationAction = constant.NotificationUpVotedCancelTheQuestion
+			}
 		} else {
 			msg.NotificationAction = constant.NotificationDownVotedTheQuestion
+			if isCancel {
+				msg.NotificationAction = constant.NotificationDownVotedCancelTheQuestion
+			}
 		}
 	}
 	if objectType == constant.AnswerObjectType {
 		if upvote {
 			msg.NotificationAction = constant.NotificationUpVotedTheAnswer
+			if isCancel {
+				msg.NotificationAction = constant.NotificationUpVotedCancelTheAnswer
+			}
 		} else {
 			msg.NotificationAction = constant.NotificationDownVotedTheAnswer
+			if isCancel {
+				msg.NotificationAction = constant.NotificationDownVotedCancelTheAnswer
+			}
 		}
 	}
 	if objectType == constant.CommentObjectType {
 		if upvote {
 			msg.NotificationAction = constant.NotificationUpVotedTheComment
+			if isCancel {
+				msg.NotificationAction = constant.NotificationUpVotedCancelTheComment
+			}
 		}
 	}
 	if len(msg.NotificationAction) > 0 {

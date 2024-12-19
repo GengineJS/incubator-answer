@@ -59,6 +59,7 @@ var (
 		&entity.TagRel{},
 		&entity.Uniqid{},
 		&entity.User{},
+		&entity.Exchange{},
 		&entity.Version{},
 		&entity.Role{},
 		&entity.RolePowerRel{},
