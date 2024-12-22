@@ -308,6 +308,12 @@ func (cs *ReviewService) updateObjectStatus(ctx context.Context, review *entity.
 			return errors.BadRequest(reason.ObjectNotFound)
 		}
 		if isApprove {
+			count, err := cs.answerRepo.GetCountByQuestionID(ctx, questionInfo.ID)
+			if err != nil {
+				return err
+			}
+			// 如果Approve了，要记得更新答案数量
+			cs.questionRepo.UpdateAnswerCount(ctx, questionInfo.ID, int(count))
 			cs.notificationAnswerTheQuestion(ctx, questionInfo.UserID, questionInfo.ID, answerInfo.ID,
 				answerInfo.UserID, questionInfo.Title, answerInfo.OriginalText)
 		}

@@ -415,7 +415,7 @@ func (us *UserService) formatUserInfoForUpdateInfo(
 	userInfo.Website = oldUserInfo.Website
 	userInfo.Location = oldUserInfo.Location
 	userInfo.ID = req.UserID
-
+	userInfo.Rank = oldUserInfo.Rank
 	if len(req.DisplayName) > 0 && siteUsersConf.AllowUpdateDisplayName {
 		userInfo.DisplayName = req.DisplayName
 	}

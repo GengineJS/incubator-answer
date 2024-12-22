@@ -677,6 +677,11 @@ func (qs *QuestionCommon) ShowFormat(ctx context.Context, data *entity.Question)
 		}
 
 	}
+	buyers, _ := qs.questionRepo.GetBuyers(ctx, data.ID)
+	info.BuyerUserIds = make([]string, len(buyers))
+	for j, buyer := range buyers {
+		info.BuyerUserIds[j] = buyer.UserID
+	}
 	info.Tags = make([]*schema.TagResp, 0)
 	return &info
 }

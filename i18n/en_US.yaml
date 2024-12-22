@@ -72,7 +72,7 @@ backend:
     rank_question_add_label:
       other: 提问
     rank_answer_add_label:
-      other: 写答案
+      other: 写回复
     rank_comment_add_label:
       other: 写评论
     rank_report_add_label:
@@ -572,17 +572,23 @@ backend:
       answer_the_question:
         other: 回复了问题
       update_answer:
-        other: 更新了答案
+        other: 更新了回复
       accept_answer:
-        other: 采纳了答案
+        other: 采纳了回复
+      cancel_accept_answer:
+        other: 回复取消了采纳
+      accepted_rank_answer:
+        other: "采纳了您的回复，并获得+{{.Rank}}声望"
       accept_rank_answer:
-        other: "采纳了答案，并获得+{{.Rank}}声望"
+        other: "采纳了您主题下的回复，并获得+{{.Rank}}声望"
+      cancel_accepted_rank_answer:
+        other: "把您的回复取消采纳, 并失去了-{{.Rank}}声望"
       cancel_accept_rank_answer:
-        other: "把您的答案取消采纳, 并失去了-{{.Rank}}声望"
+        other: "把您主题下的回复取消采纳, 并失去了-{{.Rank}}声望"
       comment_question:
         other: 评论了问题
       comment_answer:
-        other: 评论了答案
+        other: 评论了回复
       reply_to_you:
         other: 回复了你
       mention_you:
@@ -592,7 +598,7 @@ backend:
       your_question_was_deleted:
         other: 的问题已被删除
       your_answer_was_deleted:
-        other: 的答案已被删除
+        other: 的回复已被删除
       your_comment_was_deleted:
         other: 的评论已被删除
       up_voted_question:
@@ -980,7 +986,7 @@ ui:
   edit_answer:
     title: 编辑回复
     default_reason: 编辑回复
-    default_first_reason: 添加答案
+    default_first_reason: 添加回复
     form:
       fields:
         revision:
@@ -1364,7 +1370,7 @@ ui:
     search: 搜索人员
   question_detail:
     action: 操作
-    best_answer: 最佳答案
+    best_answer: 最佳回复
     accept_title: 是否采纳回复
     warn_accept: 采纳该回复会把当前积分给到该用户，并且后续无法取消采纳，是否采纳该回复?
     not_accept: 花费积分的帖子对回复采纳后无法进行取消采纳的操作
@@ -1897,7 +1903,7 @@ ui:
         title: 删除此用户
         content: 确定要删除此用户？此操作无法撤销！
         remove: 移除内容
-        label: 删除所有问题、 答案、 评论等
+        label: 删除所有问题、 回复、 评论等
         text: 如果你只想删除用户账户，请不要选中此项。
       suspend_user:
         title: 挂起此用户
@@ -1929,7 +1935,7 @@ ui:
       action: 操作
       change: 更改
       filter:
-        placeholder: "按标题筛选，答案:id"
+        placeholder: "按标题筛选，回复:id"
     general:
       page_title: 一般
       name:
