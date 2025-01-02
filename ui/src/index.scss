@@ -252,11 +252,16 @@ img[src=''] {
       padding: 2px 4px;
       border-radius: 0.25rem;
     }
+    :is(img) {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
   }
   pre {
     background-color: var(--an-e9ecef);
     border-radius: 0.25rem;
-    padding: 1rem;
+    padding: 1px;
   }
   blockquote {
     border-left: 0.25rem solid #ced4da;

@@ -30,6 +30,51 @@ export function needQuestionToLoginOrUp(question, userInfo): void {
   }
 }
 
+export function appendExternalResources(
+  cssUrl,
+  scriptUrl,
+  onLoadScript,
+  once = false,
+  isModule = true,
+) {
+  // 检查是否已经有对应的CSS文件链接
+  const linkElements = document.getElementsByTagName('link');
+  const existingCssLink = Array.from(linkElements).some((link) => {
+    return link.href === cssUrl;
+  });
+
+  // 如果没有对应的CSS链接，则添加
+  if (!existingCssLink) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = cssUrl;
+    document.head.appendChild(link);
+  }
+  // 检查是否已经有对应的script标签
+  const scriptElements = document.getElementsByTagName('script');
+  const existingScript = Array.from(scriptElements).some((script) => {
+    return script.src === scriptUrl;
+  });
+
+  // 如果没有对应的script标签，则添加
+  if (!once || !existingScript) {
+    const script = document.createElement('script');
+    script.src = scriptUrl;
+    if (isModule) {
+      script.type = 'module'; // 如果glslEditor.min.js是一个ES6模块
+    }
+    script.onload = function () {
+      onLoadScript(script);
+      // 这里可以放置脚本加载后的初始化代码
+    };
+    script.onerror = function () {
+      console.error('external script load error.');
+    };
+    document.head.appendChild(script);
+  }
+}
+
 export function hasQueryParam(url: string | null = null): boolean {
   // 获取当前页面的URL
   const currentUrl = url || window.location.href;

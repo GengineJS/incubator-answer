@@ -1,14 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+// eslint-disable-next-line import/order
+import React, { useEffect, useRef, useState } from 'react';
 
-// eslint-disable-next-line import/no-extraneous-dependencies,import/order
-import { MathJaxContext, MathJax } from 'better-react-mathjax';
-
-// eslint-disable-next-line import/no-extraneous-dependencies
-import hljs from 'highlight.js/lib/core'; // 引入 core 模块
-// eslint-disable-next-line import/no-extraneous-dependencies
-import cpp from 'highlight.js/lib/languages/cpp';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import 'highlight.js/styles/default.css';
+import { appendExternalResources } from '@/common/functions';
 
 // math jax
 export const config = {
@@ -82,152 +75,162 @@ function unescapeHtmlEntities(escapedHtml) {
   const doc = parser.parseFromString(escapedHtml, 'text/html');
   return doc.documentElement.textContent!;
 }
-function appendGlslEditorResources(cssUrl, scriptUrl, onLoadScript) {
-  // 检查是否已经有对应的CSS文件链接
-  const linkElements = document.getElementsByTagName('link');
-  const existingCssLink = Array.from(linkElements).some((link) => {
-    return link.href === cssUrl;
+
+const GlslRuntime = (articleRef) => {
+  const codeNodes = articleRef.current.querySelectorAll('pre code');
+  Array.from(codeNodes).forEach((node) => {
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const className = node.className || '';
+    const isShadertoy = className.includes('language-shadertoy');
+    const isGlsl = className.includes('language-glsl');
+    // const languageMatch = className.match(/language-(\w+)/);
+    // const language = languageMatch ? languageMatch[1] : '';
+    // @ts-ignore
+    const parentNode = node.parentNode!;
+    parentNode.style.padding = '0';
+    if (isShadertoy || isGlsl) {
+      const glslNodes = [node];
+      const htmlTag = document.querySelector('html') as HTMLHtmlElement;
+      const theme = htmlTag.getAttribute('data-bs-theme');
+      let currTheme = '';
+      if (theme !== 'light') {
+        currTheme = 'monokai';
+      }
+
+      appendExternalResources(
+        '/static/glslEditor.css',
+        '/static/glslEditor.min.js',
+        function onload() {
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          glslNodes.forEach((node, index, array) => {
+            // @ts-ignore
+            let codeInfo = unescapeHtmlEntities(node.innerHTML);
+
+            if (isShadertoy) {
+              if (!codeInfo.match(mainImgRegex)) {
+                codeInfo =
+                  codeInfo.trim() === ''
+                    ? mainImgFunc
+                    : `${codeInfo}
+                    ${mainImgFunc}`;
+              }
+            } else if (!containsMainFunction(codeInfo)) {
+              return;
+            }
+            parentNode.removeChild(node);
+            if (theme === 'light') {
+              parentNode.style.border = `1px solid #ded7d7`;
+              parentNode.style.backgroundColor = '#f7f7f7';
+            }
+            const rect = parentNode.getBoundingClientRect();
+            const { width } = rect;
+            // @ts-ignore
+            // eslint-disable-next-line no-new
+            new GlslEditor(parentNode, {
+              canvas_size: width / 3,
+              theme: currTheme,
+              canvas_follow: true,
+              multipleBuffers: true,
+              watchHash: true,
+              fileDrops: false,
+              frag_footer: isShadertoy ? postFunction : '',
+              frag_header: isShadertoy ? preFunction : '',
+              frag: codeInfo,
+              autofocus: false,
+              menu: false,
+            });
+
+            const isLast = index === array.length - 1;
+            if (isLast && theme === 'light') {
+              const elements =
+                articleRef.current.querySelectorAll('.ge_editor');
+              elements.forEach((elem) => {
+                elem.style.backgroundColor = '#ffffff';
+              });
+            }
+          });
+        },
+        false,
+        true,
+      );
+    }
   });
+};
 
-  // 如果没有对应的CSS链接，则添加
-  if (!existingCssLink) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = cssUrl;
-    document.head.appendChild(link);
-  }
-
-  // 检查是否已经有对应的script标签
-  const scriptElements = document.getElementsByTagName('script');
-  const existingScript = Array.from(scriptElements).some((script) => {
-    return script.src === scriptUrl;
+function renderVditor(articleRef, html) {
+  // @ts-ignore
+  Vditor.preview(articleRef.current, html, {
+    cdn: 'https://cdn.jsdelivr.net/npm/vditor@3.10.8',
+    hljs: {
+      lineNumber: true,
+      enable: true,
+    },
+    icon: 'material',
+    theme: {
+      current: 'light',
+    },
+    math: {
+      inlineDigit: true,
+      engine: 'MathJax',
+      mathJaxOptions: config,
+    },
+    media: {
+      enable: true,
+    },
+    after() {
+      GlslRuntime(articleRef);
+      // articleRef.current.classList.remove('vditor-reset');
+    },
+    // speech: {
+    //   enable: true,
+    // },
+    // anchor: true,
   });
-
-  // 如果没有对应的script标签，则添加
-  if (!existingScript) {
-    const script = document.createElement('script');
-    script.src = scriptUrl;
-    script.type = 'module'; // 如果glslEditor.min.js是一个ES6模块
-    script.onload = function () {
-      onLoadScript();
-      // 这里可以放置脚本加载后的初始化代码
-    };
-    script.onerror = function () {
-      console.error('glslEditor script load error.');
-    };
-    document.head.appendChild(script);
-  } else {
-    onLoadScript();
-  }
 }
 
-const MathJaxRenderer = ({ html, small = false, ref }) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const MathJaxRenderer = ({ html, replyUser = '', small = false, ref }) => {
   // 创建内部ref
   const internalRef = useRef(null);
-  let className = 'fmt text-break text-wrap mt-4';
+  // const atRef = useRef(null);
+  const [isVditorLoaded, setIsVditorLoaded] = useState(false); // 跟踪 Vditor 是否已经加载完成
+  let className = 'fmt text-break text-wrap mt-4'; // 'fmt text-break text-wrap mt-4'; // 'text-break text-wrap mt-4';
   if (small) {
-    className += ' small';
+    className += '  small'; // vditor-reset--anchor' small';
   }
   // 使用React的useRef钩子来合并外部和内部的ref
   const articleRef = ref || internalRef;
   useEffect(() => {
+    if (isVditorLoaded) {
+      renderVditor(articleRef, html);
+      return;
+    }
     if (articleRef.current) {
-      const codeNodes = articleRef.current.querySelectorAll('pre code');
-      Array.from(codeNodes).forEach((node) => {
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const className = node.className || '';
-        const isShadertoy = className.includes('language-shadertoy');
-        const isGlsl = className.includes('language-glsl');
-        const languageMatch = className.match(/language-(\w+)/);
-        const language = languageMatch ? languageMatch[1] : '';
-        // @ts-ignore
-        const parentNode = node.parentNode!;
-        parentNode.style.padding = '0';
-        if (isShadertoy || isGlsl) {
-          const glslNodes = [node];
-          const htmlTag = document.querySelector('html') as HTMLHtmlElement;
-          const theme = htmlTag.getAttribute('data-bs-theme');
-          let currTheme = '';
-          if (theme !== 'light') {
-            currTheme = 'monokai';
+      appendExternalResources(
+        'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.css',
+        'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.js',
+        function onload(scriptEle) {
+          document.head.removeChild(scriptEle);
+          if (html) {
+            renderVditor(articleRef, html);
           }
-
-          appendGlslEditorResources(
-            '/static/glslEditor.css',
-            '/static/glslEditor.min.js',
-            function onload() {
-              // eslint-disable-next-line @typescript-eslint/no-shadow
-              glslNodes.forEach((node, index, array) => {
-                // @ts-ignore
-                let codeInfo = unescapeHtmlEntities(node.innerHTML);
-
-                if (isShadertoy) {
-                  if (!codeInfo.match(mainImgRegex)) {
-                    codeInfo =
-                      codeInfo.trim() === ''
-                        ? mainImgFunc
-                        : `${codeInfo}
-                    ${mainImgFunc}`;
-                  }
-                } else if (!containsMainFunction(codeInfo)) {
-                  hljs.registerLanguage(language, cpp);
-                  // 如果glsl不包含main函数，就没必要通过editor解析了
-                  hljs.highlightBlock(node as HTMLElement);
-                  return;
-                }
-                parentNode.removeChild(node);
-                if (theme === 'light') {
-                  parentNode.style.border = `1px solid #ded7d7`;
-                  parentNode.style.backgroundColor = '#f7f7f7';
-                }
-                const rect = parentNode.getBoundingClientRect();
-                const { width } = rect;
-                // @ts-ignore
-                // eslint-disable-next-line no-new
-                new GlslEditor(parentNode, {
-                  canvas_size: width / 3,
-                  theme: currTheme,
-                  canvas_follow: true,
-                  multipleBuffers: true,
-                  watchHash: true,
-                  fileDrops: false,
-                  frag_footer: isShadertoy ? postFunction : '',
-                  frag_header: isShadertoy ? preFunction : '',
-                  frag: codeInfo,
-                  autofocus: false,
-                  menu: false,
-                });
-
-                const isLast = index === array.length - 1;
-                if (isLast && theme === 'light') {
-                  const elements =
-                    articleRef.current.querySelectorAll('.ge_editor');
-                  elements.forEach((elem) => {
-                    elem.style.backgroundColor = '#ffffff';
-                  });
-                }
-              });
-            },
-          );
-        } else {
-          hljs.registerLanguage(language || 'undefined', cpp);
-          hljs.highlightBlock(node as HTMLElement);
-        }
-      });
+          setIsVditorLoaded(true);
+        },
+        false,
+        false,
+      );
     }
   }, [html, articleRef]);
+  const style = small ? { fontSize: '.875rem' } : {};
   return (
-    <MathJaxContext version={3} config={config}>
-      <MathJax>
-        <article
-          ref={articleRef}
-          className={className}
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-      </MathJax>
-    </MathJaxContext>
+    <article
+      ref={articleRef}
+      id="vditorPreview"
+      className={className}
+      dangerouslySetInnerHTML={{ __html: html }}
+      style={style}
+    />
   );
 };
 

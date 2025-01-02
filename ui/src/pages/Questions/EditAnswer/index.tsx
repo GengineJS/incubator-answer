@@ -29,7 +29,7 @@ import { handleFormError, scrollToDocTop } from '@/utils';
 import { usePageTags, usePromptWithUnload } from '@/hooks';
 import { useCaptchaPlugin, useRenderHtmlPlugin } from '@/utils/pluginKit';
 import { pathFactory } from '@/router/pathFactory';
-import { Editor, EditorRef, Icon, htmlRender, FormatPanel } from '@/components';
+import { Editor, EditorRef, Icon, htmlRender } from '@/components';
 import type * as Type from '@/common/interface';
 import {
   useQueryAnswerInfo,
@@ -222,7 +222,7 @@ const Index = () => {
     <div className="pt-4 mb-5 edit-answer-wrap">
       <h3 className="mb-4">{t('title')}</h3>
       <Row>
-        <Col className="page-main flex-auto">
+        <Col className="page-editor-main flex-auto">
           <a
             href={pathFactory.questionLanding(
               qid,
@@ -275,6 +275,7 @@ const Index = () => {
               <Form.Label>{t('form.fields.answer.label')}</Form.Label>
               <Editor
                 value={formData.content.value}
+                cacheKey={aid || 'vditor_answer'}
                 onChange={handleAnswerChange}
                 className={classNames(
                   'form-control p-0',
@@ -324,7 +325,6 @@ const Index = () => {
             </div>
           </Form>
         </Col>
-        <FormatPanel />
       </Row>
     </div>
   );

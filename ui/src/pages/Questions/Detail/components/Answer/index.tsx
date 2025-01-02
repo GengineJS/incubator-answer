@@ -52,6 +52,7 @@ interface Props {
   isLogged: boolean;
   callback: (type: string) => void;
 }
+
 const Index: FC<Props> = ({
   aid,
   data,
@@ -152,7 +153,7 @@ const Index: FC<Props> = ({
       <ImgViewer>
         <MathJaxArticle ref={null} html={data?.html} />
         {data.is_ai && (
-          <div className="fmt fs-7 small text-secondary text-break text-wrap">
+          <div className="text-secondary vditor-reset">
             ({t('ai_commented')})
           </div>
         )}

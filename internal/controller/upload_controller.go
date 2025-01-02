@@ -67,6 +67,8 @@ func (uc *UploadController) UploadFile(ctx *gin.Context) {
 	)
 
 	source := ctx.PostForm("source")
+	isVditor := ctx.PostForm("isVditor")
+	name := ctx.PostForm("name")
 	switch source {
 	case fileFromAvatar:
 		url, err = uc.uploaderService.UploadAvatarFile(ctx)
@@ -80,6 +82,14 @@ func (uc *UploadController) UploadFile(ctx *gin.Context) {
 	}
 	if err != nil {
 		handler.HandleResponse(ctx, err, nil)
+		return
+	}
+	if isVditor == "true" {
+		responseData := map[string]interface{}{
+			"succMap": make(map[string]string), // 更具体的类型
+		}
+		responseData["succMap"].(map[string]string)[name] = url
+		handler.HandleResponse(ctx, err, responseData)
 		return
 	}
 	handler.HandleResponse(ctx, err, url)

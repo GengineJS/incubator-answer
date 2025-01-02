@@ -17,9 +17,15 @@
  * under the License.
  */
 
+// TODO: 发布主题时的宽度，之前是70%
 .page-main {
   max-width: 70%;
 }
+
+.page-editor-main {
+  max-width: 100%
+}
+
 .page-right-side {
   flex: none;
   width: 30%;

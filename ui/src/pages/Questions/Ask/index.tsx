@@ -28,7 +28,7 @@ import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
 import { usePageTags, usePromptWithUnload } from '@/hooks';
-import { Editor, EditorRef, FormatPanel, TagSelector } from '@/components';
+import { Editor, EditorRef, TagSelector } from '@/components';
 import type * as Type from '@/common/interface';
 import {
   ContentType,
@@ -476,7 +476,7 @@ const Ask = () => {
           : t(`${AskTitleTypeQuery[contentType]}`)}
       </h3>
       <Row>
-        <Col className="page-main flex-auto">
+        <Col className="page-editor-main flex-auto">
           <Form noValidate onSubmit={handleSubmit}>
             {isEdit && (
               <Form.Group controlId="revision" className="mb-3">
@@ -531,6 +531,7 @@ const Ask = () => {
               <Editor
                 value={formData.content.value}
                 onChange={handleContentChange}
+                cacheKey={qid || 'vditor_qid'}
                 className={classNames(
                   'form-control p-0',
                   focusType === 'content' && 'focus',
@@ -646,6 +647,7 @@ const Ask = () => {
                       value={formData.answer_content.value}
                       onChange={handleAnswerChange}
                       ref={editorRef2}
+                      cacheKey="vditor_qid"
                       className={classNames(
                         'form-control p-0',
                         focusType === 'answer' && 'focus',
@@ -681,7 +683,7 @@ const Ask = () => {
             )}
           </Form>
         </Col>
-        <FormatPanel />
+        {/* <FormatPanel /> */}
       </Row>
     </div>
   );

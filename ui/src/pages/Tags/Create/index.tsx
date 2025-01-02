@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 
 import { usePageTags, usePromptWithUnload } from '@/hooks';
-import { Editor, EditorRef, FormatPanel } from '@/components';
+import { Editor, EditorRef } from '@/components';
 import { loggedUserInfoStore } from '@/stores';
 import type * as Type from '@/common/interface';
 import { createTag } from '@/services';
@@ -234,7 +234,7 @@ const Index = () => {
     <div className="pt-4 mb-5">
       <h3 className="mb-4">{t('title')}</h3>
       <Row>
-        <Col className="page-main flex-auto">
+        <Col className="page-editor-main flex-auto">
           <Form noValidate onSubmit={handleSubmit}>
             <Form.Group controlId="display_name" className="mb-3">
               <Form.Label>{t('form.fields.display_name.label')}</Form.Label>
@@ -274,6 +274,7 @@ const Index = () => {
                   'form-control p-0',
                   focusType === 'description' && 'focus',
                 )}
+                cacheKey="vditor_tag"
                 onFocus={() => {
                   setForceType('description');
                 }}
@@ -298,7 +299,6 @@ const Index = () => {
             </div>
           </Form>
         </Col>
-        <FormatPanel />
       </Row>
     </div>
   );

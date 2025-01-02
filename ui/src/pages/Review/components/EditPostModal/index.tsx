@@ -326,6 +326,11 @@ const Index: FC<Props> = ({
                     content: { value, errorMsg: '', isInvalid: false },
                   });
                 }}
+                cacheKey={
+                  objectType === 'question'
+                    ? originalData.question_id || 'vditor_qid'
+                    : originalData.answer_id || 'vditor_answer'
+                }
                 className={classNames(
                   'form-control p-0',
                   focusEditor ? 'focus' : '',

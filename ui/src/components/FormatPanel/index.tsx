@@ -2,9 +2,9 @@ import React from 'react';
 import { Col, Card, Tabs, Tab } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 
-import { MathJaxContext, MathJax } from 'better-react-mathjax';
+// import { MathJaxContext, MathJax } from 'better-react-mathjax';
 
-import { config } from '@/components/MathJaxArticle';
+// import { config } from '@/components/MathJaxArticle';
 
 const FormatPanel = () => {
   const { t } = useTranslation('translation', { keyPrefix: 'tag_modal' });
@@ -26,16 +26,16 @@ const FormatPanel = () => {
           <Tab
             eventKey="formula_to_format"
             title={t('title', { keyPrefix: 'formula_to_format' })}>
-            <MathJaxContext version={3} config={config}>
-              <MathJax>
-                <Card.Body
-                  className="fmt small"
-                  dangerouslySetInnerHTML={{
-                    __html: t('desc', { keyPrefix: 'formula_to_format' }),
-                  }}
-                />
-              </MathJax>
-            </MathJaxContext>
+            {/* <MathJaxContext version={3} config={config}> */}
+            {/*  <MathJax> */}
+            <Card.Body
+              className="fmt small"
+              dangerouslySetInnerHTML={{
+                __html: t('desc', { keyPrefix: 'formula_to_format' }),
+              }}
+            />
+            {/*  </MathJax> */}
+            {/* </MathJaxContext> */}
           </Tab>
         </Tabs>
       </Card>

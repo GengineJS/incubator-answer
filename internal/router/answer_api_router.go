@@ -156,6 +156,8 @@ func (a *AnswerAPIRouter) RegisterUnAuthAnswerAPIRouter(r *gin.RouterGroup) {
 	r.GET("/answer/page", a.answerController.AnswerList)
 	r.GET("/personal/answer/page", a.questionController.PersonalAnswerPage)
 
+	// upload file
+	r.POST("/file", a.uploadController.UploadFile)
 	// question
 	r.GET("/question/sync_ab_tags", a.questionController.SyncABTags)
 	r.GET("/question/info", a.questionController.GetQuestion)
@@ -285,8 +287,6 @@ func (a *AnswerAPIRouter) RegisterAnswerAPIRouter(r *gin.RouterGroup) {
 	r.PUT("/notification/read/state/all", a.notificationController.ClearUnRead)
 	r.PUT("/notification/read/state", a.notificationController.ClearIDUnRead)
 
-	// upload file
-	r.POST("/file", a.uploadController.UploadFile)
 	r.POST("/post/render", a.uploadController.PostRender)
 
 	// activity

@@ -26,7 +26,7 @@ import dayjs from 'dayjs';
 import classNames from 'classnames';
 
 import { usePageTags, usePromptWithUnload } from '@/hooks';
-import { Editor, EditorRef, FormatPanel } from '@/components';
+import { Editor, EditorRef } from '@/components';
 import { loggedUserInfoStore } from '@/stores';
 import type * as Type from '@/common/interface';
 import { TAG_SLUG_NAME_MAX_LENGTH } from '@/common/constants';
@@ -250,7 +250,7 @@ const Index = () => {
     <div className="pt-4 mb-5">
       <h3 className="mb-4">{t('title')}</h3>
       <Row>
-        <Col className="page-main flex-auto">
+        <Col className="page-editor-main flex-auto">
           <Form noValidate onSubmit={handleSubmit}>
             <Form.Group controlId="revision" className="mb-3">
               <Form.Label>
@@ -316,6 +316,7 @@ const Index = () => {
               <Editor
                 value={formData.description.value}
                 onChange={handleDescriptionChange}
+                cacheKey={data?.tag_id || 'vditor_tag'}
                 className={classNames(
                   'form-control p-0',
                   focusType === 'description' && 'focus',
@@ -367,7 +368,6 @@ const Index = () => {
             </div>
           </Form>
         </Col>
-        <FormatPanel />
       </Row>
     </div>
   );

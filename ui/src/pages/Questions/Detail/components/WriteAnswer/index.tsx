@@ -299,6 +299,7 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
                   'form-control p-0',
                   focusType === 'answer' && 'focus',
                 )}
+                cacheKey="vditor_answer"
                 value={formData.content.value}
                 autoFocus={editorFocusState}
                 onChange={(val) => {
