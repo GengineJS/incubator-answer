@@ -17,17 +17,9 @@
  * under the License.
  */
 
-import {
-  useEffect,
-  useRef,
-  ForwardRefRenderFunction,
-  forwardRef,
-  // useImperativeHandle,
-  useState,
-} from 'react';
+import { forwardRef, ForwardRefRenderFunction, useEffect, useRef } from 'react';
 
 // import classNames from 'classnames';
-
 //
 // import PluginRender from '../PluginRender';
 //
@@ -51,10 +43,17 @@ import {
 import { htmlRender } from './utils';
 // import Viewer from './Viewer';
 // import { EditorContext } from './EditorContext';
-
 import './index.scss';
 // eslint-disable-next-line import/order
-import { appendExternalResources } from '@/common/functions';
+import {
+  appendSingleResources,
+  getTargetRootAssetBunHost,
+  isLightTheme,
+} from '@/common/functions';
+import { loggedUserInfoStore } from '@/stores';
+// import UploadManager from '@/components/Editor/upload_manager';
+// import { PolicyType, TaskType } from '@/components/Editor/types';
+// import { getFileLink } from '@/components/Editor/api';
 
 export interface EditorRef {
   getHtml: () => string;
@@ -107,45 +106,51 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
   //   autoFocus,
   // });
   const vditorContainerRef = useRef<HTMLDivElement>(null);
-  const [isVditorLoaded, setIsVditorLoaded] = useState(false); // 跟踪 Vditor 是否已经加载完成
-  const [content, setContent] = useState('');
+  // const [isVditorLoaded, setIsVditorLoaded] = useState(false); // 跟踪 Vditor 是否已经加载完成
+  // const [content, setContent] = useState('');
   // const getHtml = () => {
   //   return previewRef.current?.getHtml();
   // };
-
+  const { user: storeUser } = loggedUserInfoStore((_) => _);
   // useImperativeHandle(ref, () => ({
   //   getHtml,
   // }));
   // const overlayRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const currVal = value;
-    if (isVditorLoaded) {
-      // @ts-ignore
-      const { current } = vditorRef;
+    // @ts-ignore
+    const { current } = vditorRef;
+    if (current) {
       if (cacheKey) {
         // currVal = localStorage.getItem(cacheKey) || '';
         // @ts-ignore
         current!.vditor.options.cache.id = cacheKey;
       }
+      const storageVal = localStorage.getItem(cacheKey);
       // @ts-ignore
-      if (!content) {
+      if (!storageVal) {
         // @ts-ignore
         current.setValue(currVal || '');
       }
       return;
     }
-    appendExternalResources(
+    appendSingleResources(
       'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.css',
       'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.js',
       function onload(scriptEle) {
         // const uploadExtraData = {
         //   source: 'post',
         // };
+        let isFirst = true;
+        // 可能会在不刷新页面的情况下又重新进入了页面，会导致不渲染了，所以得hack下
         document.head.removeChild(scriptEle);
         const height = '400px';
         const top = '60px';
         // @ts-ignore
+        // const uploadManager = new UploadManager({ concurrentLimit: 5 });
+        // @ts-ignore
         const vditor = new Vditor('vditor', {
+          cdn: 'https://cdn.jsdelivr.net/npm/vditor@3.10.8',
           height,
           mode: 'wysiwyg',
           toolbar: [
@@ -155,30 +160,6 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
             'italic',
             'strike',
             'link',
-            // {
-            //   name: 'formula',
-            //   tipPosition: 'n',
-            //   hotkey: '⌘$',
-            //   tip: '行内公式',
-            //   className: 'right',
-            //   icon: `${formulaSvg}</g></svg>`,
-            //   prefix: '$',
-            //   suffix: '$',
-            //   click(eve, vditorObj) {
-            //     console.log(eve, vditorObj);
-            //   },
-            // },
-            // {
-            //   name: 'block formula',
-            //   tipPosition: 'n',
-            //   hotkey: '⌘⇧$',
-            //   tip: '公式独行',
-            //   className: 'right',
-            //   prefix: '$$',
-            //   suffix: '$$',
-            //   icon: `${formulaSvg}<line x1="0" y1="0" x2="0" y2="24" stroke="#000000" stroke-width="2"/><line x1="26" y1="0" x2="26" y2="24" stroke="#000000" stroke-width="2"/></g></svg>`,
-            //   // click() {},
-            // },
             '|',
             'line',
             'quote',
@@ -198,8 +179,6 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
             'both',
             'preview',
             'outline',
-            // 'code-theme',
-            // 'content-theme',
             {
               name: 'fullscreen',
               click() {
@@ -222,23 +201,18 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
               },
             },
             'export',
-            // 'devtools',
-            // 'info',
-            // 'help',
-            // 'br',
           ],
           counter: {
             enable: true,
           },
+          theme: isLightTheme() ? 'classic' : 'dark',
           cache: {
             enable: true,
             id: cacheKey,
-            after(val) {
-              console.log(val);
-            },
           },
           upload: {
-            accept: 'image/*,.mp3, .wav, .rar, .mp4',
+            accept:
+              '.rar, .zip, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, text/plain, application/pdf, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation, .doc, .docx, .txt, .pdf, .xls, .xlsx, .ppt, .pptx, audio/*, video/*, image/*, media_type', // 'image/*,.mp3, .wav, .rar, .mp4'
             token: 'test',
             url: '/answer/api/v1/file',
             linkToImgUrl: '/answer/api/v1/file',
@@ -248,6 +222,13 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
               isVditor: true,
               name: '',
             },
+            // success(editor: HTMLPreElement, msg: string) {
+            //   console.log(editor, msg);
+            //   const msgObj = JSON.parse(msg);
+            //   if (msgObj.code === 0) {
+            //     // const currData = msgObj.data;
+            //   }
+            // },
             filename(name) {
               return name
                 .replace(/[^(a-zA-Z0-9\u4e00-\u9fa5.)]/g, '')
@@ -259,12 +240,43 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
               const extraData =
                 // @ts-ignore
                 vditorRef.current!.vditor.options.upload.extraData;
-              // eslint-disable-next-line prefer-destructuring
-              extraData.file = files[0];
-              extraData.name = extraData.file.name;
+              // eslint-disable-next-line prefer-destructuring,no-multi-assign
+              const file = (extraData.file = files[0]);
+              extraData.name = file.name;
+              extraData.path = '/点识成金AI';
+              extraData.tag = '点识成金AI';
+              extraData.host = getTargetRootAssetBunHost();
+              extraData.userName = storeUser.display_name;
+              // 图像最大宽度
+              extraData.maxWidth = 550;
+              // const link = await getFileLink({
+              //   path: '点识成金AI',
+              //   name: file.name,
+              // });
+              // console.log(link);
+              // const currentTask = uploadManager.dispatchUploader({
+              //   type: TaskType.file,
+              //   policy: {
+              //     allowedSuffix: [],
+              //     id: '2qsD',
+              //     maxSize: 0,
+              //     name: 'AssetBun上海节点',
+              //     type: PolicyType.onedrive,
+              //   },
+              //   get_link: true,
+              //   dst: '/点识成金AI',
+              //   tag: '点识成金AI',
+              //   file,
+              //   size: file.size,
+              //   name: file.name,
+              //   chunkProgress: [],
+              //   resumed: false,
+              // });
+              // currentTask?.start();
               return files;
             },
           },
+          lang: storeUser.language !== 'en_US' ? 'zh_CN' : 'en_US',
           // 监听编辑器失去焦点时的事件
           blur: () => {
             if (onBlur) {
@@ -290,24 +302,43 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
             vditorRef.current = vditor;
             if (cacheKey) {
               currStr = localStorage.getItem(cacheKey) || '';
+              if (onChange) {
+                onChange(currStr);
+              }
               vditor.vditor.options.cache.id = cacheKey;
             }
-            if (currStr && currStr.length) {
-              setContent(currStr);
-              vditor.setValue(currStr);
-            } else {
-              setContent(currVal);
+            if (isFirst) {
+              isFirst = false;
+              if (currStr) {
+                vditor.setValue(currStr);
+                return;
+              }
+            }
+            if (!currStr) {
+              // setContent(currStr);
               vditor.setValue(currVal);
             }
-            setIsVditorLoaded(true);
+            // setIsVditorLoaded(true);
           },
         });
       },
       true,
       false,
     );
-  }, [ref, value, isVditorLoaded]);
-  return <div ref={vditorContainerRef} id="vditor" className="vditor fmt" />;
+  }, [ref, value /* , isVditorLoaded */]);
+  // const style = {};
+  // if (!isLightTheme()) {
+  //   // @ts-ignore
+  //   style.color = '#d1d5da';
+  // }
+  return (
+    <div
+      ref={vditorContainerRef}
+      // style={style}
+      id="vditor"
+      className="vditor fmt"
+    />
+  );
 };
 export { htmlRender };
 export default forwardRef(MDEditor);

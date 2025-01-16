@@ -30,7 +30,7 @@ export function needQuestionToLoginOrUp(question, userInfo): void {
   }
 }
 
-export function appendExternalResources(
+export function appendSingleResources(
   cssUrl,
   scriptUrl,
   onLoadScript,
@@ -65,7 +65,8 @@ export function appendExternalResources(
       script.type = 'module'; // 如果glslEditor.min.js是一个ES6模块
     }
     script.onload = function () {
-      onLoadScript(script);
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      onLoadScript && onLoadScript(script);
       // 这里可以放置脚本加载后的初始化代码
     };
     script.onerror = function () {
@@ -73,6 +74,43 @@ export function appendExternalResources(
     };
     document.head.appendChild(script);
   }
+}
+
+export function appendArrayResources(
+  cssUrls: string[] = [], // 接受一个CSS URL的数组
+  scriptUrls: string[] = [], // 接受一个JavaScript URL的数组
+  defer = false, // 新增参数，决定是否使用defer属性
+) {
+  // const promises = [];
+  // 检查并添加CSS链接
+  cssUrls.forEach((cssUrl) => {
+    if (!document.querySelector(`link[href="${cssUrl}"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = cssUrl;
+      document.head.appendChild(link);
+    }
+  });
+
+  // 检查并添加script标签
+  scriptUrls.forEach((scriptUrl) => {
+    if (!document.querySelector(`script[src="${scriptUrl}"]`)) {
+      const script = document.createElement('script');
+      script.src = scriptUrl;
+      // script.onload = function () {
+      //   document.head.removeChild(script);
+      // };
+      // script.type = 'text/template';
+      // 设置延迟加载属性
+      if (defer) {
+        script.defer = true; // 使用defer属性
+      } else {
+        script.async = true; // 默认使用async属性
+      }
+      document.head.appendChild(script);
+    }
+  });
 }
 
 export function hasQueryParam(url: string | null = null): boolean {
@@ -110,6 +148,12 @@ export function getTargetLocalStorageHost(): string {
   const idx = shareLocalStorageDomains.indexOf(currDomain);
   return targetLocalStorageUrl[idx];
 }
+
+export const isLightTheme = () => {
+  const htmlTag = document.querySelector('html') as HTMLHtmlElement;
+  const theme = htmlTag.getAttribute('data-bs-theme');
+  return theme === 'light';
+};
 
 export function getTargetAssetBunHost(): string {
   const currDomain = getDomainName();

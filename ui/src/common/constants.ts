@@ -765,3 +765,4 @@ export function isVIP(user): boolean {
 //     },
 //   });
 // }
+export const DEFAULT_THEME_COLOR = '#0033ff';

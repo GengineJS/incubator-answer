@@ -18,10 +18,11 @@
  */
 
 /* eslint-disable no-nested-ternary */
-import { FC, useState, useEffect, useRef } from 'react';
+import { FC, useState, useEffect, useRef, useCallback } from 'react';
 import { Dropdown, Button, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 
+import debounce from 'lodash/debounce';
 import { marked } from 'marked';
 import classNames from 'classnames';
 
@@ -40,6 +41,10 @@ interface IProps {
   maxTagLength?: number;
   showRequiredTag?: boolean;
   autoFocus?: boolean;
+  isInvalid?: boolean;
+  tagStyleMode?: 'default' | 'simple';
+  formText?: string;
+  errMsg?: string;
 }
 
 let timer;
@@ -52,6 +57,10 @@ const TagSelector: FC<IProps> = ({
   maxTagLength = 0,
   showRequiredTag = false,
   autoFocus = false,
+  isInvalid = false,
+  formText = '',
+  tagStyleMode = 'default',
+  errMsg = '',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -61,7 +70,7 @@ const TagSelector: FC<IProps> = ({
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [repeatIndex, setRepeatIndex] = useState(-1);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [tags, setTags] = useState<Type.Tag[] | null>(null);
+  const [tags, setTags] = useState<Type.Tag[] | null>([]);
   const [requiredTags, setRequiredTags] = useState<Type.Tag[] | null>(null);
   const { t } = useTranslation('translation', { keyPrefix: 'tag_selector' });
   const { data: userPermission } = useUserPermission('tag.add');
@@ -138,20 +147,23 @@ const TagSelector: FC<IProps> = ({
     handleMenuShow(false);
   };
 
-  const fetchTags = (str) => {
-    if (!showRequiredTag && !str) {
-      setTags([]);
-      return;
-    }
-    queryTags(str).then((res) => {
-      const tagArray: Type.Tag[] = filterTags(res || []);
-      if (str === '') {
-        setRequiredTags(res?.length > 5 ? res.slice(0, 5) : res);
+  const fetchTags = useCallback(
+    debounce((str) => {
+      if (!showRequiredTag && !str) {
+        setTags([]);
+        return;
       }
-      handleMenuShow(tagArray.length > 0);
-      setTags(tagArray?.length > 5 ? tagArray.slice(0, 5) : tagArray);
-    });
-  };
+      queryTags(str).then((res) => {
+        const tagArray: Type.Tag[] = filterTags(res || []);
+        if (str === '') {
+          setRequiredTags(res);
+        }
+        handleMenuShow(tagArray.length > 0);
+        setTags(tagArray);
+      });
+    }, 400),
+    [],
+  );
 
   const resetSearch = () => {
     setCurrentIndex(0);
@@ -201,8 +213,20 @@ const TagSelector: FC<IProps> = ({
 
   const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchStr = e.currentTarget.value.replace(';', '');
+    onChange?.([...value]);
     setSearchValue(searchStr);
     fetchTags(searchStr);
+  };
+
+  const scrollIntoView = (targetId) => {
+    const container = document.getElementById('a-dropdown-menu') as HTMLElement;
+    const ele = document.getElementById(targetId) as HTMLElement;
+    if (ele?.offsetTop >= 104) {
+      container.scrollTo({
+        top: ele.offsetTop - 104,
+        behavior: 'smooth',
+      });
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -221,9 +245,11 @@ const TagSelector: FC<IProps> = ({
     }
 
     if (keyCode === 38 && currentIndex > 0) {
+      scrollIntoView(tags[currentIndex - 1].slug_name);
       setCurrentIndex(currentIndex - 1);
     }
     if (keyCode === 40 && currentIndex < tags.length - 1) {
+      scrollIntoView(tags[currentIndex + 1].slug_name);
       setCurrentIndex(currentIndex + 1);
     }
 
@@ -324,13 +350,19 @@ const TagSelector: FC<IProps> = ({
   useEffect(() => {
     // set width of tag Form.Control
     const ele = document.querySelector('.a-input-width') as HTMLElement;
+    const elePlaceholder = document.querySelector(
+      '.a-placeholder-width',
+    ) as HTMLElement;
     if (ele.offsetWidth > 60) {
       inputRef.current?.setAttribute(
         'style',
         `width:${ele.offsetWidth + 16}px`,
       );
     } else {
-      inputRef.current?.setAttribute('style', 'width: 60px');
+      inputRef.current?.setAttribute(
+        'style',
+        `width: ${elePlaceholder.offsetWidth + 7}px`,
+      );
     }
   }, [searchValue]);
 
@@ -341,6 +373,7 @@ const TagSelector: FC<IProps> = ({
         className={classNames(
           'tag-selector-wrap form-control position-relative p-0',
           focusState ? 'tag-selector-wrap--focus' : '',
+          isInvalid ? 'is-invalid' : '',
         )}
         onFocus={handleTagSelectorFocus}
         onKeyDown={handleKeyDown}>
@@ -354,8 +387,12 @@ const TagSelector: FC<IProps> = ({
                   key={item.slug_name}
                   className={classNames(
                     'badge-tag rounded-1 m-1 flex-shrink-0',
-                    item.reserved && 'badge-tag-reserved',
-                    item.recommend && 'badge-tag-required',
+                    tagStyleMode === 'default' &&
+                      item.reserved &&
+                      'badge-tag-reserved',
+                    tagStyleMode === 'default' &&
+                      item.recommend &&
+                      'badge-tag-required',
                     index === repeatIndex && 'bg-fade-out',
                   )}>
                   {item.display_name}
@@ -387,6 +424,7 @@ const TagSelector: FC<IProps> = ({
               />
             )}
             <span className="a-input-width">{searchValue}</span>
+            <span className="a-placeholder-width">{t('add_btn')}</span>
           </div>
         </div>
         <Dropdown.Menu id="a-dropdown-menu" className="w-100" show={showMenu}>
@@ -401,6 +439,7 @@ const TagSelector: FC<IProps> = ({
             return (
               <Dropdown.Item
                 key={item.slug_name}
+                id={item.slug_name}
                 active={index === currentIndex}
                 onClick={() => handleClick(item)}>
                 {item.display_name}
@@ -422,7 +461,8 @@ const TagSelector: FC<IProps> = ({
           )}
         </Dropdown.Menu>
       </div>
-      {!hiddenDescription && <Form.Text>{t('hint')}</Form.Text>}
+      {!hiddenDescription && <Form.Text>{formText || t('hint')}</Form.Text>}
+      <Form.Control.Feedback type="invalid">{errMsg}</Form.Control.Feedback>
     </div>
   );
 };

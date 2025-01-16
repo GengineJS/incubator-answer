@@ -1,7 +1,14 @@
 // eslint-disable-next-line import/order
 import React, { useEffect, useRef, useState } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { MathJaxContext, MathJax } from 'better-react-mathjax';
 
-import { appendExternalResources } from '@/common/functions';
+import {
+  appendSingleResources,
+  getDomainName,
+  isLightTheme,
+  isLocalHost,
+} from '@/common/functions';
 
 // math jax
 export const config = {
@@ -84,21 +91,17 @@ const GlslRuntime = (articleRef) => {
     const className = node.className || '';
     const isShadertoy = className.includes('language-shadertoy');
     const isGlsl = className.includes('language-glsl');
-    // const languageMatch = className.match(/language-(\w+)/);
-    // const language = languageMatch ? languageMatch[1] : '';
     // @ts-ignore
     const parentNode = node.parentNode!;
     parentNode.style.padding = '0';
     if (isShadertoy || isGlsl) {
       const glslNodes = [node];
-      const htmlTag = document.querySelector('html') as HTMLHtmlElement;
-      const theme = htmlTag.getAttribute('data-bs-theme');
       let currTheme = '';
-      if (theme !== 'light') {
+      if (!isLightTheme()) {
         currTheme = 'monokai';
       }
 
-      appendExternalResources(
+      appendSingleResources(
         '/static/glslEditor.css',
         '/static/glslEditor.min.js',
         function onload() {
@@ -118,8 +121,9 @@ const GlslRuntime = (articleRef) => {
             } else if (!containsMainFunction(codeInfo)) {
               return;
             }
+            const themeLight = isLightTheme();
             parentNode.removeChild(node);
-            if (theme === 'light') {
+            if (themeLight) {
               parentNode.style.border = `1px solid #ded7d7`;
               parentNode.style.backgroundColor = '#f7f7f7';
             }
@@ -142,7 +146,7 @@ const GlslRuntime = (articleRef) => {
             });
 
             const isLast = index === array.length - 1;
-            if (isLast && theme === 'light') {
+            if (isLast && themeLight) {
               const elements =
                 articleRef.current.querySelectorAll('.ge_editor');
               elements.forEach((elem) => {
@@ -158,9 +162,41 @@ const GlslRuntime = (articleRef) => {
   });
 };
 
-function renderVditor(articleRef, html) {
+// function replaceSpecialChars(inputStr) {
+//   // 替换 \（ 为 $
+//   let replacedStr = inputStr.replace(/\\\(/g, '$');
+//   // 替换 \） 为 $
+//   replacedStr = replacedStr.replace(/\\\)/g, '$');
+//   return replacedStr;
+// }
+
+function transformMathElements(htmlString) {
+  // 创建一个新的 DOMParser 实例
+  const parser = new DOMParser();
+  // 解析 HTML 字符串为一个文档对象
+  const doc = parser.parseFromString(htmlString, 'text/html');
+
+  // 将 <p> 标签内的 <span class="language-math"> 替换为成对的 $ 符号
+  doc.querySelectorAll('p .language-math').forEach((span) => {
+    // 用 $ 包围原始内容并替换 <span>
+    span.outerHTML = `$${span.textContent}$`;
+  });
+
+  // 将 <div class="language-math"> 替换为 <p> 并在内部字符串的首尾添加各两个 $$
+  doc.querySelectorAll('div.language-math').forEach((div) => {
+    // 创建新的 <p> 元素的内容，在原始内容前后各添加两个 $$
+    const newPContent = `$$${div.innerHTML}$$`;
+    // 用新的 <p> 内容替换 <div>
+    div.outerHTML = `<p>${newPContent}</p>`;
+  });
+
+  // 将修改后的文档对象转换回 HTML 字符串
+  return doc.body.innerHTML;
+}
+
+function renderVditor(articleRef, origin) {
   // @ts-ignore
-  Vditor.preview(articleRef.current, html, {
+  Vditor.preview(articleRef.current, origin, {
     cdn: 'https://cdn.jsdelivr.net/npm/vditor@3.10.8',
     hljs: {
       lineNumber: true,
@@ -168,19 +204,23 @@ function renderVditor(articleRef, html) {
     },
     icon: 'material',
     theme: {
-      current: 'light',
+      current: isLightTheme() ? 'light' : 'dark',
     },
     math: {
       inlineDigit: true,
-      engine: 'MathJax',
-      mathJaxOptions: config,
+      engine: 'xxx',
     },
     media: {
       enable: true,
     },
+    transform(val) {
+      return transformMathElements(val);
+    },
     after() {
       GlslRuntime(articleRef);
-      // articleRef.current.classList.remove('vditor-reset');
+      // @ts-ignore
+      if (window.MathJax) window.MathJax.typeset();
+      // window.MathJax.Hub.Queue(['Typeset', window.MathJax.Hub]);
     },
     // speech: {
     //   enable: true,
@@ -189,13 +229,38 @@ function renderVditor(articleRef, html) {
   });
 }
 
+function extensionContent(content, replyInfo, aiTip) {
+  if (replyInfo.displayName) {
+    const currDomain = getDomainName();
+    const isLocal = isLocalHost(currDomain);
+    const url = `${isLocal ? 'http://localhost' : 'https://ai.assetbun.com'}/users/${replyInfo.userName}`;
+    content = `[@${replyInfo.displayName}](${url}) ${content}`;
+  }
+  if (aiTip) {
+    content = `${content} \`(${aiTip})\``;
+  }
+  return content;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const MathJaxRenderer = ({ html, replyUser = '', small = false, ref }) => {
+const MathJaxRenderer = ({
+  html,
+  replyUser = { userName: '', displayName: '' },
+  origin = '',
+  // 是否还要设置顶边距，一般为问题的主题描述
+  mt4 = false,
+  small = false,
+  aiTip = '',
+  ref,
+}) => {
   // 创建内部ref
   const internalRef = useRef(null);
   // const atRef = useRef(null);
   const [isVditorLoaded, setIsVditorLoaded] = useState(false); // 跟踪 Vditor 是否已经加载完成
-  let className = 'fmt text-break text-wrap mt-4'; // 'fmt text-break text-wrap mt-4'; // 'text-break text-wrap mt-4';
+  let className = 'fmt text-break text-wrap'; // 'fmt text-break text-wrap'; // 'text-break text-wrap mt-4';
+  if (mt4) {
+    className += ' mt-4';
+  }
   if (small) {
     className += '  small'; // vditor-reset--anchor' small';
   }
@@ -203,17 +268,19 @@ const MathJaxRenderer = ({ html, replyUser = '', small = false, ref }) => {
   const articleRef = ref || internalRef;
   useEffect(() => {
     if (isVditorLoaded) {
-      renderVditor(articleRef, html);
+      origin = extensionContent(origin, replyUser, aiTip);
+      renderVditor(articleRef, origin);
       return;
     }
     if (articleRef.current) {
-      appendExternalResources(
+      appendSingleResources(
         'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.css',
         'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.js',
         function onload(scriptEle) {
           document.head.removeChild(scriptEle);
-          if (html) {
-            renderVditor(articleRef, html);
+          if (origin) {
+            origin = extensionContent(origin, replyUser, aiTip);
+            renderVditor(articleRef, origin);
           }
           setIsVditorLoaded(true);
         },
@@ -222,15 +289,23 @@ const MathJaxRenderer = ({ html, replyUser = '', small = false, ref }) => {
       );
     }
   }, [html, articleRef]);
-  const style = small ? { fontSize: '.875rem' } : {};
+  const style = { overflow: 'hidden' };
+  if (small) {
+    // @ts-ignore
+    style.fontSize = '.875rem';
+  }
   return (
-    <article
-      ref={articleRef}
-      id="vditorPreview"
-      className={className}
-      dangerouslySetInnerHTML={{ __html: html }}
-      style={style}
-    />
+    <MathJaxContext version={3} config={config}>
+      <MathJax>
+        <article
+          ref={articleRef}
+          id="vditorPreview"
+          className={className}
+          dangerouslySetInnerHTML={{ __html: html }}
+          style={style}
+        />
+      </MathJax>
+    </MathJaxContext>
   );
 };
 

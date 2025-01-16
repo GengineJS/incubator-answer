@@ -22,6 +22,7 @@ package content
 import (
 	"encoding/json"
 	"fmt"
+	metacommon "github.com/apache/incubator-answer/internal/service/meta_common"
 	"math"
 	"strings"
 	"time"
@@ -41,7 +42,6 @@ import (
 	collectioncommon "github.com/apache/incubator-answer/internal/service/collection_common"
 	"github.com/apache/incubator-answer/internal/service/config"
 	"github.com/apache/incubator-answer/internal/service/export"
-	"github.com/apache/incubator-answer/internal/service/meta"
 	"github.com/apache/incubator-answer/internal/service/notice_queue"
 	"github.com/apache/incubator-answer/internal/service/notification"
 	"github.com/apache/incubator-answer/internal/service/permission"
@@ -75,7 +75,7 @@ type QuestionService struct {
 	userRepo                         usercommon.UserRepo
 	userRoleRelService               *role.UserRoleRelService
 	revisionService                  *revision_common.RevisionService
-	metaService                      *meta.MetaService
+	metaService                      *metacommon.MetaCommonService
 	collectionCommon                 *collectioncommon.CollectionCommon
 	answerActivityService            *activity.AnswerActivityService
 	emailService                     *export.EmailService
@@ -97,7 +97,7 @@ func NewQuestionService(
 	userRepo usercommon.UserRepo,
 	userRoleRelService *role.UserRoleRelService,
 	revisionService *revision_common.RevisionService,
-	metaService *meta.MetaService,
+	metaService *metacommon.MetaCommonService,
 	collectionCommon *collectioncommon.CollectionCommon,
 	answerActivityService *activity.AnswerActivityService,
 	emailService *export.EmailService,

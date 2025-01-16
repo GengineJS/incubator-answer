@@ -23,6 +23,8 @@ import (
 	"embed"
 	"fmt"
 	"gopkg.in/yaml.v3"
+	"path/filepath"
+	"strings"
 )
 
 type Info struct {
@@ -43,4 +45,37 @@ func (c *Info) GetInfo(info embed.FS) *Info {
 		fmt.Println(err)
 	}
 	return c
+}
+
+// IsImageFile 根据文件名判断是否为图片
+func IsImageFile(filename string) bool {
+	ext := strings.ToLower(filepath.Ext(filename))
+	switch ext {
+	case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp":
+		return true
+	default:
+		return false
+	}
+}
+
+// IsPngFile 根据文件名判断是否为PNG图片
+func IsPngFile(filename string) bool {
+	ext := strings.ToLower(filepath.Ext(filename))
+	switch ext {
+	case ".png":
+		return true
+	default:
+		return false
+	}
+}
+
+// IsVideoFile 根据文件名判断是否为视频
+func IsVideoFile(filename string) bool {
+	ext := strings.ToLower(filepath.Ext(filename))
+	switch ext {
+	case ".mp4", ".avi", ".mov", ".wmv", ".flv", ".mkv", ".3gp", ".m4v", ".webm", ".mpg", ".mpeg":
+		return true
+	default:
+		return false
+	}
 }

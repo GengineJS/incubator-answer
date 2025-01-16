@@ -963,6 +963,14 @@ ui:
     day: 天
     hours: 小时
     days: 日
+  reaction:
+    heart: 爱心
+    smile: 微笑
+    frown: 愁
+    btn_label: 添加或删除回应。
+    undo_emoji: 撤销 {{ emoji }} 回应
+    react_emoji: 用 {{ emoji }} 回应
+    unreact_emoji: 撤销 {{ emoji }}
   comment:
     btn_add_subject_comment: 添加主题描述
     btn_add_comment: 添加评论

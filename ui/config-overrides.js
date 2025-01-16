@@ -128,13 +128,15 @@ module.exports = {
         patterns: [
           { from: path.resolve(__dirname, './share.html'), to: path.resolve(__dirname, './build/static/share.html') }, // 从根目录拷贝share.html到build目录
           { from: path.resolve(__dirname, './glslEditor.css'), to: path.resolve(__dirname, './build/static/glslEditor.css') },
-          { from: path.resolve(__dirname, './glslEditor.min.js'), to: path.resolve(__dirname, './build/static/glslEditor.min.js') }
+          { from: path.resolve(__dirname, './glslEditor.min.js'), to: path.resolve(__dirname, './build/static/glslEditor.min.js') },
+          { from: path.resolve(__dirname, './ai.png'), to: path.resolve(__dirname, './build/static/ai.png') },
+          { from: path.resolve(__dirname, './cloud.png'), to: path.resolve(__dirname, './build/static/cloud.png') }
         ],
       }),
       new TerserPlugin({
         terserOptions: {
           compress: {
-            drop_console: true, // 添加这一行来移除所有的console.log
+            // drop_console: true, // 添加这一行来移除所有的console.log
           },
         },
       })
@@ -145,7 +147,7 @@ module.exports = {
       moduleScopePlugin.allowedPaths.push(i18nPath);
     }
     if (env === 'production') {
-      config.devtool = false;
+      // config.devtool = false;
     }
     return config;
   },

@@ -71,9 +71,108 @@ export interface CodeMirrorEditor extends Editor {
   moduleType;
 }
 
+export interface UploadCredential {
+  sessionID: string;
+  expires: number;
+  chunkSize: number;
+  uploadURLs: string[];
+  credential: string;
+  uploadID: string;
+  callback: string;
+  policy: string;
+  ak: string;
+  keyTime: string;
+  path: string;
+  completeURL: string;
+}
+
+export interface OneDriveError {
+  error: {
+    code: string;
+    message: string;
+    innererror?: {
+      code: string;
+    };
+    retryAfterSeconds?: number;
+  };
+}
+
 export interface IEditorContext {
   editor: Editor;
   wrapText?;
   replaceLines?;
   appendBlock?;
+}
+
+export enum PolicyType {
+  local = 'local',
+  remote = 'remote',
+  oss = 'oss',
+  qiniu = 'qiniu',
+  onedrive = 'onedrive',
+  cos = 'cos',
+  upyun = 'upyun',
+  s3 = 's3',
+}
+
+export interface OneDriveChunkResponse {
+  expirationDateTime: string;
+  nextExpectedRanges: string[];
+}
+
+// eslint-disable-next-line import/export
+export interface Response<T> {
+  code: number;
+  data: T;
+  msg: string;
+  error: string;
+}
+
+export enum TaskType {
+  file,
+  resumeHint,
+}
+
+export interface ChunkProgress {
+  loaded: number;
+  index: number;
+  etag?: string;
+}
+type Nullable<T> = T | null;
+export interface Policy {
+  id: string;
+  name: string;
+  allowedSuffix: Nullable<string[]>;
+  maxSize: number;
+  type: PolicyType;
+}
+
+export interface Task {
+  type: TaskType;
+  name: string;
+  size: number;
+  policy: Policy;
+  dst: string;
+  get_link?: boolean;
+  tag?: string;
+  file: File;
+  child?: Task[];
+  session?: UploadCredential;
+  chunkProgress: ChunkProgress[];
+  resumed: boolean;
+}
+
+export interface UploadSessionRequest {
+  path: string;
+  tag?: string;
+  size: number;
+  get_link?: boolean;
+  name: string;
+  policy_id: string;
+  last_modified?: number;
+}
+
+export interface GetFileLinkRequest {
+  path: string;
+  name: string;
 }

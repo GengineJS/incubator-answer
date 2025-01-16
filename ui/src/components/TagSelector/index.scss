@@ -20,6 +20,8 @@
 .tag-selector-wrap {
   .dropdown-menu {
     min-width: 15rem;
+    max-height: 178px;
+    overflow-y: auto;
   }
   .dropdown-toggle {
     &::after {
@@ -60,6 +62,15 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  .a-placeholder-width {
+    display: inline-block;
+    position: absolute;
+    height: 0;
+    overflow: hidden;
+    max-width: calc(100% - 40px);
+  }
+
 }
 
 .tag-selector-wrap--focus {

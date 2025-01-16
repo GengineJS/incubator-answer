@@ -156,7 +156,12 @@ const Index: FC<Props> = ({ data, initPage, hasAnswer, isLogged }) => {
         })}
       </div>
       <ImgViewer>
-        <MathJaxArticle ref={null} html={data?.html} />
+        <MathJaxArticle
+          mt4
+          ref={null}
+          origin={data?.content}
+          html={data?.html}
+        />
       </ImgViewer>
 
       <Actions

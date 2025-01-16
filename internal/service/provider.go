@@ -34,9 +34,11 @@ import (
 	"github.com/apache/incubator-answer/internal/service/config"
 	"github.com/apache/incubator-answer/internal/service/content"
 	"github.com/apache/incubator-answer/internal/service/dashboard"
+	"github.com/apache/incubator-answer/internal/service/event_queue"
 	"github.com/apache/incubator-answer/internal/service/export"
 	"github.com/apache/incubator-answer/internal/service/follow"
 	"github.com/apache/incubator-answer/internal/service/meta"
+	metacommon "github.com/apache/incubator-answer/internal/service/meta_common"
 	"github.com/apache/incubator-answer/internal/service/notice_queue"
 	"github.com/apache/incubator-answer/internal/service/notification"
 	notficationcommon "github.com/apache/incubator-answer/internal/service/notification_common"
@@ -90,7 +92,9 @@ var ProviderSetService = wire.NewSet(
 	rank.NewRankService,
 	search_parser.NewSearchParser,
 	content.NewSearchService,
+	metacommon.NewMetaCommonService,
 	meta.NewMetaService,
+	event_queue.NewEventQueueService,
 	object_info.NewObjService,
 	report_handle.NewReportHandle,
 	user_admin.NewUserAdminService,

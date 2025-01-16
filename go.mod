@@ -80,6 +80,8 @@ require (
 	xorm.io/xorm v1.3.2
 )
 
+require github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
+
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect

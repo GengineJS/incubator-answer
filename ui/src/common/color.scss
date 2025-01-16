@@ -112,29 +112,18 @@
 
   /** tag **/
   .badge-tag {
-    background: rgba($blue-900, 0.5);
-    color: $blue-300;
-    &:hover {
-      color: $blue-300;
-      background: $blue-900;
-    }
-  }
-  .badge-tag-required {
     background: $gray-800;
     color: $gray-300;
-    border: 1px solid $gray-600;
     &:hover {
-      color: $gray-300;
-      background: $gray-700;
+      background: $gray-600;
     }
   }
+
   .badge-tag-reserved {
-    color: $orange-300;
-    background: rgba($orange-900, 0.5);
-    border: 1px solid $orange-900;
+    color: $orange-200;
+    background: $orange-800;
     &:hover {
-      color: $orange-300;
-      background: rgba($orange-900, 1);
+      background: $orange-700;
     }
   }
 }

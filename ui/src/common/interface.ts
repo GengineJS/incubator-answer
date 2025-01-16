@@ -750,3 +750,67 @@ export interface PutFlagReviewParams {
   captcha_code?: any;
   captcha_id?: any;
 }
+
+/**
+ * @description response for reaction
+ */
+export interface ReactionItems {
+  reaction_summary: ReactionItem[];
+}
+
+export interface ReactionItem {
+  emoji: string;
+  count: number;
+  tooltip: string;
+  is_active: boolean;
+}
+
+export interface BadgeListItem {
+  id: string;
+  name: string;
+  icon: string;
+  award_count: number;
+  earned: boolean;
+  /** 1: bronze 2: silver 3:gold */
+  level: number;
+  earned_count?: number;
+}
+
+export interface BadgeListGroupItem {
+  badges: BadgeListItem[];
+  group_name: string;
+}
+
+export interface BadgeInfo extends BadgeListItem {
+  description: string;
+  earned_count: number;
+  is_single: boolean;
+}
+
+export interface AdminBadgeListItem extends BadgeListItem {
+  group_name: string;
+  status: string;
+  description: string;
+}
+
+export interface BadgeDetailListReq {
+  page: number;
+  page_size: number;
+  badge_id: string;
+  username?: string | null;
+}
+export interface BadgeDetailListItem {
+  created_at: number;
+  author_user_info: UserInfoBase;
+  object_type: string;
+  object_id: string;
+  url_title: string;
+  question_id: string;
+  answer_id: string;
+  comment_id: string;
+}
+
+export interface BadgeDetailListRes {
+  count: number;
+  list: BadgeDetailListItem[];
+}

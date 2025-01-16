@@ -22,6 +22,7 @@ package questioncommon
 import (
 	"context"
 	"encoding/json"
+	metacommon "github.com/apache/incubator-answer/internal/service/meta_common"
 	"math"
 	"time"
 
@@ -32,7 +33,6 @@ import (
 	"github.com/apache/incubator-answer/internal/service/activity_common"
 	"github.com/apache/incubator-answer/internal/service/activity_queue"
 	"github.com/apache/incubator-answer/internal/service/config"
-	"github.com/apache/incubator-answer/internal/service/meta"
 	"github.com/apache/incubator-answer/internal/service/revision"
 	"github.com/apache/incubator-answer/pkg/checker"
 	"github.com/apache/incubator-answer/pkg/htmltext"
@@ -91,7 +91,7 @@ type QuestionCommon struct {
 	userCommon           *usercommon.UserCommon
 	collectionCommon     *collectioncommon.CollectionCommon
 	AnswerCommon         *answercommon.AnswerCommon
-	metaService          *meta.MetaService
+	metaCommonService    *metacommon.MetaCommonService
 	configService        *config.ConfigService
 	activityQueueService activity_queue.ActivityQueueService
 	revisionRepo         revision.RevisionRepo
@@ -106,7 +106,7 @@ func NewQuestionCommon(questionRepo QuestionRepo,
 	userCommon *usercommon.UserCommon,
 	collectionCommon *collectioncommon.CollectionCommon,
 	answerCommon *answercommon.AnswerCommon,
-	metaService *meta.MetaService,
+	metaCommonService *metacommon.MetaCommonService,
 	configService *config.ConfigService,
 	activityQueueService activity_queue.ActivityQueueService,
 	revisionRepo revision.RevisionRepo,
@@ -121,7 +121,7 @@ func NewQuestionCommon(questionRepo QuestionRepo,
 		userCommon:           userCommon,
 		collectionCommon:     collectionCommon,
 		AnswerCommon:         answerCommon,
-		metaService:          metaService,
+		metaCommonService:    metaCommonService,
 		configService:        configService,
 		activityQueueService: activityQueueService,
 		revisionRepo:         revisionRepo,
@@ -240,7 +240,7 @@ func (qs *QuestionCommon) Info(ctx context.Context, questionID string, loginUser
 	}
 	resp = qs.ShowFormat(ctx, questionInfo)
 	if resp.Status == entity.QuestionStatusClosed {
-		metaInfo, err := qs.metaService.GetMetaByObjectIdAndKey(ctx, questionInfo.ID, entity.QuestionCloseReasonKey)
+		metaInfo, err := qs.metaCommonService.GetMetaByObjectIdAndKey(ctx, questionInfo.ID, entity.QuestionCloseReasonKey)
 		if err != nil {
 			log.Error(err)
 		} else {
@@ -546,7 +546,7 @@ func (qs *QuestionCommon) CloseQuestion(ctx context.Context, req *schema.CloseQu
 		CloseType: req.CloseType,
 		CloseMsg:  req.CloseMsg,
 	})
-	err = qs.metaService.AddMeta(ctx, req.ID, entity.QuestionCloseReasonKey, string(closeMeta))
+	err = qs.metaCommonService.AddMeta(ctx, req.ID, entity.QuestionCloseReasonKey, string(closeMeta))
 	if err != nil {
 		return err
 	}

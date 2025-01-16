@@ -18,15 +18,14 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Badge, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 
 import classNames from 'classnames';
 import unionBy from 'lodash/unionBy';
 
 import * as Types from '@/common/interface';
-import { Icon, ImgViewer, Modal } from '@/components';
+import { ImgViewer, Modal } from '@/components';
 import { usePageUsers, useReportModal, useCaptchaModal } from '@/hooks';
 import {
   matchedUsers,
@@ -45,6 +44,7 @@ import {
   addAIComment,
 } from '@/services';
 import { commentReplyStore, loggedUserInfoStore } from '@/stores';
+import Reactions from '@/pages/Questions/Detail/components/Reactions';
 import AILoading from '../AILoding';
 import { getUrlQuestionType, SseService } from '@/common/functions';
 import { NotUseAIOfType } from '@/common/constants';
@@ -68,6 +68,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
   });
   const [comments, setComments] = useState<any>([]);
   const [aiLoading, setAILoading] = useState(false);
+  const [aiCommented, setAICommented] = useState(false);
   const userInfo = loggedUserInfoStore((state) => state.user);
   SseService.GetInstance().addAICallback('AIComment', (eve) => {
     if (!aiLoading) {
@@ -371,6 +372,27 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
     }
   };
 
+  const handleAddComment = (isAI: boolean = false) => {
+    if (isAI) {
+      if (tryNormalLogged(true)) {
+        SseService.GetInstance().addAIEventListener();
+        setAILoading(true);
+        handleSendReply({
+          value: 'AIReply',
+          type: 'comment',
+          isAI: true,
+        });
+      }
+      return;
+    }
+    if (!tryNormalLogged(true)) {
+      setVisibleComment(false);
+      return;
+    }
+
+    setVisibleComment(!visibleComment);
+  };
+
   const handleCancel = (id) => {
     setComments(
       comments.map((item) => {
@@ -382,182 +404,159 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
       }),
     );
   };
-  let aiCommented = false;
+  // const tempAICommented = false;
   const contentType = getUrlQuestionType();
+  const isAIType =
+    NotUseAIOfType.indexOf(contentType) === -1 &&
+    mode !== 'question' &&
+    !isObjectAI;
   return (
-    <div
-      className={classNames(
-        'comments-wrap',
-        comments.length > 0 && 'bg-light px-3 py-2 rounded',
-      )}>
-      <AILoading loading={aiLoading} color="#3f51b5" />
-      {comments.map((item) => {
-        // eslint-disable-next-line no-lone-blocks
-        {
-          if (!aiCommented) aiCommented = item.is_ai;
-        }
-        return (
-          <div
-            key={item.comment_id}
-            id={item.comment_id}
-            className="py-2 comment-item">
-            {item.showEdit ? (
-              <Form
-                className="mt-2"
-                value={item.original_text}
-                type="edit"
-                mode={mode}
-                onSendReply={(value) =>
-                  handleSendReply({ ...item, value, type: 'edit' })
-                }
-                onCancel={() => handleCancel(item.comment_id)}
-              />
-            ) : (
-              <div className="d-block">
-                {item.reply_user_display_name && (
-                  <Link to="." className="small me-1 text-nowrap">
-                    @{item.reply_user_display_name}
-                  </Link>
-                )}
-                {item.is_ai ? (
-                  <ImgViewer>
-                    <MathJaxArticle small ref={null} html={item.parsed_text} />
-                  </ImgViewer>
-                ) : (
-                  <div
-                    className="fmt small text-break text-wrap"
-                    dangerouslySetInnerHTML={{ __html: item.parsed_text }}
-                  />
-                )}
-                {item.is_ai && (
-                  <div className="fmt fs-7 small text-secondary text-break text-wrap">
-                    ({t('ai_commented')})
-                  </div>
-                )}
-              </div>
-            )}
-
-            {currentReplyId === item.comment_id ? (
-              <Reply
-                userName={item.user_display_name}
-                mode={mode}
-                onSendReply={(value) =>
-                  handleSendReply({ ...item, value, type: 'reply' })
-                }
-                onCancel={() => handleCancel(item.comment_id)}
-              />
-            ) : null}
-            {item.showEdit || currentReplyId === item.comment_id ? null : (
-              <ActionBar
-                nickName={item.user_display_name}
-                username={item.username}
-                createdAt={item.created_at}
-                voteCount={item.vote_count}
-                mode={mode}
-                aiReplied={item.ai_replied}
-                isAI={item.is_ai}
-                isVote={item.is_vote}
-                memberActions={item.member_actions}
-                userStatus={item.user_status}
-                onReply={() => {
-                  handleReply(item.comment_id);
-                }}
-                onAIReply={() => {
-                  SseService.GetInstance().addAIEventListener();
-                  setAILoading(true);
-                  handleSendReply({
-                    ...item,
-                    value: 'AIReply',
-                    type: 'reply',
-                    isAI: true,
-                  });
-                }}
-                onAction={(action) => handleAction(action, item)}
-                onVote={(e) => {
-                  e.preventDefault();
-                  handleVote(item.comment_id, item.is_vote);
-                }}
-              />
-            )}
-          </div>
-        );
-      })}
-
+    <>
+      <Reactions
+        objectId={objectId}
+        mode={mode}
+        showAddCommentBtn={comments.length === 0}
+        handleClickComment={handleAddComment}
+        aiCommented={aiCommented}
+        isAIType={isAIType}
+      />
       <div
         className={classNames(
-          comments.length > 0 && 'py-2 d-flex align-items-left',
+          'comments-wrap',
+          comments.length > 0 && 'bg-light px-3 py-2 rounded',
         )}>
-        <Button
-          variant="link"
-          className="p-0 me-3 btn-no-border"
-          size="sm"
-          onClick={() => {
-            if (tryNormalLogged(true)) {
-              setVisibleComment(!visibleComment);
+        <AILoading loading={aiLoading} color="#3f51b5" />
+        {comments.map((item) => {
+          // eslint-disable-next-line no-lone-blocks
+          {
+            if (!aiCommented && item.is_ai) {
+              setAICommented(item.is_ai);
             }
-          }}>
-          {mode !== 'question'
-            ? t('btn_add_comment')
-            : t('btn_add_subject_comment')}
-        </Button>
-        {NotUseAIOfType.indexOf(contentType) === -1 &&
-          mode !== 'question' &&
-          !isObjectAI &&
-          (!aiCommented ? (
-            <Button
-              variant="link"
-              className="p-0 btn-no-border"
-              size="sm"
-              onClick={() => {
-                if (tryNormalLogged(true)) {
-                  SseService.GetInstance().addAIEventListener();
-                  setAILoading(true);
-                  handleSendReply({
-                    value: 'AIReply',
-                    type: 'comment',
-                    isAI: true,
-                  });
-                }
-              }}>
-              {t('btn_ai_add_comment')}
-            </Button>
-          ) : (
-            <div className="lh-1 m-0">
-              <Badge bg="secondary" pill>
-                <Icon name="check-circle-fill  me-1" />
-                {t('btn_dis_ai_reply')}
-              </Badge>
-            </div>
-          ))}
-        {data &&
-          (pageIndex || 1) < Math.ceil((data?.count || 0) / pageSize) && (
-            <Button
-              variant="link"
-              size="sm"
-              className="p-0 ms-3 btn-no-border"
-              onClick={() => {
-                setPageIndex(pageIndex + 1);
-              }}>
-              {t('show_more', {
-                count:
-                  data.count - (pageIndex === 0 ? 3 : pageIndex * pageSize),
-              })}
-            </Button>
-          )}
-      </div>
+          }
+          return (
+            <div
+              key={item.comment_id}
+              id={item.comment_id}
+              className="py-2 comment-item">
+              {item.showEdit ? (
+                <Form
+                  className="mt-2"
+                  value={item.original_text}
+                  type="edit"
+                  mode={mode}
+                  onSendReply={(value) =>
+                    handleSendReply({ ...item, value, type: 'edit' })
+                  }
+                  onCancel={() => handleCancel(item.comment_id)}
+                />
+              ) : (
+                <div className="d-block">
+                  <ImgViewer>
+                    <MathJaxArticle
+                      small
+                      ref={null}
+                      replyUser={{
+                        displayName: item.reply_user_display_name,
+                        userName: item.reply_username,
+                      }}
+                      origin={item.original_text}
+                      html={item.parsed_text}
+                      aiTip={item.is_ai ? t('ai_commented') : ''}
+                    />
+                  </ImgViewer>
+                </div>
+              )}
 
-      {visibleComment && (
-        <Form
-          mode={mode}
-          className={classNames(
-            'mt-2',
-            comments.length <= 0 && 'bg-light p-3 rounded',
+              {currentReplyId === item.comment_id ? (
+                <Reply
+                  userName={item.user_display_name}
+                  mode={mode}
+                  onSendReply={(value) =>
+                    handleSendReply({ ...item, value, type: 'reply' })
+                  }
+                  onCancel={() => handleCancel(item.comment_id)}
+                />
+              ) : null}
+              {item.showEdit || currentReplyId === item.comment_id ? null : (
+                <ActionBar
+                  nickName={item.user_display_name}
+                  username={item.username}
+                  createdAt={item.created_at}
+                  voteCount={item.vote_count}
+                  mode={mode}
+                  aiReplied={item.ai_replied}
+                  isAI={item.is_ai}
+                  isVote={item.is_vote}
+                  memberActions={item.member_actions}
+                  userStatus={item.user_status}
+                  onReply={() => {
+                    handleReply(item.comment_id);
+                  }}
+                  onAIReply={() => {
+                    SseService.GetInstance().addAIEventListener();
+                    setAILoading(true);
+                    handleSendReply({
+                      ...item,
+                      value: 'AIReply',
+                      type: 'reply',
+                      isAI: true,
+                    });
+                  }}
+                  onAction={(action) => handleAction(action, item)}
+                  onVote={(e) => {
+                    e.preventDefault();
+                    handleVote(item.comment_id, item.is_vote);
+                  }}
+                />
+              )}
+            </div>
+          );
+        })}
+
+        <div className={classNames(comments.length > 0 && 'py-2')}>
+          {comments.length > 0 && (
+            <Button
+              variant="link"
+              className="p-0 me-3 btn-no-border"
+              size="sm"
+              onClick={() => {
+                handleAddComment(false);
+              }}>
+              {mode !== 'question'
+                ? t('btn_add_comment')
+                : t('btn_add_subject_comment')}
+            </Button>
           )}
-          onSendReply={(value) => handleSendReply({ value, type: 'comment' })}
-          onCancel={() => setVisibleComment(!visibleComment)}
-        />
-      )}
-    </div>
+          {data &&
+            (pageIndex || 1) < Math.ceil((data?.count || 0) / pageSize) && (
+              <Button
+                variant="link"
+                size="sm"
+                className="p-0 ms-3 btn-no-border"
+                onClick={() => {
+                  setPageIndex(pageIndex + 1);
+                }}>
+                {t('show_more', {
+                  count:
+                    data.count - (pageIndex === 0 ? 3 : pageIndex * pageSize),
+                })}
+              </Button>
+            )}
+        </div>
+
+        {visibleComment && (
+          <Form
+            mode={mode}
+            className={classNames(
+              comments.length <= 0 ? 'mt-3' : 'mt-2',
+              comments.length <= 0 && 'bg-light p-3 rounded',
+            )}
+            onSendReply={(value) => handleSendReply({ value, type: 'comment' })}
+            onCancel={() => setVisibleComment(!visibleComment)}
+          />
+        )}
+      </div>
+    </>
   );
 };
 

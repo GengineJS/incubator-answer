@@ -151,12 +151,12 @@ const Index: FC<Props> = ({
         </div>
       )}
       <ImgViewer>
-        <MathJaxArticle ref={null} html={data?.html} />
-        {data.is_ai && (
-          <div className="text-secondary vditor-reset">
-            ({t('ai_commented')})
-          </div>
-        )}
+        <MathJaxArticle
+          aiTip={data.is_ai ? t('ai_commented') : ''}
+          ref={null}
+          origin={data?.content}
+          html={data?.html}
+        />
       </ImgViewer>
       <div className="d-flex align-items-center mt-4">
         <Actions

@@ -56,6 +56,8 @@ import {
   IframeMsgType,
 } from '@/common/constants';
 import {
+  appendArrayResources,
+  appendSingleResources,
   closeNavbarIfOpen,
   getAssetBunLoginHost,
   getTargetRootAssetBunHost,
@@ -67,6 +69,7 @@ import NavItems from './components/NavItems';
 
 import './index.scss';
 
+const cdn = 'https://cdn.jsdelivr.net/npm/vditor@3.10.8';
 const Header: FC = () => {
   iframeManager.initIframe();
   const navigate = useNavigate();
@@ -178,6 +181,48 @@ const Header: FC = () => {
     );
   };
 
+  // const vditorRef = useRef(null);
+  useEffect(() => {
+    const isLoaded = localStorage.getItem('vditorLoaded') === '1';
+    if (isLoaded) {
+      return;
+    }
+
+    // 预先加载下vditor，避免进入编辑界面时等待太长
+    appendSingleResources(
+      'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.css',
+      'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.js',
+      (ele) => {
+        document.head.removeChild(ele);
+        localStorage.setItem('vditorLoaded', '1');
+      },
+      true,
+      false,
+    );
+    appendArrayResources(
+      [`${cdn}/dist/css/content-theme`],
+      [
+        `${cdn}/dist/js/icons/ant.js`,
+        // `${cdn}/dist/js/echarts/echarts.min.js?v=5.5.1`,
+        `${cdn}/dist/js/i18n/zh_CN.js`,
+        // `https://cdn.jsdelivr.net/npm/d3@6.7.0`,
+        // `${cdn}/dist/method.min.js`,
+        // `${cdn}/dist/js/abcjs/abcjs_basic.min.js`,
+        // `${cdn}/dist/js/flowchart.js/flowchart.min.js`,
+        // `${cdn}/dist/js/graphviz/viz.js`,
+        `${cdn}/dist/js/highlight.js/highlight.min.js?v=11.7.0`,
+        // `${cdn}/dist/js/markmap/markmap.min.js`,
+        `${cdn}/dist/js/mermaid/mermaid.min.js`,
+        // `${cdn}/dist/js/plantuml/plantuml-encoder.min.js`,
+        // `${cdn}/dist/js/smiles-drawer/smiles-drawer.min.js?v=2.1.7`,
+        // `${cdn}/dist/js/highlight.js/third-languages.js?v=1.0.1`,
+        // `https://cdn.jsdelivr.net/npm/markmap-view@0.14.3`,
+        `${cdn}/dist/js/lute/lute.min.js`,
+      ],
+      true,
+    );
+  }, []);
+
   useEffect(() => {
     if (q && location.pathname === '/search') {
       handleInput(q);
@@ -199,225 +244,231 @@ const Header: FC = () => {
     navbarStyle = `theme-${theme_config[theme].navbar_style}`;
   }
   const toHomeUrl = isAssetBun ? window.location : '/';
+  // const style = {
+  //   display: 'none',
+  // };
   return (
-    <Navbar
-      variant={navbarStyle === 'theme-colored' ? 'dark' : ''}
-      expand="lg"
-      className={classnames('sticky-top', navbarStyle)}
-      id="header">
-      <Container className="d-flex align-items-center">
-        <Navbar.Toggle
-          aria-controls="navBarContent"
-          className="answer-navBar me-2"
-          id="navBarToggle"
-          onClick={() => {
-            updateVisible();
-          }}
-        />
+    <>
+      {/* <div id="vditorHidden" ref={vditorRef} style={style} className="vditor" /> */}
+      <Navbar
+        variant={navbarStyle === 'theme-colored' ? 'dark' : ''}
+        expand="lg"
+        className={classnames('sticky-top', navbarStyle)}
+        id="header">
+        <Container className="d-flex align-items-center">
+          <Navbar.Toggle
+            aria-controls="navBarContent"
+            className="answer-navBar me-2"
+            id="navBarToggle"
+            onClick={() => {
+              updateVisible();
+            }}
+          />
 
-        <div className="d-flex justify-content-between align-items-center nav-grow flex-nowrap">
-          <Navbar.Brand
-            to={toHomeUrl}
-            as={Link}
-            className="lh-1 me-0 me-sm-5 p-0">
-            {brandingInfo.logo ? (
-              <>
-                <img
-                  className="d-none d-lg-block logo me-0"
-                  src={brandingInfo.logo}
-                  alt={siteInfo.name}
-                />
+          <div className="d-flex justify-content-between align-items-center nav-grow flex-nowrap">
+            <Navbar.Brand
+              to={toHomeUrl}
+              as={Link}
+              className="lh-1 me-0 me-sm-5 p-0">
+              {brandingInfo.logo ? (
+                <>
+                  <img
+                    className="d-none d-lg-block logo me-0"
+                    src={brandingInfo.logo}
+                    alt={siteInfo.name}
+                  />
 
-                <img
-                  className="lg-none logo me-0"
-                  src={brandingInfo.mobile_logo || brandingInfo.logo}
-                  alt={siteInfo.name}
-                />
-              </>
-            ) : (
-              <span>
-                {isAssetBun ? assetBunName : siteInfo.name}
-                {isAssetBun || <sup>AI</sup>}
-              </span>
-            )}
-          </Navbar.Brand>
+                  <img
+                    className="lg-none logo me-0"
+                    src={brandingInfo.mobile_logo || brandingInfo.logo}
+                    alt={siteInfo.name}
+                  />
+                </>
+              ) : (
+                <span>
+                  {isAssetBun ? assetBunName : siteInfo.name}
+                  {isAssetBun || <sup>AI</sup>}
+                </span>
+              )}
+            </Navbar.Brand>
 
-          {/* mobile nav */}
-          <div className="d-flex lg-none align-items-center flex-lg-nowrap">
-            {user?.username ? (
-              <NavItems
-                redDot={redDot}
-                userInfo={user}
-                logOut={(e) => handleLogout(e)}
-              />
-            ) : (
-              <>
-                <Button
-                  variant="link"
-                  className={classnames('me-2', {
-                    'link-light': navbarStyle === 'theme-colored',
-                    'link-primary': navbarStyle !== 'theme-colored',
-                  })}
-                  onClick={() => floppyNavigation.storageLoginRedirect()}
-                  href={userCenter.getLoginUrl()}>
-                  {t('btns.login')}
-                </Button>
-                {loginSetting.allow_new_registrations && (
-                  <Button
-                    variant={
-                      navbarStyle === 'theme-colored' ? 'light' : 'primary'
-                    }
-                    href={userCenter.getSignUpUrl()}>
-                    {t('btns.signup')}
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-
-        <Navbar.Collapse id="navBarContent" className="me-auto">
-          <hr className="hr lg-none mb-3" style={{ marginTop: '12px' }} />
-          <Col lg={8} className="ps-0">
-            <Form
-              action="/search"
-              className="w-100 maxw-400"
-              onSubmit={handleSearch}>
-              <FormControl
-                type="search"
-                placeholder={t('header.search.placeholder')}
-                className="placeholder-search"
-                value={searchStr}
-                name="q"
-                onChange={(e) => handleInput(e.target.value)}
-              />
-            </Form>
-          </Col>
-
-          <Nav.Item className="lg-none mt-3 pb-1">
-            <Dropdown>
-              <Dropdown.Toggle
-                className="text-capitalize text-nowrap btn btn-light"
-                variant="light"
-                id="dropdown-basic">
-                {t('btns.add_publish')}
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu>
-                <Dropdown.Item
-                  href={
-                    isAssetBun
-                      ? `${askUrl}${ContentType.QUESTION}&${assetBunSearch}`
-                      : `${askUrl}${ContentType.QUESTION}`
-                  }>
-                  {t('header.nav.question')}
-                </Dropdown.Item>
-                <Dropdown.Item
-                  href={
-                    isAssetBun
-                      ? `${askUrl}${ContentType.ARTICLE}&${assetBunSearch}`
-                      : `${askUrl}${ContentType.ARTICLE}`
-                  }>
-                  {t('header.nav.article')}
-                </Dropdown.Item>
-                <Dropdown.Item
-                  href={
-                    isAssetBun
-                      ? `${askUrl}${ContentType.BOUNTY}&${assetBunSearch}`
-                      : `${askUrl}${ContentType.BOUNTY}`
-                  }>
-                  {t('header.nav.bounty')}
-                </Dropdown.Item>
-                <Dropdown.Item
-                  target="_blank"
-                  href="https://cloud.assetbun.com">
-                  {t('header.nav.assetbun')}
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </Nav.Item>
-          {/* pc nav */}
-          <Col
-            lg={4}
-            className="d-none d-lg-flex justify-content-start justify-content-sm-end">
-            {user?.username ? (
-              <Nav className="d-flex align-items-center flex-lg-nowrap">
-                <Nav.Item className="me-3">
-                  <Dropdown>
-                    <Dropdown.Toggle
-                      className="text-capitalize text-nowrap btn btn-light"
-                      variant="light"
-                      id="dropdown-basic">
-                      {t('btns.add_publish')}
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                      <Dropdown.Item
-                        href={
-                          isAssetBun
-                            ? `${askUrl}${ContentType.QUESTION}&${assetBunSearch}`
-                            : `${askUrl}${ContentType.QUESTION}`
-                        }>
-                        {t('header.nav.question')}
-                      </Dropdown.Item>
-                      <Dropdown.Item
-                        href={
-                          isAssetBun
-                            ? `${askUrl}${ContentType.ARTICLE}&${assetBunSearch}`
-                            : `${askUrl}${ContentType.ARTICLE}`
-                        }>
-                        {t('header.nav.article')}
-                      </Dropdown.Item>
-                      <Dropdown.Item
-                        href={
-                          isAssetBun
-                            ? `${askUrl}${ContentType.BOUNTY}&${assetBunSearch}`
-                            : `${askUrl}${ContentType.BOUNTY}`
-                        }>
-                        {t('header.nav.bounty')}
-                      </Dropdown.Item>
-                      <Dropdown.Item
-                        target="_blank"
-                        href="https://cloud.assetbun.com">
-                        {t('header.nav.assetbun')}
-                      </Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Nav.Item>
-
+            {/* mobile nav */}
+            <div className="d-flex lg-none align-items-center flex-lg-nowrap">
+              {user?.username ? (
                 <NavItems
                   redDot={redDot}
                   userInfo={user}
-                  logOut={handleLogout}
+                  logOut={(e) => handleLogout(e)}
                 />
-              </Nav>
-            ) : (
-              <>
-                <Button
-                  variant="link"
-                  className={classnames('me-2', {
-                    'link-light': navbarStyle === 'theme-colored',
-                    'link-primary': navbarStyle !== 'theme-colored',
-                  })}
-                  onClick={() => floppyNavigation.storageLoginRedirect()}
-                  href={userCenter.getLoginUrl()}>
-                  {t('btns.login')}
-                </Button>
-                {loginSetting.allow_new_registrations && (
+              ) : (
+                <>
                   <Button
-                    variant={
-                      navbarStyle === 'theme-colored' ? 'light' : 'primary'
-                    }
-                    href={userCenter.getSignUpUrl()}>
-                    {t('btns.signup')}
+                    variant="link"
+                    className={classnames('me-2', {
+                      'link-light': navbarStyle === 'theme-colored',
+                      'link-primary': navbarStyle !== 'theme-colored',
+                    })}
+                    onClick={() => floppyNavigation.storageLoginRedirect()}
+                    href={userCenter.getLoginUrl()}>
+                    {t('btns.login')}
                   </Button>
-                )}
-              </>
-            )}
-          </Col>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+                  {loginSetting.allow_new_registrations && (
+                    <Button
+                      variant={
+                        navbarStyle === 'theme-colored' ? 'light' : 'primary'
+                      }
+                      href={userCenter.getSignUpUrl()}>
+                      {t('btns.signup')}
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+
+          <Navbar.Collapse id="navBarContent" className="me-auto">
+            <hr className="hr lg-none mb-3" style={{ marginTop: '12px' }} />
+            <Col lg={8} className="ps-0">
+              <Form
+                action="/search"
+                className="w-100 maxw-400"
+                onSubmit={handleSearch}>
+                <FormControl
+                  type="search"
+                  placeholder={t('header.search.placeholder')}
+                  className="placeholder-search"
+                  value={searchStr}
+                  name="q"
+                  onChange={(e) => handleInput(e.target.value)}
+                />
+              </Form>
+            </Col>
+
+            <Nav.Item className="lg-none mt-3 pb-1">
+              <Dropdown>
+                <Dropdown.Toggle
+                  className="text-capitalize text-nowrap btn btn-light"
+                  variant="light"
+                  id="dropdown-basic">
+                  {t('btns.add_publish')}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  <Dropdown.Item
+                    href={
+                      isAssetBun
+                        ? `${askUrl}${ContentType.QUESTION}&${assetBunSearch}`
+                        : `${askUrl}${ContentType.QUESTION}`
+                    }>
+                    {t('header.nav.question')}
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    href={
+                      isAssetBun
+                        ? `${askUrl}${ContentType.ARTICLE}&${assetBunSearch}`
+                        : `${askUrl}${ContentType.ARTICLE}`
+                    }>
+                    {t('header.nav.article')}
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    href={
+                      isAssetBun
+                        ? `${askUrl}${ContentType.BOUNTY}&${assetBunSearch}`
+                        : `${askUrl}${ContentType.BOUNTY}`
+                    }>
+                    {t('header.nav.bounty')}
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    target="_blank"
+                    href="https://cloud.assetbun.com">
+                    {t('header.nav.assetbun')}
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </Nav.Item>
+            {/* pc nav */}
+            <Col
+              lg={4}
+              className="d-none d-lg-flex justify-content-start justify-content-sm-end">
+              {user?.username ? (
+                <Nav className="d-flex align-items-center flex-lg-nowrap">
+                  <Nav.Item className="me-3">
+                    <Dropdown>
+                      <Dropdown.Toggle
+                        className="text-capitalize text-nowrap btn btn-light"
+                        variant="light"
+                        id="dropdown-basic">
+                        {t('btns.add_publish')}
+                      </Dropdown.Toggle>
+
+                      <Dropdown.Menu>
+                        <Dropdown.Item
+                          href={
+                            isAssetBun
+                              ? `${askUrl}${ContentType.QUESTION}&${assetBunSearch}`
+                              : `${askUrl}${ContentType.QUESTION}`
+                          }>
+                          {t('header.nav.question')}
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          href={
+                            isAssetBun
+                              ? `${askUrl}${ContentType.ARTICLE}&${assetBunSearch}`
+                              : `${askUrl}${ContentType.ARTICLE}`
+                          }>
+                          {t('header.nav.article')}
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          href={
+                            isAssetBun
+                              ? `${askUrl}${ContentType.BOUNTY}&${assetBunSearch}`
+                              : `${askUrl}${ContentType.BOUNTY}`
+                          }>
+                          {t('header.nav.bounty')}
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          target="_blank"
+                          href="https://cloud.assetbun.com">
+                          {t('header.nav.assetbun')}
+                        </Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </Nav.Item>
+
+                  <NavItems
+                    redDot={redDot}
+                    userInfo={user}
+                    logOut={handleLogout}
+                  />
+                </Nav>
+              ) : (
+                <>
+                  <Button
+                    variant="link"
+                    className={classnames('me-2', {
+                      'link-light': navbarStyle === 'theme-colored',
+                      'link-primary': navbarStyle !== 'theme-colored',
+                    })}
+                    onClick={() => floppyNavigation.storageLoginRedirect()}
+                    href={userCenter.getLoginUrl()}>
+                    {t('btns.login')}
+                  </Button>
+                  {loginSetting.allow_new_registrations && (
+                    <Button
+                      variant={
+                        navbarStyle === 'theme-colored' ? 'light' : 'primary'
+                      }
+                      href={userCenter.getSignUpUrl()}>
+                      {t('btns.signup')}
+                    </Button>
+                  )}
+                </>
+              )}
+            </Col>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+    </>
   );
 };
 

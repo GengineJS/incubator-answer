@@ -187,7 +187,11 @@ const Index: FC<IProps> = ({ refreshCount }) => {
           )}
           <div className="small font-monospace">
             <ImgViewer>
-              <MathJaxArticle ref={ref} html={flagItemData?.parsed_text} />
+              <MathJaxArticle
+                ref={ref}
+                origin={flagItemData?.original_text}
+                html={flagItemData?.parsed_text}
+              />
             </ImgViewer>
           </div>
           <div className="d-flex flex-wrap align-items-center justify-content-between mt-4">
