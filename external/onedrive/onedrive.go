@@ -25,19 +25,18 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/apache/incubator-answer-plugins/storage-aliyunoss/i18n"
-	"github.com/apache/incubator-answer/external/util"
-	"github.com/apache/incubator-answer/external/util/request"
-	"github.com/apache/incubator-answer/plugin"
 	"io"
 	"io/ioutil"
-	"log"
-	"mime/multipart"
 	"net/http"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/apache/incubator-answer-plugins/storage-aliyunoss/i18n"
+	"github.com/apache/incubator-answer/external/util"
+	"github.com/apache/incubator-answer/external/util/request"
+	"github.com/apache/incubator-answer/plugin"
 )
 
 const (
@@ -156,57 +155,14 @@ type ShareCreateService struct {
 	SourceLink      string `json:"sourceLink"`
 }
 
-// 将 bytes.Buffer 转换为 *multipart.FileHeader
-func bufferToMultipartFile(buffer *bytes.Buffer, filename string, contentType string) (*multipart.FileHeader, error) {
-	pr, pw := io.Pipe()
-	writer := multipart.NewWriter(pw)
-
-	go func() {
-		defer pw.Close()
-
-		// 创建 form file 并写入 buffer 内容
-		part, err := writer.CreateFormFile("file", filename)
-		if err != nil {
-			fmt.Println("Failed to create form file:", err)
-			return
-		}
-		if _, err := io.Copy(part, buffer); err != nil {
-			fmt.Println("Failed to copy buffer to part:", err)
-			return
-		}
-
-		// 关闭 writer 以确保所有数据都被正确写入 body
-		writer.Close()
-	}()
-
-	// 读取 multipart 数据
-	var b bytes.Buffer
-	if _, err := io.Copy(&b, pr); err != nil {
-		return nil, fmt.Errorf("failed to read from pipe: %v", err)
-	}
-
-	// 解析 multipart 数据
-	mr, err := multipart.NewReader(&b, writer.Boundary()).ReadForm(0)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse multipart data: %v", err)
-	}
-
-	fileHeaders := mr.File["file"]
-	if len(fileHeaders) == 0 {
-		return nil, fmt.Errorf("no file found in multipart data")
-	}
-
-	return fileHeaders[0], nil
-}
-
 var ctxUUIDKey = "ctxUuidKey"
 
 func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource) (resp plugin.UploadFileResponse) {
-	logFile := filepath.Join("./", "app.log") // 假设日志文件在项目根目录下的 logs 文件夹中
-	err := util.InitGlobalLogger(logFile)
-	if err != nil {
-		log.Fatalf("create logger failed: %v", err)
-	}
+	//logFile := filepath.Join("./", "app.log") // 假设日志文件在项目根目录下的 logs 文件夹中
+	//err := util.InitGlobalLogger(logFile)
+	// if err != nil {
+	// 	log.Fatalf("create logger failed: %v", err)
+	// }
 
 	resp = plugin.UploadFileResponse{}
 	file, err := ctx.FormFile("file")
@@ -215,11 +171,11 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 	host := ctx.PostForm("host")
 	userName := ctx.PostForm("userName")
 	maxWidth := ctx.PostForm("maxWidth")
-	util.GlobalLogger.Info("OneDrive参数列表: ", path, tag, host, userName, maxWidth)
+	// util.GlobalLogger.Info("OneDrive参数列表: ", path, tag, host, userName, maxWidth)
 	if err != nil {
 		resp.OriginalError = fmt.Errorf("get upload file failed: %v", err)
 		resp.DisplayErrorMsg = plugin.MakeTranslator(i18n.ErrFileNotFound)
-		util.GlobalLogger.Error(err)
+		// util.GlobalLogger.Error(err)
 		return resp
 	}
 
@@ -232,7 +188,7 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 	src, err := file.Open()
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "Error opening file: %s", err.Error())
-		util.GlobalLogger.Error(err)
+		// util.GlobalLogger.Error(err)
 		return
 	}
 	defer src.Close()
@@ -240,7 +196,7 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 	if !util.IsImageFile(file.Filename) {
 		// 使用 io.Copy 从 file 复制数据到 buf
 		if _, err := io.Copy(&buf, src); err != nil {
-			util.GlobalLogger.Error(err)
+			// util.GlobalLogger.Error(err)
 			return
 		}
 	} else {
@@ -255,7 +211,7 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 
 		currWidth, err := strconv.Atoi(maxWidth)
 		if err != nil {
-			util.GlobalLogger.Error(err)
+			// util.GlobalLogger.Error(err)
 			currWidth = 550
 		}
 		// Add watermark
@@ -274,7 +230,7 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 		GetLink:      true,
 		Size:         int64(buf.Len()),
 		Name:         file.Filename,
-		PolicyID:     "2qsD",
+		PolicyID:     "yZuZ",
 		LastModified: time.Now().Unix(), // this.task.file.lastModified 的示例值 (Unix 时间戳)
 	}
 	sessionToken, _ := ctx.Cookie("cloudreve-session")
@@ -290,7 +246,7 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 	}
 	respRes, err := request.PutAction(host+"/api/v3/file/upload", bodyRes, headers, cookies)
 	if err != nil {
-		util.GlobalLogger.Error(err)
+		// util.GlobalLogger.Error(err)
 		fmt.Println("Error:", err)
 		return
 	}
@@ -299,7 +255,7 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 	// 读取响应
 	responseBody, err := ioutil.ReadAll(respRes.Body)
 	if err != nil {
-		util.GlobalLogger.Error(err)
+		// util.GlobalLogger.Error(err)
 		fmt.Println("Error reading response:", err)
 		return
 	}
@@ -311,11 +267,11 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 	var response UploadSessionResponse
 	err = json.Unmarshal([]byte(respVal), &response)
 	if err != nil {
-		util.GlobalLogger.Error(err)
+		// util.GlobalLogger.Error(err)
 		fmt.Println("Error convert response:", err)
 		return
 	}
-	util.GlobalLogger.Info("创建UploadSession: ", respVal)
+	// util.GlobalLogger.Info("创建UploadSession: ", respVal)
 	if response.Code == 0 {
 		if response.Data.FileLink != "" {
 			resp.FullURL = response.Data.FileLink
