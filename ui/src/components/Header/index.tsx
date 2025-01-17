@@ -60,9 +60,11 @@ import {
   appendSingleResources,
   closeNavbarIfOpen,
   getAssetBunLoginHost,
+  getDomainName,
   getTargetRootAssetBunHost,
   iframeManager,
   isAssetBunPageType,
+  isLocalHost,
 } from '@/common/functions';
 
 import NavItems from './components/NavItems';
@@ -243,10 +245,17 @@ const Header: FC = () => {
   if (theme_config?.[theme]?.navbar_style) {
     navbarStyle = `theme-${theme_config[theme].navbar_style}`;
   }
-  const toHomeUrl = isAssetBun ? window.location : '/';
+  let toHomeUrl = '/';
   // const style = {
   //   display: 'none',
   // };
+  const domain = getDomainName();
+  const httpStr = isLocalHost(domain) ? 'http://' : 'https://';
+  brandingInfo.logo = `${httpStr}${domain}/static/ai.png`;
+  if (isAssetBun) {
+    toHomeUrl = window.location.href;
+    brandingInfo.logo = `${httpStr}${domain}/static/cloud.png`;
+  }
   return (
     <>
       {/* <div id="vditorHidden" ref={vditorRef} style={style} className="vditor" /> */}
