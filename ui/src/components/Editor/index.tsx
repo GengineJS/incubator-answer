@@ -112,6 +112,7 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
   //   return previewRef.current?.getHtml();
   // };
   const { user: storeUser } = loggedUserInfoStore((_) => _);
+
   // useImperativeHandle(ref, () => ({
   //   getHtml,
   // }));
