@@ -206,7 +206,7 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 		//	ctx.String(http.StatusInternalServerError, "Error decoding image: %s", err.Error())
 		//	return
 		//}
-		markText := "点识成金AI @" + userName
+		markText := "@" + userName
 		// userInfo, exist := ctx.Get(ctxUUIDKey)
 
 		currWidth, err := strconv.Atoi(maxWidth)

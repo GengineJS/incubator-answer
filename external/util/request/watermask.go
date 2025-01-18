@@ -38,9 +38,49 @@ func AddWatermark(img draw.Image, watermarkText string) {
 	d.DrawString(watermarkText)
 }
 
-// DrawTextOnImage 将文本绘制到已有的image.Image上，并将文本放置在图片的左下角
-func DrawTextOnImage(img draw.Image, text string, fontPath string, fontSize float64, textColor color.Color) error {
-	// Read the font data.
+// DrawImageOnImageWithHeight 将目标图绘制到底图之上，位置默认为左下角，并按指定高度等比例绘制
+// baseImage: 底图
+// targetImagePath: 目标图的路径
+// targetHeight: 目标图的高度
+// mode: 绘制模式（draw.Src, draw.Over, draw.SrcOver, draw.DstOver等）
+func DrawImageOnImageWithHeight(baseImage draw.Image, targetImagePath string, targetHeight int) (width, height int) {
+	// 打开目标图
+	targetFile, err := os.Open(targetImagePath)
+	if err != nil {
+		return 0, 0
+	}
+	defer targetFile.Close()
+
+	targetImage, _, err := image.Decode(targetFile)
+	if err != nil {
+		return 0, 0
+	}
+
+	// 计算等比例的宽度
+	targetBounds := targetImage.Bounds()
+	widthRatio := float64(targetBounds.Dx()) / float64(targetBounds.Dy())
+	targetWidth := int(float64(targetHeight) * widthRatio)
+
+	// 创建一个等比例缩放后的目标图
+	resizedTarget := image.NewRGBA(image.Rect(0, 0, targetWidth, targetHeight))
+	draw.NearestNeighbor.Scale(resizedTarget, resizedTarget.Bounds(), targetImage, targetBounds, draw.Over, nil)
+
+	// 计算目标图在底图上的绘制区域，位置默认为左下角
+	baseBounds := baseImage.Bounds()
+	position := image.Point{
+		X: baseBounds.Min.X + 10,
+		Y: baseBounds.Max.Y - targetHeight - 10,
+	}
+
+	// 将目标图绘制到底图上
+	draw.Draw(baseImage, resizedTarget.Bounds().Add(position), resizedTarget, image.ZP, draw.Over)
+
+	return targetWidth, targetHeight
+}
+
+// DrawTextOnImage 将文本绘制到已有的image.Image上，并将文本放置在图片的左下角，同时添加文本轮廓
+func DrawTextOnImage(img draw.Image, text string, fontPath string, fontSize float64, marginLeft int) error {
+	// 读取字体文件
 	fontBytes, err := os.ReadFile(fontPath)
 	if err != nil {
 		return err
@@ -50,7 +90,7 @@ func DrawTextOnImage(img draw.Image, text string, fontPath string, fontSize floa
 		return err
 	}
 
-	// Create the font.Face.
+	// 创建字体面
 	h := font.HintingNone
 	face := truetype.NewFace(f, &truetype.Options{
 		Size:    fontSize,
@@ -58,23 +98,40 @@ func DrawTextOnImage(img draw.Image, text string, fontPath string, fontSize floa
 		Hinting: h,
 	})
 
-	// Create the font.Drawer.
+	// 设置文本颜色和轮廓颜色
+	textColor := color.RGBA{255, 255, 255, 255}    // 白色
+	outlineColor := color.RGBA{210, 210, 210, 255} // 轮廓颜色
+	outlineWidth := 2                              // 轮廓宽度
+
+	// 创建字体绘制器
 	d := &font.Drawer{
 		Dst:  img,
 		Src:  image.NewUniform(textColor),
 		Face: face,
 	}
 
-	// Measure the text width and height.
-	// textWidth := d.MeasureString(text)
+	// 计算文本高度
 	textHeight := face.Metrics().Height.Ceil()
 
-	// Calculate the position for the bottom-left corner.
+	// 计算文本位置
 	bounds := img.Bounds()
-	x := bounds.Min.X + 10
+	x := bounds.Min.X + 10 + marginLeft
 	y := bounds.Max.Y - textHeight
 
-	// Draw the text.
+	// 绘制文本轮廓
+	for dx := -outlineWidth; dx <= outlineWidth; dx++ {
+		for dy := -outlineWidth; dy <= outlineWidth; dy++ {
+			if dx == 0 && dy == 0 {
+				continue // 跳过中心位置
+			}
+			d.Src = image.NewUniform(outlineColor)
+			d.Dot = fixed.P(x+dx, y+dy)
+			d.DrawString(text)
+		}
+	}
+
+	// 绘制文本
+	d.Src = image.NewUniform(textColor)
 	d.Dot = fixed.P(x, y)
 	d.DrawString(text)
 

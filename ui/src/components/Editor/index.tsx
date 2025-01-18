@@ -139,9 +139,6 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
       'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.css',
       'https://cdn.jsdelivr.net/npm/vditor@3.10.8/dist/index.min.js',
       function onload(scriptEle) {
-        // const uploadExtraData = {
-        //   source: 'post',
-        // };
         let isFirst = true;
         // 可能会在不刷新页面的情况下又重新进入了页面，会导致不渲染了，所以得hack下
         document.head.removeChild(scriptEle);
@@ -249,31 +246,7 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
               extraData.host = getTargetRootAssetBunHost();
               extraData.userName = storeUser.display_name;
               // 图像最大宽度
-              extraData.maxWidth = 550;
-              // const link = await getFileLink({
-              //   path: '点识成金AI',
-              //   name: file.name,
-              // });
-              // console.log(link);
-              // const currentTask = uploadManager.dispatchUploader({
-              //   type: TaskType.file,
-              //   policy: {
-              //     allowedSuffix: [],
-              //     id: '2qsD',
-              //     maxSize: 0,
-              //     name: 'AssetBun上海节点',
-              //     type: PolicyType.onedrive,
-              //   },
-              //   get_link: true,
-              //   dst: '/点识成金AI',
-              //   tag: '点识成金AI',
-              //   file,
-              //   size: file.size,
-              //   name: file.name,
-              //   chunkProgress: [],
-              //   resumed: false,
-              // });
-              // currentTask?.start();
+              extraData.maxWidth = 700;
               return files;
             },
           },
@@ -316,10 +289,8 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
               }
             }
             if (!currStr) {
-              // setContent(currStr);
               vditor.setValue(currVal);
             }
-            // setIsVditorLoaded(true);
           },
         });
       },
@@ -327,11 +298,6 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
       false,
     );
   }, [ref, value /* , isVditorLoaded */]);
-  // const style = {};
-  // if (!isLightTheme()) {
-  //   // @ts-ignore
-  //   style.color = '#d1d5da';
-  // }
   return (
     <div
       ref={vditorContainerRef}

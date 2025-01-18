@@ -299,10 +299,10 @@ const Ask = () => {
     });
   };
   const handleContentChange = (value: string) => {
-    setFormData({
-      ...formData,
-      content: { ...formData.content, value, errorMsg: '' },
-    });
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      content: { ...prevFormData.content, value, errorMsg: '' },
+    }));
   };
   const handleTagsChange = (value) =>
     setFormData({

@@ -9,7 +9,6 @@ import (
 	"github.com/apache/incubator-answer/plugin"
 	"golang.org/x/image/draw"
 	"image"
-	"image/color"
 	"image/jpeg"
 	"image/png"
 	"io"
@@ -101,7 +100,8 @@ func GenerateThumbnailWithWatermark(fileHeader *multipart.FileHeader, maxWidth i
 
 	// 添加水印
 	if watermarkText != "" {
-		DrawTextOnImage(thumbnail, watermarkText, "./sySerif.ttf", 14, color.White)
+		width, _ := DrawImageOnImageWithHeight(thumbnail, "./logo.png", 30)
+		DrawTextOnImage(thumbnail, watermarkText, "./sySerif.ttf", 16, width)
 	}
 
 	// 将处理后的图像编码为 JPEG 格式
