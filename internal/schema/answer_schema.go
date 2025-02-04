@@ -45,18 +45,19 @@ const (
 )
 
 type AnswerAddReq struct {
-	QuestionID  string `json:"question_id"`
-	Content     string `validate:"required,notblank,gte=6,lte=65535" json:"content"`
-	HTML        string `json:"-"`
-	UserID      string `json:"-"`
-	CanEdit     bool   `json:"-"`
-	CanDelete   bool   `json:"-"`
-	CanRecover  bool   `json:"-"`
-	IsAI        bool   `json:"-"`
-	CaptchaID   string `json:"captcha_id"`
-	CaptchaCode string `json:"captcha_code"`
-	IP          string `json:"-"`
-	UserAgent   string `json:"-"`
+	QuestionID    string `json:"question_id"`
+	Content       string `validate:"required,notblank,gte=6,lte=65535" json:"content"`
+	HTML          string `json:"-"`
+	UserID        string `json:"-"`
+	CanEdit       bool   `json:"-"`
+	CanDelete     bool   `json:"-"`
+	CanRecover    bool   `json:"-"`
+	IsAI          bool   `json:"-"`
+	CaptchaID     string `json:"captcha_id"`
+	CaptchaCode   string `json:"captcha_code"`
+	ResolveOption bool   `json:"resolve_option"`
+	IP            string `json:"-"`
+	UserAgent     string `json:"-"`
 }
 
 func (req *AnswerAddReq) Check() (errFields []*validator.FormErrorField, err error) {
@@ -118,6 +119,7 @@ type AnswerInfo struct {
 	QuestionInfo   *QuestionInfoResp `json:"question_info,omitempty"`
 	Status         int               `json:"status"`
 	IsAI           bool              `json:"is_ai"`
+	ResolveOption  bool              `json:"resolve_option"`
 	AIReplied      bool              `json:"ai_replied"`
 	// MemberActions
 	MemberActions []*PermissionMemberAction `json:"member_actions"`

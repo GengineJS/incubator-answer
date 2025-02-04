@@ -27,6 +27,7 @@ import {
 } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
+import { getUrlQuestionType, isNeedResolveType } from '@/common/functions';
 import { Pagination, CustomSidebar } from '@/components';
 import { loggedUserInfoStore, toastStore } from '@/stores';
 import { scrollToElementTop, scrollToDocTop } from '@/utils';
@@ -35,6 +36,7 @@ import type {
   ListResult,
   QuestionDetailRes,
   AnswerItem,
+  UserAnswer,
 } from '@/common/interface';
 import { questionDetail, getAnswers } from '@/services';
 
@@ -73,6 +75,10 @@ const Index = () => {
     count: -1,
     list: [],
   });
+  const [userAnswer, setUserAnswer] = useState<UserAnswer>({
+    answered: false,
+    resolved: false,
+  });
   const { setUsers } = usePageUsers();
   const userInfo = loggedUserInfoStore((state) => state.user);
   const isAuthor = userInfo?.username === question?.user_info?.username;
@@ -105,6 +111,7 @@ const Index = () => {
     });
 
     if (res) {
+      const currUserAnswer: UserAnswer = {};
       res.list = res.list?.filter((v) => {
         // delete answers only show to author and admin and has search params aid
         if (v.status === 10) {
@@ -116,9 +123,19 @@ const Index = () => {
           }
           return null;
         }
+        if (v.user_info.username === userInfo?.username) {
+          if (v.resolve_option) {
+            currUserAnswer.resolved = true;
+            currUserAnswer.resolvedID = v.id;
+          } else {
+            currUserAnswer.isAI = v.is_ai;
+            currUserAnswer.answered = true;
+            currUserAnswer.answeredID = v.id;
+          }
+        }
         return v;
       });
-
+      setUserAnswer(currUserAnswer);
       setAnswers({ ...res, count: res.list.length });
       if (page > 0 || order) {
         // scroll into view;
@@ -193,10 +210,11 @@ const Index = () => {
   };
 
   const writeAnswerCallback = (obj: AnswerItem) => {
-    setAnswers({
-      count: answers.count + 1,
-      list: [...answers.list, obj],
-    });
+    requestAnswers();
+    // setAnswers({
+    //   count: answers.count + 1,
+    //   list: [...answers.list, obj],
+    // });
 
     if (question) {
       setQuestion({
@@ -239,7 +257,7 @@ const Index = () => {
       canInvitePeople = true;
     }
   }
-
+  const contentType = getUrlQuestionType();
   return (
     <Row className="questionDetailPage pt-4 mb-5">
       <Col className="page-main flex-auto">
@@ -260,6 +278,8 @@ const Index = () => {
             {answerList?.map((item) => {
               return (
                 <Answer
+                  quser={question?.user_info.id}
+                  resolveType={item.resolve_option}
                   acceptedId={question?.accepted_answer_id}
                   aid={aid}
                   key={item?.id}
@@ -291,8 +311,13 @@ const Index = () => {
             <WriteAnswer
               data={{
                 qid,
+                userAnswer,
+                score: question?.score,
                 aiAnswered: question?.ai_answer_replied,
-                answered: question?.answered,
+                answered:
+                  (userAnswer.answered &&
+                    !isNeedResolveType(contentType, question?.score)) ||
+                  (userAnswer.answered && userAnswer.resolved),
                 loggedUserRank,
                 first_answer_id: question?.first_answer_id,
               }}

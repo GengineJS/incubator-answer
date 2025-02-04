@@ -713,6 +713,9 @@ export const PayContentType = [
   ContentType.BOUNTY,
   ContentType.ASSETBUN,
 ];
+
+export const NeedResolveType = [ContentType.QUESTION, ContentType.BOUNTY];
+
 export const ExternalPayContentType = [ContentType.ASSETBUN];
 export const NotUseAIOfType = [ContentType.ASSETBUN];
 

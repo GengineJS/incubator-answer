@@ -53,7 +53,13 @@ import MathJaxArticle from '@/components/MathJaxArticle';
 import { Form, ActionBar, Reply } from './components';
 import './index.scss';
 
-const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
+const Comment = ({
+  objectId,
+  closeAI = false,
+  isObjectAI = false,
+  mode,
+  commentId,
+}) => {
   const pageUsers = usePageUsers();
   const [pageIndex, setPageIndex] = useState(0);
   const [visibleComment, setVisibleComment] = useState(false);
@@ -413,6 +419,7 @@ const Comment = ({ objectId, isObjectAI = false, mode, commentId }) => {
   return (
     <>
       <Reactions
+        closeAI={closeAI}
         objectId={objectId}
         mode={mode}
         showAddCommentBtn={comments.length === 0}

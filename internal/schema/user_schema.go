@@ -113,8 +113,13 @@ func (r *UserLoginResp) ConvertFromUserEntity(userInfo *entity.User) {
 
 type GetCurrentLoginUserInfoResp struct {
 	*UserLoginResp
-	RankToScore float32     `json:"rank_score"`
-	Avatar      *AvatarInfo `json:"avatar"`
+	RankToScore float32          `json:"rank_score"`
+	Avatar      *AvatarInfo      `json:"avatar"`
+	Contract    *entity.Contract `json:"contract"`
+	// 已入驻并生效中的合约
+	Contracted []entity.Contract `json:"contracted"`
+	// 目前数据库已有的所有合约
+	ContractInfoList []entity.ContractInfo `json:"contract_list"`
 }
 
 func (r *GetCurrentLoginUserInfoResp) ConvertFromUserEntity(userInfo *entity.User) {
@@ -165,6 +170,12 @@ type GetOtherUserInfoByUsernameResp struct {
 	Score     int    `json:"score"`
 	// Vip信息
 	GroupInfo interface{} `json:"group_info"`
+	// 当前合约
+	Contract *entity.Contract `json:"contract"`
+	// 已入驻并生效中的合约
+	Contracted []entity.Contract `json:"contracted"`
+	// 目前数据库已有的所有合约
+	ContractInfoList []entity.ContractInfo `json:"contract_list"`
 }
 
 func (r *GetOtherUserInfoByUsernameResp) ConvertFromUserEntity(userInfo *entity.User) {
@@ -263,6 +274,11 @@ type UpdateExchangeRequest struct {
 	ExchangeRank float32 `validate:"omitempty,gt=0" json:"exchange_rank"`
 	Score        int     `validate:"omitempty,gt=0" json:"score"`
 	UserID       string  `json:"-"`
+}
+
+type UpdateContractRequest struct {
+	ContractInfoID int    `json:"contract_info_id"`
+	UserID         string `json:"-"`
 }
 
 type AvatarInfo struct {

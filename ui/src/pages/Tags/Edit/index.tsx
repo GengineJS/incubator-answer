@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 
-import { usePageTags, usePromptWithUnload } from '@/hooks';
+import { usePageTags } from '@/hooks';
 import { Editor, EditorRef } from '@/components';
 import { loggedUserInfoStore } from '@/stores';
 import type * as Type from '@/common/interface';
@@ -73,15 +73,15 @@ const Index = () => {
   const { data: revisions = [] } = useQueryRevisions(data?.tag_id);
   const [formData, setFormData] = useState<FormDataItem>(initFormData);
   const [immData, setImmData] = useState(initFormData);
-  const [contentChanged, setContentChanged] = useState(false);
+  // const [contentChanged, setContentChanged] = useState(false);
 
   const editorRef = useRef<EditorRef>({
     getHtml: () => '',
   });
 
-  usePromptWithUnload({
-    when: contentChanged,
-  });
+  // usePromptWithUnload({
+  //   when: contentChanged,
+  // });
 
   useEffect(() => {
     initFormData.displayName.value = data?.display_name || '';
@@ -105,9 +105,9 @@ const Index = () => {
       original_text.value !== description.value ||
       editSummary.value
     ) {
-      setContentChanged(true);
+      // setContentChanged(true);
     } else {
-      setContentChanged(false);
+      // setContentChanged(false);
     }
   }, [
     formData.displayName.value,
@@ -185,7 +185,7 @@ const Index = () => {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    setContentChanged(false);
+    // setContentChanged(false);
 
     event.preventDefault();
     event.stopPropagation();

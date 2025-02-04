@@ -1,11 +1,13 @@
 // eslint-disable-next-line max-classes-per-file
 import {
   assetBunLoginUrl,
+  ContentType,
   getUrlQueryParam,
   getUrlQuestionType,
   hasPayType,
   IframeMsgType,
   isModerator,
+  NeedResolveType,
   PageType,
   shareLocalStorageDomains,
   targetAssetBunHomeUrl,
@@ -29,6 +31,21 @@ export function needQuestionToLoginOrUp(question, userInfo): void {
     }
   }
 }
+
+export const formatNumber = (num, length, isEnd = true) => {
+  const numStr = String(num);
+  if (numStr.length < length) {
+    let output = '';
+    const offsetLen = length - numStr.length;
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < offsetLen; i++) {
+      output += '&nbsp;&nbsp;';
+    }
+    output = isEnd ? `${numStr}${output}` : `${output}${numStr}`;
+    return output;
+  }
+  return String(num);
+};
 
 export function appendSingleResources(
   cssUrl,
@@ -141,6 +158,20 @@ export function getDomainName(url: string | null = null) {
 
 export function isLocalHost(hostname: string) {
   return shareLocalStorageDomains.indexOf(hostname) === 0;
+}
+
+export function isNeedResolveType(contentType: ContentType, score: number) {
+  return (
+    (NeedResolveType.indexOf(contentType) !== -1 && score > 0) ||
+    contentType === ContentType.BOUNTY
+  );
+}
+
+export function removeLastNewline(str) {
+  if (str.endsWith('\n')) {
+    return str.slice(0, -1); // 移除最后一个字符
+  }
+  return str;
 }
 
 export function getTargetLocalStorageHost(): string {

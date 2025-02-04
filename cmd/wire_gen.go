@@ -25,6 +25,7 @@ import (
 	"github.com/apache/incubator-answer/internal/repo/collection"
 	"github.com/apache/incubator-answer/internal/repo/comment"
 	"github.com/apache/incubator-answer/internal/repo/config"
+	"github.com/apache/incubator-answer/internal/repo/contract"
 	"github.com/apache/incubator-answer/internal/repo/export"
 	"github.com/apache/incubator-answer/internal/repo/limit"
 	"github.com/apache/incubator-answer/internal/repo/meta"
@@ -128,13 +129,14 @@ func initApplication(debug bool, serverConf *conf.Server, dbConf *data.Database,
 	assetBunRepo := assetbun.NewAssetBunRepo(dataData)
 	userRankRepo := rank.NewUserRankRepo(dataData, configService, assetBunRepo)
 	userActiveActivityRepo := activity.NewUserActiveActivityRepo(dataData, activityRepo, userRankRepo, configService)
+	contractRepo := contract.NewContractRepo(dataData)
 	emailRepo := export.NewEmailRepo(dataData)
 	emailService := export2.NewEmailService(configService, emailRepo, siteInfoCommonService)
 	userRoleRelRepo := role.NewUserRoleRelRepo(dataData)
 	roleRepo := role.NewRoleRepo(dataData)
 	roleService := role2.NewRoleService(roleRepo)
 	userRoleRelService := role2.NewUserRoleRelService(userRoleRelRepo, roleService)
-	userCommon := usercommon.NewUserCommon(userRepo, userRoleRelService, authService, siteInfoCommonService)
+	userCommon := usercommon.NewUserCommon(contractRepo, userRepo, userRoleRelService, authService, siteInfoCommonService)
 	userExternalLoginRepo := user_external_login.NewUserExternalLoginRepo(dataData)
 	userNotificationConfigRepo := user_notification_config.NewUserNotificationConfigRepo(dataData)
 	userNotificationConfigService := user_notification_config2.NewUserNotificationConfigService(userRepo, userNotificationConfigRepo)
@@ -157,7 +159,7 @@ func initApplication(debug bool, serverConf *conf.Server, dbConf *data.Database,
 	metaRepo := meta.NewMetaRepo(dataData)
 	metaCommonService := metacommon.NewMetaCommonService(metaRepo)
 	questionCommon := questioncommon.NewQuestionCommon(questionRepo, answerRepo, voteRepo, followRepo, tagCommonService, userCommon, collectionCommon, answerCommon, metaCommonService, configService, activityQueueService, revisionRepo, dataData)
-	userService := content.NewUserService(userRepo, userActiveActivityRepo, activityRepo, emailService, authService, siteInfoCommonService, userRoleRelService, userCommon, userExternalLoginService, userNotificationConfigRepo, userNotificationConfigService, questionCommon, assetBunRepo, configService, userRankRepo)
+	userService := content.NewUserService(userRepo, userActiveActivityRepo, activityRepo, contractRepo, emailService, authService, siteInfoCommonService, userRoleRelService, userCommon, userExternalLoginService, userNotificationConfigRepo, userNotificationConfigService, questionCommon, assetBunRepo, configService, userRankRepo, notificationQueueService)
 	captchaRepo := captcha.NewCaptchaRepo(dataData)
 	captchaService := action.NewCaptchaService(captchaRepo)
 	userController := controller.NewUserController(authService, userService, captchaService, emailService, siteInfoCommonService, userNotificationConfigService)
@@ -196,7 +198,7 @@ func initApplication(debug bool, serverConf *conf.Server, dbConf *data.Database,
 	collectionService := collection2.NewCollectionService(collectionRepo, collectionGroupRepo, questionCommon)
 	collectionController := controller.NewCollectionController(collectionService)
 	questionController := controller.NewQuestionController(questionService, answerService, rankService, siteInfoCommonService, captchaService, rateLimitMiddleware)
-	answerController := controller.NewAnswerController(answerService, sseService, rankService, captchaService, siteInfoCommonService, rateLimitMiddleware)
+	answerController := controller.NewAnswerController(questionService, answerService, sseService, rankService, captchaService, siteInfoCommonService, rateLimitMiddleware)
 	aiController := controller.NewAIController(commentController, answerController)
 	searchParser := search_parser.NewSearchParser(tagCommonService, userCommon)
 	searchRepo := search_common.NewSearchRepo(dataData, uniqueIDRepo, userCommon, questionRepo, tagCommonService)

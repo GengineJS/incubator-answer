@@ -67,6 +67,8 @@ type User struct {
 	IsAdmin        bool      `xorm:"not null default false BOOL is_admin"`
 	Language       string    `xorm:"not null default '' VARCHAR(100) language"`
 	ColorScheme    string    `xorm:"not null default '' VARCHAR(100) color_scheme"`
+	ContractId     int       `xorm:"'contract_id' index"`
+	Contract       *Contract `xorm:"-"`
 }
 
 // TableName user table name

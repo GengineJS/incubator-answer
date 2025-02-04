@@ -171,6 +171,9 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 	host := ctx.PostForm("host")
 	userName := ctx.PostForm("userName")
 	maxWidth := ctx.PostForm("maxWidth")
+	fileName := ctx.PostForm("name")
+	watermark := ctx.PostForm("watermark")
+	token := ctx.PostForm("token")
 	// util.GlobalLogger.Info("OneDrive参数列表: ", path, tag, host, userName, maxWidth)
 	if err != nil {
 		resp.OriginalError = fmt.Errorf("get upload file failed: %v", err)
@@ -193,7 +196,7 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 	}
 	defer src.Close()
 	var buf bytes.Buffer
-	if !util.IsImageFile(file.Filename) {
+	if !util.IsImageFile(fileName) {
 		// 使用 io.Copy 从 file 复制数据到 buf
 		if _, err := io.Copy(&buf, src); err != nil {
 			// util.GlobalLogger.Error(err)
@@ -207,6 +210,9 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 		//	return
 		//}
 		markText := "@" + userName
+		if watermark != "true" {
+			markText = ""
+		}
 		// userInfo, exist := ctx.Get(ctxUUIDKey)
 
 		currWidth, err := strconv.Atoi(maxWidth)
@@ -229,11 +235,14 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 		Tag:          tag,
 		GetLink:      true,
 		Size:         int64(buf.Len()),
-		Name:         file.Filename,
+		Name:         fileName,
 		PolicyID:     "yZuZ",
 		LastModified: time.Now().Unix(), // this.task.file.lastModified 的示例值 (Unix 时间戳)
 	}
 	sessionToken, _ := ctx.Cookie("cloudreve-session")
+	if token != "" {
+		sessionToken = token
+	}
 	body, _ := json.Marshal(taskData)
 	// 创建请求体
 	bodyRes := bytes.NewBuffer(body)
@@ -311,16 +320,6 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 				resp.FullURL = response.Data.(string)
 			}
 		}
-		// if resp.Data
-
-		// var uploadProgress UploadProgress
-		//chunks, _ := GetChunks(file, int64(response.Data.ChunkSize))
-		//chunkProgress, uploadProgress := InitChunkProgresses(file, chunks)
-		//for i := 0; i < len(chunks); i++ {
-		//	if chunkProgress[i].Loaded < len(chunks[i]) || len(chunks[i]) == 0 {
-		//
-		//	}
-		//}
 	}
 	return resp
 }

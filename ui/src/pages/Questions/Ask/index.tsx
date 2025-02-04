@@ -27,7 +27,7 @@ import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
-import { usePageTags, usePromptWithUnload } from '@/hooks';
+import { usePageTags } from '@/hooks';
 import { Editor, EditorRef, TagSelector } from '@/components';
 import type * as Type from '@/common/interface';
 import {
@@ -112,7 +112,7 @@ const Ask = () => {
   const [formData, setFormData] = useState<FormDataItem>(initFormData);
   const [immData, setImmData] = useState<FormDataItem>(initFormData);
   const [checked, setCheckState] = useState(false);
-  const [blockState, setBlockState] = useState(false);
+  // const [setBlockState] = useState(false); // blockState,
   const [focusType, setForceType] = useState('');
   const [hasDraft, setHasDraft] = useState(false);
   const resetForm = () => {
@@ -189,9 +189,9 @@ const Ask = () => {
           tags.value.map((v) => v.slug_name),
         )
       ) {
-        setBlockState(true);
+        // setBlockState(true);
       } else {
-        setBlockState(false);
+        // setBlockState(false);
       }
       return;
     }
@@ -212,16 +212,17 @@ const Ask = () => {
         },
         callback: () => setHasDraft(true),
       });
-      setBlockState(true);
+      // setBlockState(true);
     } else {
       removeDraft();
-      setBlockState(false);
+      // setBlockState(false);
     }
   }, [formData]);
 
-  usePromptWithUnload({
-    when: blockState,
-  });
+  // TODO: 未保存的提示
+  // usePromptWithUnload({
+  //   when: blockState,
+  // });
   const contentType = getUrlQuestionType();
   const { data: revisions = [] } = useQueryRevisions(qid);
   const { score } = loggedUserInfoStore((state) => state.user);
@@ -334,7 +335,7 @@ const Ask = () => {
   };
 
   const submitModifyQuestion = (params) => {
-    setBlockState(false);
+    // setBlockState(false);
     const ep = {
       ...params,
       id: qid,
@@ -367,7 +368,7 @@ const Ask = () => {
   };
 
   const submitQuestion = async (params) => {
-    setBlockState(false);
+    // setBlockState(false);
     const imgCode = saveCaptcha?.getCaptcha();
     if (imgCode?.verify) {
       params.captcha_code = imgCode.captcha_code;

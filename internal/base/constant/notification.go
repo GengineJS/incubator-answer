@@ -109,6 +109,7 @@ const (
 	NotificationYourCommentWasDeleted = "notification.action.your_comment_was_deleted"
 	// NotificationInvitedYouToAnswer invited you to answer
 	NotificationInvitedYouToAnswer = "notification.action.invited_you_to_answer"
+	NotificationUserContract       = "notification.action.contract_subject"
 )
 
 type NotificationChannelKey string
@@ -186,5 +187,6 @@ var (
 		NotificationAccpetedSelfIntegral:       4,
 		NotificationAIAcceptedGetIntegral:      4,
 		NotificationAcceptedGetIntegral:        4,
+		NotificationUserContract:               5,
 	}
 )

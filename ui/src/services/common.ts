@@ -167,6 +167,10 @@ export const updateUserExchange = (params: Type.UserExchangeReq) => {
   return request.put('/answer/api/v1/user/exchange', params);
 };
 
+export const updateUserContract = (params: Type.UserContractReq) => {
+  return request.put('/answer/api/v1/user/contract', params);
+};
+
 export const modifyPassword = (params: Type.ModifyPasswordReq) => {
   return request.put('/answer/api/v1/user/password', params);
 };

@@ -84,6 +84,9 @@ function unescapeHtmlEntities(escapedHtml) {
 }
 
 const GlslRuntime = (articleRef) => {
+  if (!articleRef.current) {
+    return;
+  }
   const codeNodes = articleRef.current.querySelectorAll('pre code');
   Array.from(codeNodes).forEach((node) => {
     // @ts-ignore
@@ -219,7 +222,10 @@ function renderVditor(articleRef, origin) {
     after() {
       GlslRuntime(articleRef);
       // @ts-ignore
-      if (window.MathJax) window.MathJax.typeset();
+      if (window.MathJax && typeof window.MathJax.typeset === 'function') {
+        // @ts-ignore
+        window.MathJax.typeset();
+      }
       // window.MathJax.Hub.Queue(['Typeset', window.MathJax.Hub]);
     },
     // speech: {

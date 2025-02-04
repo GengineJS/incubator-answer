@@ -38,8 +38,9 @@ import { AnswerItem } from '@/common/interface';
 import { acceptanceAnswer } from '@/services';
 import { useRenderHtmlPlugin } from '@/utils/pluginKit';
 import { PayContentType } from '@/common/constants';
-import { getUrlQuestionType } from '@/common/functions';
+import { getUrlQuestionType, removeLastNewline } from '@/common/functions';
 import MathJaxArticle from '@/components/MathJaxArticle';
+import { loggedUserInfoStore } from '@/stores';
 
 interface Props {
   data: AnswerItem;
@@ -47,6 +48,9 @@ interface Props {
   aid?: string;
   acceptedId?: string;
   canAccept: boolean;
+  resolveType: boolean;
+  // 发布问题的用户
+  quser?: string;
   score?: number;
   questionTitle: string;
   isLogged: boolean;
@@ -61,6 +65,8 @@ const Index: FC<Props> = ({
   score = 0,
   questionTitle = '',
   callback,
+  quser,
+  resolveType = false,
   canAccept = false,
 }) => {
   const contentType = getUrlQuestionType();
@@ -70,10 +76,18 @@ const Index: FC<Props> = ({
   if (hasAccepted) {
     canAccept = data.accepted === 2;
   }
+  const getResolvePermision = () => {
+    const userInfo = loggedUserInfoStore((state) => state.user);
+    const isQAuthor = userInfo?.id === quser;
+    const isAAuthor = userInfo.id === data.user_info.id;
+    const isAdmin = userInfo?.role_id === 2;
+    const isModerator = userInfo?.role_id === 3;
+    return isQAuthor || isAdmin || isAAuthor || isModerator;
+  };
+
   const { t } = useTranslation('translation', {
     keyPrefix: 'question_detail',
   });
-
   const [searchParams] = useSearchParams();
   const answerRef = useRef<HTMLDivElement>(null);
   useRenderHtmlPlugin(answerRef.current);
@@ -128,7 +142,7 @@ const Index: FC<Props> = ({
   if (!data?.id) {
     return null;
   }
-
+  const resolvePerm = getResolvePermision();
   return (
     <div id={data.id} ref={answerRef} className="answer-item py-4">
       {data.status === 10 && (
@@ -154,8 +168,15 @@ const Index: FC<Props> = ({
         <MathJaxArticle
           aiTip={data.is_ai ? t('ai_commented') : ''}
           ref={null}
-          origin={data?.content}
-          html={data?.html}
+          origin={
+            resolveType && !resolvePerm
+              ? `\`${t('resolve_tip')}\``
+              : removeLastNewline(data?.content || '') +
+                (resolveType && resolvePerm ? `\`(${t('resolve_type')})\`` : '')
+          }
+          html={
+            resolveType && !resolvePerm ? `${t('resolve_tip')}` : data?.html
+          }
         />
       </ImgViewer>
       <div className="d-flex align-items-center mt-4">
@@ -239,6 +260,7 @@ const Index: FC<Props> = ({
       </div>
 
       <Comment
+        closeAI={data.resolve_option}
         objectId={data.id}
         isObjectAI={data.is_ai}
         mode="answer"

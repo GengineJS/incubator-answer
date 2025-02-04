@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 
 import classNames from 'classnames';
 
-import { usePageTags, usePromptWithUnload } from '@/hooks';
+import { usePageTags } from '@/hooks';
 import { Editor, EditorRef } from '@/components';
 import { loggedUserInfoStore } from '@/stores';
 import type * as Type from '@/common/interface';
@@ -63,15 +63,15 @@ const Index = () => {
 
   const [formData, setFormData] = useState<FormDataItem>(initFormData);
   const [immData] = useState(initFormData);
-  const [contentChanged, setContentChanged] = useState(false);
+  // const [contentChanged, setContentChanged] = useState(false);
 
   const editorRef = useRef<EditorRef>({
     getHtml: () => '',
   });
 
-  usePromptWithUnload({
-    when: contentChanged,
-  });
+  // usePromptWithUnload({
+  //   when: contentChanged,
+  // });
 
   useEffect(() => {
     const { displayName, slugName, description } = formData;
@@ -89,9 +89,9 @@ const Index = () => {
       slug_name.value !== slugName.value ||
       original_text.value !== description.value
     ) {
-      setContentChanged(true);
+      // setContentChanged(true);
     } else {
-      setContentChanged(false);
+      // setContentChanged(false);
     }
   }, [
     formData.displayName.value,
@@ -173,7 +173,7 @@ const Index = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    setContentChanged(false);
+    // setContentChanged(false);
 
     if (!checkValidated()) {
       return;

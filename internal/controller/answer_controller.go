@@ -47,6 +47,7 @@ import (
 
 // AnswerController answer controller
 type AnswerController struct {
+	questionService       *content.QuestionService
 	answerService         *content.AnswerService
 	sseService            *Sse.SseService
 	rankService           *rank.RankService
@@ -57,6 +58,7 @@ type AnswerController struct {
 
 // NewAnswerController new controller
 func NewAnswerController(
+	questionService *content.QuestionService,
 	answerService *content.AnswerService,
 	sseService *Sse.SseService,
 	rankService *rank.RankService,
@@ -65,6 +67,7 @@ func NewAnswerController(
 	rateLimitMiddleware *middleware.RateLimitMiddleware,
 ) *AnswerController {
 	return &AnswerController{
+		questionService:       questionService,
 		answerService:         answerService,
 		sseService:            sseService,
 		rankService:           rankService,
@@ -249,7 +252,9 @@ func (ac *AnswerController) add(ctx *gin.Context, service *content.AIQWenService
 		handler.HandleResponse(ctx, err, nil)
 		return
 	}
-	if write.RestrictAnswer {
+	questObj, _ := ac.questionService.GetQuestion(ctx, req.QuestionID, req.UserID, schema.QuestionPermission{})
+	if write.RestrictAnswer &&
+		!((questObj.ContentType == int(entity.TypeQuestion) && questObj.Score > 0) || questObj.ContentType == int(entity.TypeBounty)) {
 		// check if there's already an answer by this user
 		ids, err := ac.answerService.GetCountByUserIDQuestionID(ctx, req.UserID, req.QuestionID)
 		if err != nil {

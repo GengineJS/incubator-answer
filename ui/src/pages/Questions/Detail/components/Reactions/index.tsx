@@ -36,6 +36,7 @@ import { ReactionItem } from '@/common/interface';
 
 interface Props {
   objectId: string;
+  closeAI?: boolean;
   mode: string;
   showAddCommentBtn?: boolean;
   isAIType?: boolean;
@@ -64,6 +65,7 @@ const emojiMap = [
 const Index: FC<Props> = ({
   objectId,
   mode,
+  closeAI,
   aiCommented,
   isAIType,
   showAddCommentBtn,
@@ -142,6 +144,7 @@ const Index: FC<Props> = ({
         </Button>
       )}
       {isAIType &&
+        !closeAI &&
         (!aiCommented ? (
           <Button
             className="rounded-pill me-2 link-secondary"

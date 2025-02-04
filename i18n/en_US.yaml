@@ -549,6 +549,8 @@ backend:
         other: "提交的{{.ContentType}}的AI回复被删除后已重新恢复并获得了+{{.Rank}}声望在"
       delete_subject:
         other: "删除了{{.ContentType}}并失去了-{{.Rank}}声望在"
+      contract_subject:
+        other: "已成功完成平台入驻且获得了\"{{.Title}}\"权益并失去了-{{.Rank}}声望"
       sub_integral:
         other: "支付了-{{.Integral}}积分在"
       add_integral:
@@ -769,6 +771,7 @@ ui:
       invites: 邀请
       votes: 点赞
       integrals: 积分
+      entry: 入驻
   suspended:
     title: 你的账号账号已被封禁
     until_time: "你的账号被封禁直到 {{ time }}。"
@@ -977,6 +980,7 @@ ui:
     btn_ai_add_comment: 请AI回复
     reply_to: 回复
     btn_reply: 回复
+    private_reply: 私密
     btn_ai_reply: AI回复
     btn_dis_ai_reply: AI已回复
     ai_commented: 此评论为AI回复
@@ -1105,6 +1109,7 @@ ui:
       rankToScore: 声望兑积分
       realName: 实名认证
       withdrawal: 积分提现
+      platformEntry: 平台入驻
       logout: 退出
       admin: 后台管理
       review: 审查
@@ -1347,8 +1352,10 @@ ui:
       remove_success: 移除成功
   toast:
     update: 更新成功
+    failed: 操作失败
     rank_score_short: 积分兑换至少需要为1积分才可兑换
     invalid_rank_score: 声望兑积分功能暂时关闭
+    need_entry: 请先完成平台入驻
     update_password: 密码更新成功。
     flag_success: 感谢标记。
     forbidden_operate_self: 禁止对自己执行操作
@@ -1382,6 +1389,8 @@ ui:
     accept_title: 是否采纳回复
     warn_accept: 采纳该回复会把当前积分给到该用户，并且后续无法取消采纳，是否采纳该回复?
     not_accept: 花费积分的帖子对回复采纳后无法进行取消采纳的操作
+    resolve_tip: 此回复属于私密方案，内容已被锁定并隐藏。您当前无权查看
+    resolve_type: 此回复为私密方案
     accept: 采纳
     integral: 积分
     ai_reply: 请AI回复该主题
@@ -1415,11 +1424,16 @@ ui:
       btn_accepted: 已被采纳
     write_answer:
       title: 你的回复
-      edit_answer: 编辑我的回复
-      btn_name: 提交你的回复
-      btn_ai_name: 请AI直接回复
+      edit_answer: 编辑回复
+      edit_resolve: 编辑方案
+      btn_name: 提交回复
+      btn_resolve_name: 私密方案
+      btn_ai_name: 请AI回复
       ai_answered: AI已回复
-      add_another_answer: 添加另一个回复
+      add_another_answer: 添加其它回复
+      resolve_option_title: 提交解决方案
+      resolve_option_content: 该回复作为解决方案后，完整信息仅对主题作者可见，并对其他用户私密隐藏
+      submit: 提交
       confirm_title: 继续回复
       continue: 继续
       confirm_info: >-
@@ -1465,11 +1479,19 @@ ui:
   ranks:
     exchange_confirm: 确认兑换积分?
     modal_title: 声望兑积分
+    platform_entry_title: 平台入驻
+    platform_entry_tip: 声望：入驻所需声望值；权益：入驻后，兑换每1积分所需声望值
+    default_option: 请选择可以入驻的等级
+    not_enough_option: 当前声望不足无法入驻
+    contract_option: "{{title}} | 声望: {{redeem_rank_points}} | 权益: {{rank_to_point}}:1"
+    creator_level_selection: 创作者入驻等级选择
     exchange_val: 兑换积分值
     placeholder: 输入想兑换的积分值
     confirm: 确认
     close: 关闭
     exchange: 兑换
+    entry: 入驻
+    entered: " (已入驻)"
     content: "您有 {{rank}} 声望,最多可兑 {{maxScore}} 积分,兑换后剩余 {{remaining}} 声望"
     content_confirm: "您有 {{rank}} 声望，兑换 {{currScore}} 积分后剩余 {{remaining}} 声望"
   btns:

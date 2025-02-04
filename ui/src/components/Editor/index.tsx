@@ -228,10 +228,11 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
             //   }
             // },
             filename(name) {
-              return name
+              const filename = name
                 .replace(/[^(a-zA-Z0-9\u4e00-\u9fa5.)]/g, '')
                 .replace(/[?\\/:|<>*[\]()$%{}@~]/g, '')
                 .replace('/\\s/g', '');
+              return filename;
             },
             async file(files) {
               // eslint-disable-next-line prefer-destructuring
@@ -240,13 +241,22 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
                 vditorRef.current!.vditor.options.upload.extraData;
               // eslint-disable-next-line prefer-destructuring,no-multi-assign
               const file = (extraData.file = files[0]);
-              extraData.name = file.name;
+              let fileName = file.name;
+              // 如果是image.png，大概率是截图直接上传的，应该给个唯一标识
+              if (file.name === 'image.png') {
+                const uniqueIdentifier = Date.now(); // 获取当前时间的毫秒时间戳
+                const filenameParts = file.name.split('.'); // 将文件名按“.”分割成数组
+                const newFilename = `${filenameParts[0]}_${uniqueIdentifier}.${filenameParts[1]}`; // 重新组合文件名
+                fileName = newFilename; // 更新文件名
+              }
+              extraData.name = fileName;
               extraData.path = '/点识成金AI';
               extraData.tag = '点识成金AI';
               extraData.host = getTargetRootAssetBunHost();
               extraData.userName = storeUser.display_name;
+              extraData.watermark = true;
               // 图像最大宽度
-              extraData.maxWidth = 700;
+              extraData.maxWidth = 800;
               return files;
             },
           },

@@ -30,6 +30,7 @@ import (
 	"github.com/apache/incubator-answer/internal/repo/collection"
 	"github.com/apache/incubator-answer/internal/repo/comment"
 	"github.com/apache/incubator-answer/internal/repo/config"
+	"github.com/apache/incubator-answer/internal/repo/contract"
 	"github.com/apache/incubator-answer/internal/repo/export"
 	"github.com/apache/incubator-answer/internal/repo/limit"
 	"github.com/apache/incubator-answer/internal/repo/meta"
@@ -102,4 +103,5 @@ var ProviderSetRepo = wire.NewSet(
 	plugin_config.NewPluginUserConfigRepo,
 	review.NewReviewRepo,
 	assetbun.NewAssetBunRepo,
+	contract.NewContractRepo,
 )

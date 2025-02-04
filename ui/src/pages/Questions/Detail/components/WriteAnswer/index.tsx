@@ -25,10 +25,10 @@ import { Link } from 'react-router-dom';
 import { marked } from 'marked';
 import classNames from 'classnames';
 
-import { usePromptWithUnload } from '@/hooks';
+// import { usePromptWithUnload } from '@/hooks';
 import { useCaptchaPlugin } from '@/utils/pluginKit';
 import { Editor, Icon, Modal, TextArea, AILoading } from '@/components';
-import { FormDataType, PostAnswerReq } from '@/common/interface';
+import { FormDataType, PostAnswerReq, UserAnswer } from '@/common/interface';
 import { postAIAnswer, postAnswer } from '@/services';
 import { guard, handleFormError, SaveDraft, storageExpires } from '@/utils';
 import {
@@ -37,13 +37,15 @@ import {
   NotUseAIOfType,
 } from '@/common/constants';
 import { loggedUserInfoStore, writeSettingStore } from '@/stores';
-import { SseService } from '@/common/functions';
+import { isNeedResolveType, SseService } from '@/common/functions';
 
 interface Props {
   visible?: boolean;
   data: {
     /** question  id */
     qid: string;
+    score: number;
+    userAnswer: UserAnswer;
     aiAnswered?: boolean;
     answered?: boolean;
     loggedUserRank: number;
@@ -51,7 +53,7 @@ interface Props {
   };
   callback?: (obj) => void;
 }
-
+let resolveOption = false;
 const saveDraft = new SaveDraft({ type: 'answer' });
 
 const Index: FC<Props> = ({ visible = false, data, callback }) => {
@@ -74,9 +76,11 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
   const writeInfo = writeSettingStore((state) => state.write);
   const [editorCanSave, setEditorCanSave] = useState(false);
   const [aiLoading, setAILoading] = useState(false);
-  usePromptWithUnload({
-    when: Boolean(formData.content.value),
-  });
+  resolveOption = false;
+  // TODO:会自动保存内容，所以弹窗提示可以不要
+  // usePromptWithUnload({
+  //   when: Boolean(formData.content.value),
+  // });
   const userInfo = loggedUserInfoStore((state) => state.user);
   SseService.GetInstance().addAICallback('AIHandle', (eve) => {
     if (!aiLoading) {
@@ -118,7 +122,6 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
   useEffect(() => {
     const draft = storageExpires.get(DRAFT_ANSWER_STORAGE_KEY);
     const { content } = formData;
-
     if (content.value) {
       // save Draft
       saveDraft.save({
@@ -167,19 +170,25 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
     });
   };
 
+  const forceDeleteDraft = () => {
+    localStorage.removeItem('vditor_answer');
+    removeDraft();
+    resetForm();
+  };
+
   const deleteDraft = () => {
     const res = window.confirm(t('discard_confirm', { keyPrefix: 'draft' }));
     if (res) {
-      removeDraft();
-      resetForm();
+      forceDeleteDraft();
     }
   };
-
+  const contentType = getUrlQuestionType();
   const submitAnswer = (isAI: boolean = false) => {
     const params: PostAnswerReq = {
       question_id: data?.qid,
       content: isAI ? 'AIReply' : formData.content.value,
       html: marked.parse(formData.content.value),
+      resolve_option: resolveOption,
     };
     const imgCode = aCaptcha?.getCaptcha();
     if (imgCode?.verify) {
@@ -203,6 +212,12 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
           SseService.GetInstance().removeAIEventListener();
           setAILoading(false);
         }
+        // if (isNeedResolveType(contentType, data.score)) {
+        // window.location.reload();
+        // }
+        // const navigate = useNavigate();
+        // const fullPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+        // navigate(fullPath, { replace: true });
       })
       .catch((ex) => {
         if (ex.isError) {
@@ -220,6 +235,7 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
     if (!checkValidated()) {
       return;
     }
+    forceDeleteDraft();
     if (!aCaptcha) {
       submitAnswer();
       return;
@@ -234,6 +250,29 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
     SseService.GetInstance().addAIEventListener();
     setAILoading(true);
     submitAnswer(true);
+  };
+
+  // 添加解决方案
+  const clickResolveBtn = () => {
+    if (!guard.tryNormalLogged(true)) {
+      return;
+    }
+    const showResolve = 'showResolve';
+    if (!(localStorage.getItem(showResolve) === 'true')) {
+      localStorage.setItem(showResolve, 'true');
+      Modal.confirm({
+        title: t('resolve_option_title'),
+        content: t('resolve_option_content'),
+        confirmText: t('submit'),
+        onConfirm: () => {
+          resolveOption = true;
+          handleSubmit();
+        },
+      });
+      return;
+    }
+    resolveOption = true;
+    handleSubmit();
   };
 
   const clickBtn = () => {
@@ -269,7 +308,6 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
     setShowEditor(true);
     setEditorFocusState(true);
   };
-  const contentType = getUrlQuestionType();
   return (
     <Form noValidate className="mt-4">
       <AILoading loading={aiLoading} color="#3f51b5" />
@@ -357,28 +395,80 @@ const Index: FC<Props> = ({ visible = false, data, callback }) => {
       )}
 
       {data.answered && !showEditor ? (
-        // the 0th answer is the oldest one
-        <Link
-          to={`/posts/${data.qid}/${data.first_answer_id}/edit`}
-          className="btn btn-primary">
-          {t('edit_answer')}
-        </Link>
+        <>
+          {data.userAnswer.resolvedID && (
+            <Link
+              to={`/posts/${data.qid}/${data.userAnswer.resolvedID}/edit`}
+              className="btn me-3 btn-primary">
+              {t('edit_resolve')}
+            </Link>
+          )}
+          {data.userAnswer.answered && (
+            <Link
+              to={`/posts/${data.qid}/${data.userAnswer.answeredID}/edit`}
+              className="btn me-3 btn-primary">
+              {t('edit_answer')}
+            </Link>
+          )}
+          {data.aiAnswered && (
+            <div className="lh-1 btn m-0">
+              <Badge bg="secondary" pill>
+                <Icon name="check-circle-fill me-1" />
+                {t('ai_answered')}
+              </Badge>
+            </div>
+          )}
+        </>
       ) : (
         <>
-          <Button className="me-3" onClick={clickBtn}>
-            {t('btn_name')}
-          </Button>
-          {NotUseAIOfType.indexOf(contentType) !== -1 ||
-            (!data.aiAnswered ? (
-              <Button onClick={clickAIBtn}>{t('btn_ai_name')}</Button>
+          {isNeedResolveType(contentType, data.score) &&
+            (!data.userAnswer.resolved ? (
+              <Button className="me-3" onClick={clickResolveBtn}>
+                {t('btn_resolve_name')}
+              </Button>
             ) : (
-              <div className="lh-1 btn m-0">
-                <Badge bg="secondary" pill>
-                  <Icon name="check-circle-fill  me-1" />
-                  {t('ai_answered')}
-                </Badge>
-              </div>
+              <Link
+                to={`/posts/${data.qid}/${data.userAnswer.resolvedID}/edit`}
+                className="btn me-3 btn-primary">
+                {t('edit_resolve')}
+              </Link>
             ))}
+          {!data.userAnswer.answered ? (
+            <>
+              <Button className="me-3" onClick={clickBtn}>
+                {t('btn_name')}
+              </Button>
+              {NotUseAIOfType.indexOf(contentType) !== -1 ||
+                (!data.aiAnswered ? (
+                  <Button onClick={clickAIBtn}>{t('btn_ai_name')}</Button>
+                ) : (
+                  <div className="lh-1 btn m-0">
+                    <Badge bg="secondary" pill>
+                      <Icon name="check-circle-fill  me-1" />
+                      {t('ai_answered')}
+                    </Badge>
+                  </div>
+                ))}
+            </>
+          ) : (
+            <>
+              {!data.userAnswer.isAI && (
+                <Link
+                  to={`/posts/${data.qid}/${data.userAnswer.answeredID}/edit`}
+                  className="btn me-3 btn-primary">
+                  {t('edit_answer')}
+                </Link>
+              )}
+              {data.aiAnswered && (
+                <div className="lh-1 btn m-0">
+                  <Badge bg="secondary" pill>
+                    <Icon name="check-circle-fill me-1" />
+                    {t('ai_answered')}
+                  </Badge>
+                </div>
+              )}
+            </>
+          )}
         </>
       )}
 

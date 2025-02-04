@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 
@@ -14,18 +14,25 @@ export const RankToPointsModal = ({ show, onHide, onExchange }) => {
   const [maxScore, setMaxScore] = useState(0);
   const { t } = useTranslation('translation', { keyPrefix: 'ranks' });
   const Toast = useToast();
-  const calculateMaxExchange = () => {
-    const max = Math.floor(userRank / rankScore);
+  const currContract = useRef();
+  const calculateMaxExchange = (uRank, rank2Point) => {
+    const max = Math.floor(uRank / rank2Point);
     setMaxScore(max);
     return max;
   };
-  getLoggedUserInfo().then((resp) => {
-    const userRankVal = resp.rank;
-    const rank_score_val = resp.rank_score;
-    setRankScore(rank_score_val);
-    setUserRank(userRankVal);
-    calculateMaxExchange();
-  });
+  useEffect(() => {
+    getLoggedUserInfo().then((resp) => {
+      const userRankVal = resp.rank;
+      let rank_score_val = resp.rank_score;
+      if (resp.contract) {
+        rank_score_val = resp.contract.contract_info.rank_to_point;
+      }
+      currContract.current = resp.contract;
+      setRankScore(rank_score_val);
+      setUserRank(userRankVal);
+      calculateMaxExchange(userRankVal, rank_score_val);
+    });
+  }, []);
   // useEffect(() => {
   //
   // }, [rankScore, userRank]);

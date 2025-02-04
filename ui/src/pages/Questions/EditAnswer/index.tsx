@@ -26,7 +26,7 @@ import dayjs from 'dayjs';
 import classNames from 'classnames';
 
 import { handleFormError, scrollToDocTop } from '@/utils';
-import { usePageTags, usePromptWithUnload } from '@/hooks';
+import { usePageTags } from '@/hooks';
 import { useCaptchaPlugin, useRenderHtmlPlugin } from '@/utils/pluginKit';
 import { pathFactory } from '@/router/pathFactory';
 import { Editor, EditorRef, Icon, htmlRender } from '@/components';
@@ -70,7 +70,7 @@ const Index = () => {
   const { data } = useQueryAnswerInfo(aid);
   const [formData, setFormData] = useState<FormDataItem>(initFormData);
   const [immData, setImmData] = useState(initFormData);
-  const [contentChanged, setContentChanged] = useState(false);
+  // const [contentChanged, setContentChanged] = useState(false);
   const editCaptcha = useCaptchaPlugin('edit');
 
   useEffect(() => {
@@ -102,16 +102,16 @@ const Index = () => {
     htmlRender(questionContentRef.current);
   }, [questionContentRef]);
 
-  usePromptWithUnload({
-    when: contentChanged,
-  });
+  // usePromptWithUnload({
+  //   when: contentChanged,
+  // });
 
   useEffect(() => {
     const { content, description } = formData;
     if (immData.content.value !== content.value || description.value) {
-      setContentChanged(true);
+      // setContentChanged(true);
     } else {
-      setContentChanged(false);
+      // setContentChanged(false);
     }
   }, [formData.content.value, formData.description.value]);
 
@@ -187,7 +187,7 @@ const Index = () => {
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    setContentChanged(false);
+    // setContentChanged(false);
 
     event.preventDefault();
     event.stopPropagation();

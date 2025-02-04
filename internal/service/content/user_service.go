@@ -25,7 +25,11 @@ import (
 	"fmt"
 	"github.com/apache/incubator-answer/internal/service/assetbun"
 	"github.com/apache/incubator-answer/internal/service/config"
+	"github.com/apache/incubator-answer/internal/service/contract"
+	"github.com/apache/incubator-answer/internal/service/notice_queue"
 	"github.com/apache/incubator-answer/internal/service/rank"
+	"math"
+	"strconv"
 	"time"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
@@ -56,12 +60,14 @@ import (
 // UserService user service
 type UserService struct {
 	userCommonService             *usercommon.UserCommon
+	contractService               contract.ContractRepo
 	userRepo                      usercommon.UserRepo
 	userActivity                  activity.UserActiveActivityRepo
 	activityRepo                  activity_common.ActivityRepo
 	emailService                  *export.EmailService
 	authService                   *auth.AuthService
 	siteInfoService               siteinfo_common.SiteInfoCommonService
+	notificationQueueService      notice_queue.NotificationQueueService
 	userRoleService               *role.UserRoleRelService
 	userExternalLoginService      *user_external_login.UserExternalLoginService
 	userNotificationConfigRepo    user_notification_config.UserNotificationConfigRepo
@@ -75,6 +81,7 @@ type UserService struct {
 func NewUserService(userRepo usercommon.UserRepo,
 	userActivity activity.UserActiveActivityRepo,
 	activityRepo activity_common.ActivityRepo,
+	contractService contract.ContractRepo,
 	emailService *export.EmailService,
 	authService *auth.AuthService,
 	siteInfoService siteinfo_common.SiteInfoCommonService,
@@ -87,11 +94,14 @@ func NewUserService(userRepo usercommon.UserRepo,
 	aseetbunRepo assetbun.AssetBunRepo,
 	configService *config.ConfigService,
 	userRankRepo rank.UserRankRepo,
+	notificationQueueService notice_queue.NotificationQueueService,
 ) *UserService {
 	return &UserService{
+		notificationQueueService:      notificationQueueService,
 		userCommonService:             userCommonService,
 		userRepo:                      userRepo,
 		userActivity:                  userActivity,
+		contractService:               contractService,
 		activityRepo:                  activityRepo,
 		emailService:                  emailService,
 		authService:                   authService,
@@ -105,6 +115,10 @@ func NewUserService(userRepo usercommon.UserRepo,
 		configService:                 configService,
 		userRankRepo:                  userRankRepo,
 	}
+}
+
+func (us *UserService) GetContractFromID(ctx context.Context, userID string) (*entity.Contract, error) {
+	return us.userCommonService.GetContractFromID(ctx, userID)
 }
 
 func (us *UserService) GetAllUserIDs(ctx context.Context) ([]string, error) {
@@ -152,6 +166,18 @@ func (us *UserService) GetUserInfoByUserID(ctx context.Context, token, userID st
 	resp.GroupInfo, _ = us.assetbunRepo.GetVIPInfo(ctx, userID)
 	config, _ := us.configService.GetConfigByKey(ctx, constant.RankScoreExchangeKey)
 	resp.RankToScore = config.GetFloatValue()
+	contract, err := us.GetContractFromID(ctx, userID)
+	if contract != nil {
+		resp.Contract = contract
+	}
+	contractList, err := us.contractService.GetUserContracts(userInfo.ID)
+	if err == nil {
+		resp.Contracted = contractList
+	}
+	contractInfoList, err := us.contractService.GetAllContractInfos()
+	if err == nil {
+		resp.ContractInfoList = contractInfoList
+	}
 	return resp, nil
 }
 
@@ -175,6 +201,18 @@ func (us *UserService) GetOtherUserInfoByUsername(ctx context.Context, req *sche
 		return nil, err
 	}
 	resp.QuestionCount = int(questionCount)
+	contract, err := us.GetContractFromID(ctx, userInfo.ID)
+	if contract != nil {
+		resp.Contract = contract
+	}
+	contractList, err := us.contractService.GetUserContracts(userInfo.ID)
+	if err == nil {
+		resp.Contracted = contractList
+	}
+	contractInfoList, err := us.contractService.GetAllContractInfos()
+	if err == nil {
+		resp.ContractInfoList = contractInfoList
+	}
 	return resp, nil
 }
 
@@ -340,6 +378,59 @@ func (us *UserService) UpdateExchange(ctx context.Context, req *schema.UpdateExc
 	userInfo, exist, err := us.userRepo.GetByUserID(ctx, req.UserID)
 	if userInfo != nil && exist {
 		err = us.userRankRepo.UpdateExchange(ctx, req.UserID, req.ExchangeRank, req.Score)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (us *UserService) UpdateContract(ctx context.Context, req *schema.UpdateContractRequest) (err error) {
+	userInfo, exist, err := us.userRepo.GetByUserID(ctx, req.UserID)
+	if userInfo != nil && exist {
+		userIntId, err := strconv.Atoi(req.UserID)
+		if err != nil {
+			return err
+		}
+		contractInfoId := req.ContractInfoID
+		if err != nil {
+			return err
+		}
+		var contractId int64
+		// 如果用户切换入驻信息，并且该入驻信息有效，直接切换
+		currContract, err := us.contractService.GetUserContract(req.UserID, strconv.Itoa(req.ContractInfoID), entity.ContractEffective)
+		if currContract == nil {
+			contractInfo, err := us.contractService.GetContractInfoByInfoId(contractInfoId)
+			if userInfo.Rank < contractInfo.RedeemRankPoints {
+				return fmt.Errorf("Reputation deficit")
+			}
+			contractId, err = us.contractService.AddContract(&entity.Contract{
+				UserId:         userIntId,
+				ContractInfoId: contractInfoId,
+				StartTime:      time.Now(),
+				EndTime:        time.Now().Add(365 * 24 * time.Hour), // 合约为期一年
+				Status:         entity.ContractEffective,
+				CreatedAt:      time.Now(),
+				UpdatedAt:      time.Now(),
+			})
+			//}
+			if err != nil {
+				return err
+			}
+			err = us.userRankRepo.ChangeFRankImmediate(ctx, req.UserID, -float32(contractInfo.RedeemRankPoints))
+			if err != nil {
+				return err
+			}
+			notice_queue.OperateCustomNotifySend(ctx, us.notificationQueueService, constant.AnswerObjectType, false, userInfo.ID, "", userInfo.ID, "", constant.NotificationUserContract, map[string]string{
+				"Title": contractInfo.Title,
+				"Rank":  fmt.Sprintf("%.2f", math.Abs(float64(-contractInfo.RedeemRankPoints))),
+			})
+		} else {
+			contractId = int64(currContract.Id)
+		}
+		err = us.userRepo.UpdateContract(ctx, req.UserID, int(contractId))
 		if err != nil {
 			return err
 		}

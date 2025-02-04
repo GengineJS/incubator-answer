@@ -31,6 +31,7 @@ const (
 	NotificationInboxTypeVotes    = 2
 	NotificationInboxTypeInvites  = 3
 	NotificationInboxTypeIntegral = 4
+	NotificationInboxTypeEntry    = 5
 )
 
 var NotificationType = map[string]int{
@@ -44,6 +45,7 @@ var NotificationInboxType = map[string]int{
 	"invites":   NotificationInboxTypeInvites,
 	"votes":     NotificationInboxTypeVotes,
 	"integrals": NotificationInboxTypeIntegral,
+	"entry":     NotificationInboxTypeEntry,
 }
 
 type NotificationContent struct {

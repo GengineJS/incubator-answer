@@ -248,6 +248,7 @@ func (as *AnswerService) Insert(ctx context.Context, req *schema.AnswerAddReq) (
 	insertData.RevisionID = "0"
 	insertData.LastEditUserID = "0"
 	insertData.IsAI = req.IsAI
+	insertData.ResolveOption = req.ResolveOption
 	insertData.Status = entity.AnswerStatusPending
 	//insertData.UpdatedAt = now
 	if err = as.answerRepo.AddAnswer(ctx, insertData); err != nil {

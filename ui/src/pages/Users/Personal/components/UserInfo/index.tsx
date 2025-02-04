@@ -114,6 +114,20 @@ const Index: FC<Props> = ({ data }) => {
             }}>
             {isVip ? data.group_info.Name : t(data.group_info.Name)}
           </span>
+          {data.contract && (
+            <span
+              style={{
+                marginLeft: '3px',
+                padding: '1px 3px',
+                borderRadius: '5px',
+                backgroundImage: data.contract.contract_info.background_image,
+                color: 'white',
+                fontSize: 'x-small',
+                display: 'inline-block',
+              }}>
+              {data.contract.contract_info.title}
+            </span>
+          )}
         </div>
 
         <div className="d-flex flex-wrap mb-3">

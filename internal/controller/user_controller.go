@@ -487,6 +487,18 @@ func (uc *UserController) UpdateExchange(ctx *gin.Context) {
 	handler.HandleResponse(ctx, err, nil)
 }
 
+// UpdateContract 更新用户入驻信息
+// @Router /answer/api/v1/user/contract [put]
+func (uc *UserController) UpdateContract(ctx *gin.Context) {
+	req := &schema.UpdateContractRequest{}
+	if handler.BindAndCheck(ctx, req) {
+		return
+	}
+	req.UserID = middleware.GetLoginUserIDFromContext(ctx)
+	err := uc.userService.UpdateContract(ctx, req)
+	handler.HandleResponse(ctx, err, nil)
+}
+
 // UserUpdateInterface update user interface config
 // @Summary UserUpdateInterface update user interface config
 // @Description UserUpdateInterface update user interface config

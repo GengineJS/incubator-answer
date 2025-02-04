@@ -33,6 +33,7 @@ import (
 	"github.com/apache/incubator-answer/internal/service/comment_common"
 	"github.com/apache/incubator-answer/internal/service/config"
 	"github.com/apache/incubator-answer/internal/service/content"
+	"github.com/apache/incubator-answer/internal/service/contract"
 	"github.com/apache/incubator-answer/internal/service/dashboard"
 	"github.com/apache/incubator-answer/internal/service/event_queue"
 	"github.com/apache/incubator-answer/internal/service/export"
@@ -121,4 +122,5 @@ var ProviderSetService = wire.NewSet(
 	notice_queue.NewNewQuestionNotificationQueueService,
 	review.NewReviewService,
 	Sse.NewSseService,
+	contract.NewContractCommon,
 )

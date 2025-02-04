@@ -60,6 +60,7 @@ type Answer struct {
 	RevisionID     string    `xorm:"not null default 0 BIGINT(20) revision_id"`
 	IsAI           bool      `xorm:"not null default false BOOL is_ai"`
 	AIReplied      bool      `xorm:"not null default false BOOL ai_replied"`
+	ResolveOption  bool      `xorm:"not null default false BOOL resolve_option"`
 }
 
 type AnswerSearch struct {

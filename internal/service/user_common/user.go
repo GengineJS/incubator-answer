@@ -21,6 +21,8 @@ package usercommon
 
 import (
 	"context"
+	"fmt"
+	"github.com/apache/incubator-answer/internal/service/contract"
 	"strings"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
@@ -61,11 +63,13 @@ type UserRepo interface {
 	GetByUsernames(ctx context.Context, usernames []string) ([]*entity.User, error)
 	GetByEmail(ctx context.Context, email string) (userInfo *entity.User, exist bool, err error)
 	GetUserCount(ctx context.Context) (count int64, err error)
+	UpdateContract(ctx context.Context, userID string, contractID int) error
 	SearchUserListByName(ctx context.Context, name string, limit int, onlyStaff bool) (userList []*entity.User, err error)
 }
 
 // UserCommon user service
 type UserCommon struct {
+	contractRepo          contract.ContractRepo
 	userRepo              UserRepo
 	userRoleService       *role.UserRoleRelService
 	authService           *auth.AuthService
@@ -73,12 +77,14 @@ type UserCommon struct {
 }
 
 func NewUserCommon(
+	contractRepo contract.ContractRepo,
 	userRepo UserRepo,
 	userRoleService *role.UserRoleRelService,
 	authService *auth.AuthService,
 	siteInfoCommonService siteinfo_common.SiteInfoCommonService,
 ) *UserCommon {
 	return &UserCommon{
+		contractRepo:          contractRepo,
 		userRepo:              userRepo,
 		userRoleService:       userRoleService,
 		authService:           authService,
@@ -95,6 +101,21 @@ func (us *UserCommon) GetUserBasicInfoByID(ctx context.Context, ID string) (
 	info := us.FormatUserBasicInfo(ctx, userInfo)
 	info.Avatar = us.siteInfoCommonService.FormatAvatar(ctx, userInfo.Avatar, userInfo.EMail, userInfo.Status).GetURL()
 	return info, exist, nil
+}
+
+func (us *UserCommon) GetContractFromID(ctx context.Context, userID string) (*entity.Contract, error) {
+	user, exist, err := us.userRepo.GetByUserID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if !exist {
+		return nil, fmt.Errorf("user with id %s not found", userID)
+	}
+	return us.contractRepo.GetContractWithRelations(user.ContractId)
+}
+
+func (us *UserCommon) UpdateContractRef(ctx context.Context, userID string, contractID string) {
+
 }
 
 func (us *UserCommon) GetUserBasicInfoByUserName(ctx context.Context, username string) (*schema.UserBasicInfo, bool, error) {

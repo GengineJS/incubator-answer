@@ -78,6 +78,15 @@ const ActionBar = ({
           onClick={onReply}>
           {t('btn_reply')}
         </Button>
+        {/* {!isAI && mode !== 'question' && ( */}
+        {/*  <Button */}
+        {/*    variant="link" */}
+        {/*    size="sm" */}
+        {/*    className="link-secondary m-0 me-3 p-0 btn-no-border" */}
+        {/*    onClick={onReply}> */}
+        {/*    {t('private_reply')} */}
+        {/*  </Button> */}
+        {/* )} */}
         {NotUseAIOfType.indexOf(contentType) === -1 &&
           mode !== 'question' &&
           !isAI &&

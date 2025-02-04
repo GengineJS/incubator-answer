@@ -34,6 +34,7 @@ import { assetBunSearch } from '@/common/constants';
 import { RankToPointsModal } from '@/components/Header/components/NavItems/RankToScore';
 import { getLoggedUserInfo } from '@/services';
 import { useToast } from '@/hooks';
+import { PlatformEntryModal } from '@/components/Header/components/NavItems/PlatformEntry';
 
 interface Props {
   redDot: Type.NotificationStatus | undefined;
@@ -41,15 +42,29 @@ interface Props {
   logOut: (e) => void;
 }
 
+const deleteParams = (param: string) => {
+  const params = new URLSearchParams(window.location.search);
+  params.delete(param);
+  const newUrl = params.values.length
+    ? `${window.location.pathname}?${params.toString()}`
+    : `${window.location.pathname}`;
+  window.history.replaceState(null, '', newUrl);
+};
+
 const Index: FC<Props> = ({ redDot, userInfo, logOut }) => {
-  const [modalShow, setModalShow] = useState(false);
+  const [modalRSShow, setModalRSShow] = useState(false);
+  const [platformEntryShow, setPlatformEntryShow] = useState(false);
   const [validRankScore, setValidRankScore] = useState(false);
   const Toast = useToast();
 
-  const handleShow = () => setModalShow(true);
-  const handleClose = () => setModalShow(false);
+  const handleRSShow = () => setModalRSShow(true);
+  const handleRSClose = () => setModalRSShow(false);
+
+  const handlePlatformEntryShow = () => setPlatformEntryShow(true);
+  const handlePlatformEntryClose = () => setPlatformEntryShow(false);
 
   const handleExchange = () => {};
+  const handleEntryPlatform = () => {};
   const { t } = useTranslation();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigate = useNavigate();
@@ -62,7 +77,14 @@ const Index: FC<Props> = ({ redDot, userInfo, logOut }) => {
     }
   };
   const handleRankToScore = () => {
-    handleShow();
+    if (!validRankScore) {
+      Toast.onShow({
+        msg: t('need_entry', { keyPrefix: 'toast' }),
+        variant: 'warning',
+      });
+      return;
+    }
+    handleRSShow();
   };
   const isAssetBun = isAssetBunPageType();
   let inboxUrl = '/users/notifications/inbox';
@@ -72,41 +94,46 @@ const Index: FC<Props> = ({ redDot, userInfo, logOut }) => {
     achievementUrl += `?${assetBunSearch}`;
   }
 
-  const openRankScoreDialog = (isValid) => {
+  const openRankRefDialog = (isValid) => {
     const params = new URLSearchParams(window.location.search);
     const rank_score = params.get('rank_score');
+    const platform_entry = params.get('take_entry');
     if (rank_score && rank_score === 'true') {
       // 从URL中移除rank_score参数
-      params.delete('rank_score');
-      const newUrl = params.values.length
-        ? `${window.location.pathname}?${params.toString()}`
-        : `${window.location.pathname}`;
-      window.history.replaceState(null, '', newUrl);
+      deleteParams('rank_score');
       if (!isValid) {
         Toast.onShow({
-          msg: t('invalid_rank_score', { keyPrefix: 'toast' }),
+          msg: t('need_entry', { keyPrefix: 'toast' }),
           variant: 'warning',
         });
         return;
       }
-      handleShow();
+      handleRSShow();
+    } else if (platform_entry && platform_entry === 'true') {
+      deleteParams('take_entry');
+      handlePlatformEntryShow();
     }
   };
   useEffect(() => {
     getLoggedUserInfo().then((resp) => {
       const rank_score_val = resp.rank_score;
-      const isValid = rank_score_val > 0;
+      const isValid = rank_score_val > 0 || resp.contract;
       setValidRankScore(isValid);
-      openRankScoreDialog(isValid);
+      openRankRefDialog(isValid);
     });
   }, []);
 
   return (
     <>
       <RankToPointsModal
-        show={modalShow}
-        onHide={handleClose}
+        show={modalRSShow}
+        onHide={handleRSClose}
         onExchange={handleExchange}
+      />
+      <PlatformEntryModal
+        show={platformEntryShow}
+        onHide={handlePlatformEntryClose}
+        onEntry={handleEntryPlatform}
       />
       <Nav className="flex-row">
         <Nav.Link
@@ -191,11 +218,15 @@ const Index: FC<Props> = ({ redDot, userInfo, logOut }) => {
             }}>
             {t('header.nav.realName')}
           </Dropdown.Item>
-          {validRankScore && (
-            <Dropdown.Item onClick={handleRankToScore}>
-              {t('header.nav.rankToScore')}
-            </Dropdown.Item>
-          )}
+          <Dropdown.Item
+            onClick={() => {
+              handlePlatformEntryShow();
+            }}>
+            {t('header.nav.platformEntry')}
+          </Dropdown.Item>
+          <Dropdown.Item onClick={handleRankToScore}>
+            {t('header.nav.rankToScore')}
+          </Dropdown.Item>
           <Dropdown.Item
             onClick={() => {
               const rootHost = getTargetRootAssetBunHost();

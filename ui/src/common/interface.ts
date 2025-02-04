@@ -141,6 +141,10 @@ export interface UserExchangeReq {
   score: number;
 }
 
+export interface UserContractReq {
+  contract_info_id: number;
+}
+
 enum RoleId {
   User = 1,
   Admin = 2,
@@ -275,13 +279,24 @@ export interface AnswerItem {
   html: string;
   create_time: string;
   update_time: string;
+  is_ai: boolean;
+  resolve_option: boolean;
   user_info: UserInfoBase;
   [prop: string]: any;
+}
+
+export interface UserAnswer {
+  answered?: boolean;
+  answeredID?: string;
+  resolved?: boolean;
+  resolvedID?: string;
+  isAI?: boolean;
 }
 
 export interface PostAnswerReq extends ImgCodeReq {
   content: string;
   html?: string;
+  resolve_option?: boolean;
   question_id: string;
 }
 

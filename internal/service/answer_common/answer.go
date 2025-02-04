@@ -107,6 +107,7 @@ func (as *AnswerCommon) ShowFormat(ctx context.Context, data *entity.Answer) *sc
 	info.VoteCount = data.VoteCount
 	info.IsAI = data.IsAI
 	info.AIReplied = data.AIReplied
+	info.ResolveOption = data.ResolveOption
 	info.CreateTime = data.CreatedAt.Unix()
 	info.UpdateTime = data.UpdatedAt.Unix()
 	if data.UpdatedAt.Unix() < 1 {

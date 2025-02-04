@@ -191,6 +191,14 @@ func (ur *userRepo) UpdatePass(ctx context.Context, userID, pass string) error {
 	return nil
 }
 
+func (ur *userRepo) UpdateContract(ctx context.Context, userID string, contractID int) error {
+	_, err := ur.data.DB.Context(ctx).Where("id = ?", userID).Update(&entity.User{ContractId: contractID})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (ur *userRepo) UpdateEmail(ctx context.Context, userID, email string) (err error) {
 	_, err = ur.data.DB.Context(ctx).Where("id = ?", userID).Update(&entity.User{EMail: email})
 	if err != nil {
