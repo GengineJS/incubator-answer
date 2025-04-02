@@ -1,2284 +1,2284 @@
 backend:
   base:
     success:
-      other: 成功。
+      other: Success.
     unknown:
-      other: 未知错误。
+      other: Unknown error.
     request_format_error:
-      other: 请求格式错误。
+      other: Request format error.
     unauthorized_error:
-      other: 未授权。
+      other: Unauthorized.
     database_error:
-      other: 数据服务器错误。
+      other: Database server error.
     forbidden_error:
-      other: 禁止访问。
+      other: Forbidden access.
     duplicate_request_error:
-      other: 重复提交。
+      other: Duplicate submission.
   action:
     report:
-      other: 举报
+      other: Report
     edit:
-      other: 编辑
+      other: Edit
     delete:
-      other: 删除
+      other: Delete
     close:
-      other: 关闭
+      other: Close
     reopen:
-      other: 重新打开
+      other: Reopen
     forbidden_error:
-      other: 禁止访问。
+      other: Forbidden access.
     pin:
-      other: 置顶
+      other: Pin
     hide:
-      other: 列表隐藏
+      other: Hide from the list
     unpin:
-      other: 取消置顶
+      other: Unpin
     show:
-      other: 列表显示
+      other: Show in the list
     invite_someone_to_answer:
-      other: 编辑
+      other: Invite someone to answer
     undelete:
-      other: 撤消删除
+      other: Undo delete
     ai_reply:
-      other: 请AI回复该内容
+      other: Please have AI reply to this content
   role:
     name:
       user:
-        other: 用户
+        other: User
       admin:
-        other: 管理员
+        other: Admin
       moderator:
-        other: 版主
+        other: Moderator
     description:
       user:
-        other: 默认没有特殊权限。
+        other: No special permissions by default.
       admin:
-        other: 拥有管理网站的全部权限。
+        other: Has full permissions to manage the website.
       moderator:
-        other: 拥有除访问后台管理以外的所有权限。
+        other: Has all permissions except access to backend management.
   privilege:
     level_1:
       description:
-        other: 级别 1（少量声望要求，适合私有团队、群组）
+        other: Level 1 (Minimal reputation requirement, suitable for private teams or groups)
     level_2:
       description:
-        other: 级别 2（低声望要求，适合初启动的社区）
+        other: Level 2 (Low reputation requirement, suitable for newly started communities)
     level_3:
       description:
-        other: 级别 3（高声望要求，适合成熟的社区）
+        other: Level 3 (High reputation requirement, suitable for mature communities)
     level_custom:
       description:
-        other: 自定义等级
+        other: Custom level
     rank_question_add_label:
-      other: 提问
+      other: Ask a question
     rank_answer_add_label:
-      other: 写回复
+      other: Write a reply
     rank_comment_add_label:
-      other: 写评论
+      other: Write a comment
     rank_report_add_label:
-      other: 举报
+      other: Report
     rank_comment_vote_up_label:
-      other: 点赞评论
+      other: Upvote comment
     rank_link_url_limit_label:
-      other: 每次发布超过 2 个链接
+      other: More than 2 links per post
     rank_question_vote_up_label:
-      other: 点赞问题
+      other: Upvote question
     rank_answer_vote_up_label:
-      other: 点赞回复
+      other: Upvote reply
     rank_question_vote_down_label:
-      other: 点踩问题
+      other: Downvote question
     rank_answer_vote_down_label:
-      other: 点踩回复
+      other: Downvote reply
     rank_invite_someone_to_answer_label:
-      other: 邀请回复
+      other: Invite reply
     rank_tag_add_label:
-      other: 创建新标签
+      other: Create a new tag
     rank_tag_edit_label:
-      other: 编辑标签描述（需要审核）
+      other: Edit tag description (needs review)
     rank_question_edit_label:
-      other: 编辑别人的问题（需要审核）
+      other: Edit someone else's question (needs review)
     rank_answer_edit_label:
-      other: 编辑别人的答案（需要审核）
+      other: Edit someone else's answer (needs review)
     rank_question_edit_without_review_label:
-      other: 编辑别人的问题无需审核
+      other: Edit someone else's question without review
     rank_answer_edit_without_review_label:
-      other: 编辑别人的答案无需审核
+      other: Edit someone else's answer without review
     rank_question_audit_label:
-      other: 审核问题编辑
+      other: Audit question edits
     rank_answer_audit_label:
-      other: 审核回复编辑
+      other: Audit reply edits
     rank_tag_audit_label:
-      other: 审核标签编辑
+      other: Audit tag edits
     rank_tag_edit_without_review_label:
-      other: 编辑标签描述无需审核
+      other: Edit tag description without review
     rank_tag_synonym_label:
-      other: 管理标签同义词
+      other: Manage tag synonyms
     rank_subject_contribute_label:
-      other: 发布任何主题时会获取的贡献值
+      other: Contribution value gained when publishing any subject
     rank_subject_score_contribute_label:
-      other: 发布任何积分主题时会获取的贡献值
+      other: Contribution value gained when publishing any score topic
     rank_subject_accept_label:
-      other: 当主题回复被采纳时，主题的作者能获取的贡献值
+      other: Contribution value that the subject author can gain when the subject reply is accepted
     rank_subject_score_accept_label:
-      other: 当积分主题回复被采纳时，主题的作者能获取的贡献值
+      other: Contribution value that the subject author can gain when the score subject reply is accepted
     rank_subject_ai_accept_label:
-      other: 当主题AI回复被采纳时，主题的作者能获取的贡献值
+      other: Contribution value that the subject author can gain when the AI reply to the subject is accepted
     rank_subject_score_ai_accept_label:
-      other: 当积分主题AI回复被采纳时，主题的作者能获取的贡献值
+      other: Contribution value that the subject author can gain when the AI reply to the score subject is accepted
     rank_subject_accepted_label:
-      other: 主题回复被采纳时会获取的贡献值
+      other: Contribution value gained when the subject reply is accepted
     rank_subject_ai_accepted_label:
-      other: AI主题回复被采纳时会获取的贡献值
+      other: Contribution value gained when the AI subject reply is accepted
     rank_subject_score_accepted_label:
-      other: 积分主题回复被采纳时会获取的贡献值
+      other: Contribution value gained when the score subject reply is accepted
     rank_subject_ai_score_accepted_label:
-      other: AI回复积分主题被采纳时会获取的贡献值
+      other: Contribution value gained when the AI reply to the score subject is accepted
     rank_subject_answer_label:
-      other: 回复主题时会获取的贡献值
+      other: Contribution value gained when replying to a subject
     rank_subject_score_answer_label:
-      other: 回复积分主题时会获取的贡献值
+      other: Contribution value gained when replying to a score subject
     rank_subject_ai_answer_label:
-      other: AI回复主题时会获取的贡献值
+      other: Contribution value gained when the AI replies to a subject
     rank_subject_ai_score_answer_label:
-      other: AI回复积分主题时会获取的贡献值
+      other: Contribution value gained when the AI replies to a score subject
     rank_subject_score_ai_accepted_get_label:
-      other: AI回复积分主题被采纳时会获取的积分百分比
+      other: Percentage of points gained when the AI reply to a score subject is accepted
     rank_subject_up_vote_label:
-      other: 主题点赞可以获得的声望值
+      other: Reputation value that can be gained through upvoting a subject
     rank_subject_down_vote_label:
-      other: 主题点踩会失去的声望值
+      other: Reputation value lost when downvoting a subject
     rank_subject_score_up_vote_label:
-      other: 每个积分主题的点赞所获得的声望
+      other: Reputation gained from upvoting each score subject
     rank_subject_score_down_vote_label:
-      other: 每个积分主题的点踩所失去的声望
+      other: Reputation lost from downvoting each score subject
     rank_subject_collect_label:
-      other: 对主题的每次收藏所能获得的声望
+      other: Reputation gained from each collection of a subject
     rank_subject_score_collect_label:
-      other: 对积分主题的每次收藏所能获得的声望
+      other: Reputation gained from each collection of a score subject
     rank_subject_answer_up_vote_label:
-      other: 对主题回复的每个点赞能获取的声望
+      other: Reputation gained from each upvote on a subject reply
     rank_subject_answer_down_vote_label:
-      other: 对主题回复的每个点踩会失去的声望
+      other: Reputation lost from each downvote on a subject reply
     rank_subject_answer_score_up_vote_label:
-      other: 对积分主题回复的每个点赞能获取的声望
+      other: Reputation gained from each upvote on a score subject reply
     rank_subject_answer_score_down_vote_label:
-      other: 对积分主题回复的每个点踩会失去的声望
+      other: Reputation lost from each downvote on a score subject reply
     rank_subject_answer_ai_up_vote_label:
-      other: 对AI回复的每个点赞能获取的声望
+      other: Reputation gained from each upvote on an AI reply
     rank_subject_answer_ai_down_vote_label:
-      other: 对AI回复的每个点踩会失去的声望
+      other: Reputation lost from each downvote on an AI reply
     rank_subject_answer_score_ai_up_vote_label:
-      other: 对积分主题AI回复的每个点赞能获取的声望
+      other: Reputation gained from each upvote on an AI reply to a score subject
     rank_subject_answer_score_ai_down_vote_label:
-      other: 对积分主题AI回复的每个点踩会失去的声望
+      other: Reputation lost from each downvote on an AI reply to a score subject
     rank_subject_comment_up_voted_label:
-      other: 对主题评论的每个点赞能获取的声望
+      other: Reputation gained from each upvote on a subject comment
     rank_subject_comment_down_voted_label:
-      other: 对主题评论的每个点踩会失去的声望
+      other: Reputation lost from each downvote on a subject comment
     rank_subject_comment_score_up_voted_label:
-      other: 对积分主题评论的每个点赞能获取的声望
+      other: Reputation gained from each upvote on a score subject comment
     rank_subject_comment_score_down_voted_label:
-      other: 对积分主题评论的每个点踩会失去的声望
+      other: Reputation lost from each downvote on a score subject comment
     rank_subject_comment_ai_up_voted_label:
-      other: 对AI评论的每个点赞能获取的声望
+      other: Reputation gained from each upvote on an AI comment
     rank_subject_comment_ai_down_voted_label:
-      other: 对AI评论的每个点踩会失去的声望
+      other: Reputation lost from each downvote on an AI comment
     rank_subject_comment_score_ai_up_voted_label:
-      other: 对积分主题AI评论的每个点赞能获取的声望
+      other: Reputation gained from each upvote on a score subject AI comment
     rank_subject_comment_score_ai_down_voted_label:
-      other: 对积分主题AI评论的每个点踩会失去的声望
+      other: Reputation lost from each downvote on a score subject AI comment
     rank_score_exchange_label:
-      other: 多少声望可以兑换1积分
+      other: How much reputation can be exchanged for 1 point
     rank_article_contribute_label:
-      other: 发布文章时会获取的贡献值
+      other: Contribution value gained when publishing an article
     rank_article_score_contribute_label:
-      other: 发布积分文章时会获取的贡献值
+      other: Contribution value gained when publishing a score article
     rank_article_accepted_label:
-      other: 文章被采纳时会获取的贡献值
+      other: Contribution value gained when an article is accepted
     rank_article_score_accepted_label:
-      other: 积分文章回复被采纳时会获取的贡献值
+      other: Contribution value gained when a score article reply is accepted
     rank_article_ai_score_accepted_label:
-      other: 积分文章AI回复被采纳时会获取的贡献值
+      other: Contribution value gained when an AI reply to a score article is accepted
     rank_article_answer_label:
-      other: 回复文章时会获取的贡献值
+      other: Contribution value gained when replying to an article
     rank_article_score_answer_label:
-      other: 回复积分文章时会获取的贡献值
+      other: Contribution value gained when replying to a score article
     rank_article_ai_answer_label:
-      other: AI回复文章时会获取的贡献值
+      other: Contribution value gained when an AI responds to an article
     rank_article_ai_score_answer_label:
-      other: AI回复积分文章时会获取的贡献值
+      other: Contribution value gained when an AI replies to a score article
     rank_article_score_ai_accepted_get_label:
-      other: AI回复积分文章被采纳时会获取的积分百分比
+      other: Percentage of points gained when an AI reply to a score article is accepted
     rank_assetbun_contribute_label:
-      other: 发布云盘资源时会获取的贡献值
+      other: Contribution value gained when publishing cloud drive resources
     rank_assetbun_score_contribute_label:
-      other: 发布积分云盘资源时会获取的贡献值
+      other: Contribution value gained when publishing score cloud drive resources
     rank_assetbun_accepted_label:
-      other: 云盘资源回复被采纳时会获取的贡献值
+      other: Contribution value gained when cloud drive resource replies are accepted
     rank_assetbun_score_accepted_label:
-      other: 积分云盘资源回复被采纳时会获取的贡献值
+      other: Contribution value gained when score cloud drive resource replies are accepted
     rank_assetbun_ai_score_accepted_label:
-      other: 积分云盘资源ai回复被采纳时会获取的贡献值
+      other: Contribution value gained when AI replies to score cloud drive resources are accepted
     rank_assetbun_answer_label:
-      other: 云盘资源回复时会获取的贡献值
+      other: Contribution value gained when replying to cloud drive resources
     rank_assetbun_score_answer_label:
-      other: 积分云盘资源回复时会获取的贡献值
+      other: Contribution value gained when replying to score cloud drive resources
     rank_assetbun_ai_answer_label:
-      other: AI回复云盘资源时会获取的贡献值
+      other: Contribution value gained when AI replies to cloud drive resources
     rank_assetbun_ai_score_answer_label:
-      other: AI回复积分云盘资源时会获取的贡献值
+      other: Contribution value gained when AI replies to score cloud drive resources
     rank_assetbun_score_ai_accepted_get_label:
-      other: AI回复积分云盘资源时会获取的积分百分比
+      other: Percentage of points gained when AI replies to score cloud drive resources are accepted
 
     rank_bounty_contribute_label:
-      other: 发布项目需求时会获取的贡献值
+      other: Contribution value gained when publishing project needs
     rank_bounty_accepted_label:
-      other: 项目需求回复被采纳时会获取的贡献值
+      other: Contribution value gained when project need replies are accepted
     rank_bounty_score_accepted_label:
-      other: 积分项目需求被采纳时会获取的贡献值
+      other: Contribution value gained when score project needs are accepted
     rank_bounty_ai_score_accepted_label:
-      other: 积分项目需求ai回复被采纳时会获取的贡献值
+      other: Contribution value gained when AI replies to score project needs are accepted
     rank_bounty_answer_label:
-      other: 回复项目需求时会获取的贡献值
+      other: Contribution value gained when replying to project needs
     rank_bounty_score_answer_label:
-      other: 回复积分项目需求时会获取的贡献值
+      other: Contribution value gained when replying to score project needs
     rank_bounty_ai_answer_label:
-      other: AI回复项目需求时会获取的贡献值
+      other: Contribution value gained when an AI replies to project needs
     rank_bounty_ai_score_answer_label:
-      other: AI回复积分项目需求时会获取的贡献值
+      other: Contribution value gained when an AI replies to score project needs
     rank_bounty_score_ai_accepted_get_label:
-      other: AI回复积分项目需求被采纳会获取的积分百分比
+      other: Percentage of points gained when AI replies to score project needs are accepted
   email:
-    other: 邮箱
+    other: Email
   e_mail:
-    other: 邮箱
+    other: Email
   password:
-    other: 密码
+    other: Password
   pass:
-    other: 密码
+    other: Password
   email_or_password_wrong_error:
-    other: 邮箱和密码不匹配。
+    other: Email and password do not match.
   error:
     common:
       invalid_url:
-        other: 不合法的 URL
+        other: Invalid URL
     password:
       space_invalid:
-        other: 密码不得含有空格。
+        other: Password cannot contain spaces.
     admin:
       cannot_update_their_password:
-        other: 你无法修改自己的密码。
+        other: You cannot modify your own password.
       cannot_modify_self_status:
-        other: 你无法修改自己的状态。
+        other: You cannot modify your own status.
       email_or_password_wrong:
-        other: 邮箱和密码不匹配。
+        other: Email and password do not match.
     answer:
       not_found:
-        other: 没有找到答案。
+        other: Answer not found.
       cannot_deleted:
-        other: 没有删除权限。
+        other: No deletion permission.
       cannot_update:
-        other: 没有更新权限。
+        other: No update permission.
       question_closed_cannot_add:
-        other: 问题已关闭，无法添加。
+        other: The question is closed and cannot be added to.
     comment:
       edit_without_permission:
-        other: 不允许编辑评论。
+        other: Editing comments is not allowed.
       not_found:
-        other: 评论未找到。
+        other: Comment not found.
       cannot_edit_after_deadline:
-        other: 评论时间太久，无法修改。
+        other: Comment time has passed, cannot modify.
     email:
       duplicate:
-        other: 邮箱已存在。
+        other: Email already exists.
       need_to_be_verified:
-        other: 邮箱需要验证。
+        other: Email needs verification.
       verify_url_expired:
-        other: 邮箱验证的网址已过期，请重新发送邮件。
+        other: The email verification URL has expired, please resend the email.
       illegal_email_domain_error:
-        other: 此邮箱不在允许注册的邮箱域中。请使用其他邮箱尝试。
+        other: This email is not within the allowed registration domains. Please try with another email.
     lang:
       not_found:
-        other: 语言文件未找到。
+        other: Language file not found.
     object:
       captcha_verification_failed:
-        other: 验证码错误。
+        other: Incorrect CAPTCHA.
       disallow_follow:
-        other: 你不能关注。
+        other: You cannot follow.
       disallow_vote:
-        other: 你不能投票。
+        other: You cannot vote.
       disallow_vote_your_self:
-        other: 你不能为自己的帖子投票。
+        other: You cannot vote for your own post.
       not_found:
-        other: 对象未找到。
+        other: Object not found.
       verification_failed:
-        other: 验证失败。
+        other: Verification failed.
       email_or_password_incorrect:
-        other: 邮箱和密码不匹配。
+        other: Email and password do not match.
       old_password_verification_failed:
-        other: 旧密码验证失败。
+        other: Old password verification failed.
       new_password_same_as_previous_setting:
-        other: 新密码和旧密码相同。
+        other: New password is the same as the old password.
     question:
       already_deleted:
-        other: 该帖子已被删除。
+        other: This post has been deleted.
       under_review:
-        other: 您的帖子正在等待审核。它将在它获得批准后可见。
+        other: Your post is waiting for review. It will be visible once approved.
       not_found:
-        other: 问题未找到。
+        other: Question not found.
       cannot_deleted:
-        other: 没有删除权限。
+        other: No deletion permission.
       cannot_close:
-        other: 没有关闭权限。
+        other: No closing permission.
       cannot_update:
-        other: 没有更新权限。
+        other: No update permission.
     rank:
       fail_to_meet_the_condition:
-        other: 声望值未达到要求。
+        other: Reputation points do not meet the requirements.
       vote_fail_to_meet_the_condition:
-        other: 感谢投票。你至少需要 {{.Rank}} 声望才能投票。
+        other: Thank you for voting. You need at least {{.Rank}} reputation to vote.
       no_enough_rank_to_operate:
-        other: 你至少需要 {{.Rank}} 声望才能执行此操作。
+        other: You need at least {{.Rank}} reputation to perform this operation.
     report:
       handle_failed:
-        other: 报告处理失败。
+        other: Report handling failed.
       not_found:
-        other: 报告未找到。
+        other: Report not found.
     tag:
       already_exist:
-        other: 标签已存在。
+        other: Tag already exists.
       not_found:
-        other: 标签未找到。
+        other: Tag not found.
       recommend_tag_not_found:
-        other: 推荐标签不存在。
+        other: Recommended tag does not exist.
       recommend_tag_enter:
-        other: 请选择至少一个必选标签。
+        other: Please select at least one required tag.
       not_contain_synonym_tags:
-        other: 不应包含同义词标签。
+        other: Should not contain synonymous tags.
       cannot_update:
-        other: 没有更新权限。
+        other: No update permission.
       is_used_cannot_delete:
-        other: 你不能删除这个正在使用的标签。
+        other: You cannot delete this tag that is in use.
       cannot_set_synonym_as_itself:
-        other: 你不能将当前标签设为自己的同义词。
+        other: You cannot set the current tag as its own synonym.
     smtp:
       config_from_name_cannot_be_email:
-        other: 发件人名称不能是邮箱地址。
+        other: The sender name cannot be an email address.
     theme:
       not_found:
-        other: 主题未找到。
+        other: Theme not found.
     revision:
       review_underway:
-        other: 目前无法编辑，有一个版本在审阅队列中。
+        other: Editing is currently not possible, as a version is in the review queue.
       no_permission:
-        other: 无权限修改。
+        other: No permission to modify.
     user:
       external_login_missing_user_id:
-        other: 第三方平台没有提供唯一的 UserID，所以你不能登录，请联系网站管理员。
+        other: The third-party platform did not provide a unique UserID, so you cannot log in, please contact the site administrator.
       external_login_unbinding_forbidden:
-        other: 请在移除此登录之前为你的账户设置登录密码。
+        other: Please set a login password for your account before removing this login.
       email_or_password_wrong:
         other:
-          other: 邮箱和密码不匹配。
+          other: Email and password do not match.
       not_found:
-        other: 用户未找到。
+        other: User not found.
       suspended:
-        other: 用户已被封禁。
+        other: User has been banned.
       username_invalid:
-        other: 用户名无效。
+        other: Invalid username.
       username_duplicate:
-        other: 用户名已被使用。
+        other: Username is already in use.
       set_avatar:
-        other: 头像设置错误。
+        other: Avatar setting error.
       cannot_update_your_role:
-        other: 你不能修改自己的角色。
+        other: You cannot modify your own role.
       not_allowed_registration:
-        other: 该网站暂未开放注册。
+        other: The website is not open for registration yet.
       not_allowed_login_via_password:
-        other: 该网站暂不支持密码登录。
+        other: The website does not support password login for now.
       access_denied:
-        other: 拒绝访问
+        other: Access denied
       page_access_denied:
-        other: 您没有权限访问此页面。
+        other: You do not have permission to access this page.
       add_bulk_users_format_error:
-        other: "发生错误，{{.Field}} 格式错误，在 '{{.Content}}' 行数 {{.Line}}. {{.ExtraMessage}}"
+        other: "An error occurred, {{.Field}} formatting error on line '{{.Content}}'. {{.ExtraMessage}}"
       add_bulk_users_amount_error:
-        other: "一次性添加的用户数量应在 1-{{.MaxAmount}} 之间。"
+        other: "The number of users added at once should be between 1-{{.MaxAmount}}."
     config:
       read_config_failed:
-        other: 读取配置失败
+        other: Failed to read configuration.
     database:
       connection_failed:
-        other: 数据库连接失败
+        other: Database connection failed.
       create_table_failed:
-        other: 创建表失败
+        other: Failed to create table.
     install:
       create_config_failed:
-        other: 无法创建 config.yaml 文件。
+        other: Unable to create config.yaml file.
     upload:
       unsupported_file_format:
-        other: 不支持的文件格式。
+        other: Unsupported file format.
     site_info:
       config_not_found:
-        other: 未找到网站的该配置信息。
+        other: Configuration information for the website was not found.
   reason:
     spam:
       name:
-        other: 垃圾信息
+        other: Spam
       desc:
-        other: 这个帖子是一个广告，或是破坏性行为。它对当前的主题无帮助或无关。
+        other: This post is an advertisement or harmful behavior. It is irrelevant or unhelpful to the current topic.
     rude_or_abusive:
       name:
-        other: 粗鲁或辱骂的
+        other: Rude or abusive
       desc:
-        other: 一个有理智的人都会认为这种内容不适合进行尊重性的讨论。
+        other: A rational person would consider this content unethical for a respectful discussion.
     a_duplicate:
       name:
-        other: 重复内容
+        other: Duplicate content
       desc:
-        other: 该问题有人问过，而且已经有了答案。
+        other: This question has been asked before and already has an answer.
       placeholder:
-        other: 输入已有的问题链接
+        other: Enter the link to the existing question
     not_a_answer:
       name:
-        other: 不是答案
+        other: Not an answer
       desc:
-        other: 该帖是作为答案发布的，但它并没有试图回复这个问题。总之，它可能应该是个编辑、评论、另一个问题或者需要被删除。
+        other: This post is intended as an answer, but it does not attempt to respond to the question. It might need to be an edit, a comment, a different question, or needs to be deleted.
     no_longer_needed:
       name:
-        other: 不再需要
+        other: No longer needed
       desc:
-        other: 该评论已过时，对话性质或与此帖子无关。
+        other: This comment is outdated, or is irrelevant to the conversation or this post.
     something:
       name:
-        other: 其他原因
+        other: Other reasons
       desc:
-        other: 此帖子需要工作人员注意，因为是上述所列以外的其他理由。
+        other: This post requires staff attention, as it is due to reasons not listed above.
       placeholder:
-        other: 让我们具体知道你关心的什么
+        other: Let us know specifically what you are concerned about
     community_specific:
       name:
-        other: 社区特定原因
+        other: Community specific reason
       desc:
-        other: 该问题不符合社区准则。
+        other: This question does not meet community guidelines.
     not_clarity:
       name:
-        other: 需要细节或澄清
+        other: Needs details or clarification
       desc:
-        other: 该问题目前涵盖多个问题。它应该侧重在一个问题上。
+        other: This question currently covers multiple issues. It should focus on a single issue.
     looks_ok:
       name:
-        other: 看起来没问题
+        other: Looks ok
       desc:
-        other: 这个帖子是好的，不是低质量。
+        other: This post is good, not low-quality.
     needs_edit:
       name:
-        other: 需要编辑，我已做了修改。
+        other: Needs editing, I've made modifications.
       desc:
-        other: 改进和纠正你自己帖子中的问题。
+        other: Improve and correct issues in your own post.
     needs_close:
       name:
-        other: 需要关闭
+        other: Needs to be closed
       desc:
-        other: 关闭的问题不能回复，但仍然可以编辑、投票和评论。
+        other: Closed questions cannot be replied to, but can still be edited, voted on, and commented.
     needs_delete:
       name:
-        other: 需要删除
+        other: Needs to be deleted
       desc:
-        other: 该帖子将被删除。
+        other: This post will be deleted.
   question:
-    score: 积分
-    all: 全部
+    score: Points
+    all: All
     close:
       duplicate:
         name:
-          other: 垃圾信息
+          other: Spam
         desc:
-          other: 此问题以前就有人问过，而且已经有了答案。
+          other: This question has been asked before and already has an answer.
       guideline:
         name:
-          other: 社区特定原因
+          other: Community specific reason
         desc:
-          other: 该问题不符合社区准则。
+          other: This question does not meet community guidelines.
       multiple:
         name:
-          other: 需要细节或澄清
+          other: Needs details or clarification
         desc:
-          other: 该问题目前涵盖多个问题。它应该只集中在一个问题上。
+          other: This question currently covers multiple issues. It should focus on a single issue.
       other:
         name:
-          other: 其他原因
+          other: Other reasons
         desc:
-          other: 该帖子存在上面没有列出的另一个原因。
+          other: This post has another reason not listed above.
     operation_type:
       asked:
-        other: 提交于
+        other: Submitted on
       answered:
-        other: 回复于
+        other: Replied on
       modified:
-        other: 修改于
+        other: Modified on
     deleted_title:
-      other: 删除的问题
+      other: Deleted question
   notification:
     action:
       update_question:
-        other: 更新了问题
+        other: Updated the question
       add_subject:
-        other: "发布了{{.ContentType}}并获得了+{{.Rank}}声望在"
+        other: "Published {{.ContentType}} and gained +{{.Rank}} reputation"
       collect_subject:
-        other: "收藏了{{.ContentType}}，您获得了+{{.Rank}}声望在"
+        other: "Collected {{.ContentType}}, you gained +{{.Rank}} reputation"
       cancel_collect_subject:
-        other: "取消收藏了{{.ContentType}}，您失去了-{{.Rank}}声望在"
+        other: "Canceled collecting {{.ContentType}}, you lost -{{.Rank}} reputation"
       add_answer:
-        other: "提交了{{.ContentType}}的回复并获得了+{{.Rank}}声望在"
+        other: "Submitted a reply to {{.ContentType}} and gained +{{.Rank}} reputation"
       add_ai_answer:
-        other: "提交了{{.ContentType}}的AI回复并获得了+{{.Rank}}声望在"
+        other: "Submitted an AI reply to {{.ContentType}} and gained +{{.Rank}} reputation"
       delete_answer:
-        other: "提交的{{.ContentType}}的回复被删除了并扣除了-{{.Rank}}声望在"
+        other: "The submitted reply to {{.ContentType}} was deleted and -{{.Rank}} reputation was deducted"
       delete_ai_answer:
-        other: "提交的{{.ContentType}}的AI回复被删除了并扣除了-{{.Rank}}声望在"
+        other: "The submitted AI reply to {{.ContentType}} was deleted and -{{.Rank}} reputation was deducted"
       closed_subject:
-        other: "的{{.ContentType}}被管理员关闭了并扣除了-{{.Rank}}声望在"
+        other: "The {{.ContentType}} was closed by an admin and -{{.Rank}} reputation was deducted"
       reopen_subject:
-        other: "的{{.ContentType}}被管理员重新上架了并获得了+{{.Rank}}声望在"
+        other: "The {{.ContentType}} was reinstated by an admin and gained +{{.Rank}} reputation"
       recover_subject:
-        other: "的{{.ContentType}}被删除后已重新恢复并获得了+{{.Rank}}声望在"
+        other: "The {{.ContentType}} has been recovered after deletion and gained +{{.Rank}} reputation"
       recover_answer:
-        other: "提交的{{.ContentType}}的回复被删除后已重新恢复并获得了+{{.Rank}}声望在"
+        other: "The submitted reply to {{.ContentType}} has been recovered after deletion and gained +{{.Rank}} reputation"
       ai_recover_answer:
-        other: "提交的{{.ContentType}}的AI回复被删除后已重新恢复并获得了+{{.Rank}}声望在"
+        other: "The submitted AI reply to {{.ContentType}} has been recovered after deletion and gained +{{.Rank}} reputation"
       delete_subject:
-        other: "删除了{{.ContentType}}并失去了-{{.Rank}}声望在"
+        other: "Deleted {{.ContentType}} and lost -{{.Rank}} reputation"
       contract_subject:
-        other: "已成功完成平台入驻且获得了\"{{.Title}}\"权益并失去了-{{.Rank}}声望"
+        other: "Successfully completed platform entry and gained \"{{.Title}}\" rights and lost -{{.Rank}} reputation"
       sub_integral:
-        other: "支付了-{{.Integral}}积分在"
+        other: "Paid -{{.Integral}} points in"
       add_integral:
-        other: "获得了+{{.Integral}}积分在"
+        other: "Gained +{{.Integral}} points in"
       pay_integral:
-        other: "支付了-{{.Pay}}积分, 且您获得了+{{.Integral}}积分在"
+        other: "Paid -{{.Pay}} points, and you gained +{{.Integral}} points in"
       accepted_get_integral:
-        other: "采纳了您的回复, 且您获得了+{{.Integral}}积分在"
+        other: "Accepted your reply, you gained +{{.Integral}} points in"
       ai_accepted_get_integral:
-        other: "采纳了您的AI回复, 且您获得了+{{.Integral}}积分在"
+        other: "Accepted your AI reply, you gained +{{.Integral}} points in"
       accpeted_self_integral:
-        other: "采纳了自己的回复，为您返还了+{{.Integral}}积分在"
+        other: "Accepted your own reply, refunded +{{.Integral}} points in"
       ai_accepted_integral:
-        other: "采纳了AI回复, 为您返还了+{{.Integral}}积分在"
+        other: "Accepted AI reply, refunded +{{.Integral}} points in"
       delete_back_integral:
-        other: "删除了帖子, 返还+{{.Integral}}积分在"
+        other: "Deleted the post, refunded +{{.Integral}} points in"
       update_sub_integral:
-        other: "更新了帖子的积分, 额外支付-{{.Integral}}积分在"
+        other: "Updated the post points, additionally paid -{{.Integral}} points in"
       update_back_integral:
-        other: "更新了帖子的积分, 返还+{{.Integral}}积分在"
+        other: "Updated the post points, refunded +{{.Integral}} points in"
       answer_the_question:
-        other: 回复了问题
+        other: Answered the question
       update_answer:
-        other: 更新了回复
+        other: Updated the reply
       accept_answer:
-        other: 采纳了回复
+        other: Accepted the reply
       cancel_accept_answer:
-        other: 回复取消了采纳
+        other: Cancelled the acceptance of the reply
       accepted_rank_answer:
-        other: "采纳了您的回复，并获得+{{.Rank}}声望"
+        other: "Accepted your reply and gained +{{.Rank}} reputation"
       accept_rank_answer:
-        other: "采纳了您主题下的回复，并获得+{{.Rank}}声望"
+        other: "Accepted the reply under your subject and gained +{{.Rank}} reputation"
       cancel_accepted_rank_answer:
-        other: "把您的回复取消采纳, 并失去了-{{.Rank}}声望"
+        other: "Cancelled the acceptance of your reply and lost -{{.Rank}} reputation"
       cancel_accept_rank_answer:
-        other: "把您主题下的回复取消采纳, 并失去了-{{.Rank}}声望"
+        other: "Cancelled the acceptance of the reply under your subject and lost -{{.Rank}} reputation"
       comment_question:
-        other: 评论了问题
+        other: Commented on the question
       comment_answer:
-        other: 评论了回复
+        other: Commented on the reply
       reply_to_you:
-        other: 回复了你
+        other: Replied to you
       mention_you:
-        other: 提到了你
+        other: Mentioned you
       your_question_is_closed:
-        other: 的问题已被关闭
+        other: Your question has been closed
       your_question_was_deleted:
-        other: 的问题已被删除
+        other: Your question has been deleted
       your_answer_was_deleted:
-        other: 的回复已被删除
+        other: Your reply has been deleted
       your_comment_was_deleted:
-        other: 的评论已被删除
+        other: Your comment has been deleted
       up_voted_question:
-        other: "点赞主题，并获得了+{{.Rank}}声望"
+        other: "Upvoted the topic and gained +{{.Rank}} reputation"
       up_voted_cancel_question:
-        other: "取消点赞主题，并失去了-{{.Rank}}声望"
+        other: "Canceled upvoting the topic and lost -{{.Rank}} reputation"
       down_voted_question:
-        other: "点踩主题，并失去了-{{.Rank}}声望"
+        other: "Downvoted the topic and lost -{{.Rank}} reputation"
       down_voted_cancel_question:
-        other: "取消点踩主题，并获得了+{{.Rank}}声望"
+        other: "Canceled downvoting the topic and gained +{{.Rank}} reputation"
       up_voted_answer:
-        other: "点赞回复，并获得了+{{.Rank}}声望"
+        other: "Upvoted the reply and gained +{{.Rank}} reputation"
       up_voted_cancel_answer:
-        other: "取消点赞回复，并失去了-{{.Rank}}声望"
+        other: "Canceled upvoting the reply and lost -{{.Rank}} reputation"
       down_voted_answer:
-        other: "点踩回复，并失去了-{{.Rank}}声望"
+        other: "Downvoted the reply and lost -{{.Rank}} reputation"
       down_voted_cancel_answer:
-        other: "取消点踩回复，并获得了+{{.Rank}}声望"
+        other: "Canceled downvoting the reply and gained +{{.Rank}} reputation"
       up_voted_comment:
-        other: "点赞评论，并获得了+{{.Rank}}声望"
+        other: "Upvoted the comment and gained +{{.Rank}} reputation"
       up_voted_cancel_comment:
-        other: "取消点赞评论，并失去了-{{.Rank}}声望"
+        other: "Canceled upvoting the comment and lost -{{.Rank}} reputation"
       invited_you_to_answer:
-        other: 邀请你回复
+        other: Invited you to reply
   email_tpl:
-    integral: 积分
-    accept_get: (参与该主题并被采纳后即可获得{{.Score}}积分,可提现{{.Money}}¥)
-    pay_get: (该主题需要{{.Score}}积分解锁,兑换需{{.Money}}¥)
-    pay_asset_get: (该资源需要{{.Score}}积分解锁,兑换需{{.Money}}¥)
+    integral: Points
+    accept_get: (Participating in the topic and accepted will earn you {{.Score}} points, cashable at {{.Money}}¥)
+    pay_get: (The topic requires {{.Score}} points to unlock, redemption requires {{.Money}}¥)
+    pay_asset_get: (This resource requires {{.Score}} points to unlock, redemption requires {{.Money}}¥)
     content_type:
-      question: "问题"
-      question_score: "积分问题"
-      article: "文章"
-      article_score: "积分文章"
-      picture: "图片"
-      picture_score: "积分图片"
-      bounty: "项目需求"
-      assetbun: "云盘资源"
-      assetbun_score: "云盘积分资源"
+      question: "Question"
+      question_score: "Score Question"
+      article: "Article"
+      article_score: "Score Article"
+      picture: "Image"
+      picture_score: "Score Image"
+      bounty: "Project Requirement"
+      assetbun: "Cloud Drive Resource"
+      assetbun_score: "Cloud Drive Score Resource"
     change_email:
       title:
-        other: "[{{.SiteName}}AI 与 资产包子云盘] 确认你的新邮箱地址"
+        other: "[{{.SiteName}}AI and Asset Bun Cloud Drive] Confirm your new email address"
       body:
-        other: "请点击以下链接确认你在 [{{.SiteName}}<sup>AI</sup> 与 资产包子云盘] 上的新邮箱地址：<br>\n<a href='{{.ChangeEmailUrl}}' target='_blank'>{{.ChangeEmailUrl}}</a><br><br>\n\n如果你没有请求此更改，请忽略此邮件。\n"
+        other: "Please click the link below to confirm your new email address on [{{.SiteName}}<sup>AI</sup> and Asset Bun Cloud Drive]:<br>\n<a href='{{.ChangeEmailUrl}}' target='_blank'>{{.ChangeEmailUrl}}</a><br><br>\n\nIf you did not request this change, please ignore this email.\n"
     new_answer:
       title:
-        other: "[{{.SiteName}}AI] {{.DisplayName}} 回复了你的问题"
+        other: "[{{.SiteName}}AI] {{.DisplayName}} replied to your question"
       body:
-        other: "<a href='{{.AnswerUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}：<br>\n<blockquote>{{.AnswerSummary}}</blockquote><br>\n<a href='{{.AnswerUrl}}'>在 {{.SiteName}}<sup>AI</sup> 上查看</a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
+        other: "<a href='{{.AnswerUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}:<br>\n<blockquote>{{.AnswerSummary}}</blockquote><br>\n<a href='{{.AnswerUrl}}'>View on {{.SiteName}}<sup>AI</sup></a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>Unsubscribe</a></small>"
     invited_you_to_answer:
       title:
-        other: "[{{.SiteName}}AI] {{.DisplayName}} 邀请您回复问题"
+        other: "[{{.SiteName}}AI] {{.DisplayName}} invites you to reply to the question"
       body:
-        other: "<a href='{{.InviteUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}：<br>\n<blockquote>我想你可能知道答案。</blockquote><br>\n<a href='{{.InviteUrl}}'>在 {{.SiteName}}<sup>AI</sup> 上查看</a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
+        other: "<a href='{{.InviteUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}:<br>\n<blockquote>I think you might know the answer.</blockquote><br>\n<a href='{{.InviteUrl}}'>View on {{.SiteName}}<sup>AI</sup></a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>Unsubscribe</a></small>"
     new_comment:
       title:
-        other: "[{{.SiteName}}AI] {{.DisplayName}} 评论了你的帖子"
+        other: "[{{.SiteName}}AI] {{.DisplayName}} commented on your post"
       body:
-        other: "<a href='{{.CommentUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}：<br>\n<blockquote>{{.CommentSummary}}</blockquote><br>\n<a href='{{.CommentUrl}}'>在 {{.SiteName}}<sup>AI</sup> 上查看</a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
+        other: "<a href='{{.CommentUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}:<br>\n<blockquote>{{.CommentSummary}}</blockquote><br>\n<a href='{{.CommentUrl}}'>View on {{.SiteName}}<sup>AI</sup></a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>Unsubscribe</a></small>"
     new_question:
       title:
-        other: "[{{.SiteName}}AI] 新问题: {{.QuestionTitle}}"
+        other: "[{{.SiteName}}AI] New question: {{.QuestionTitle}}"
       body:
-        other: "<a href='{{.QuestionUrl}}'>{{.QuestionTitle}}</a><br>\n<small>{{.Tags}}</small><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
+        other: "<a href='{{.QuestionUrl}}'>{{.QuestionTitle}}</a><br>\n<small>{{.Tags}}</small><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>Unsubscribe</a></small>"
     new_content:
       title:
-        other: "[{{.SiteName}}AI] 发布了新的{{.ContentType}}: {{.QuestionTitle}}"
+        other: "[{{.SiteName}}AI] Published new {{.ContentType}}: {{.QuestionTitle}}"
       body:
-        other: "用户 {{.DisplayName}} 发布了新的{{.ContentType}}: <a href='{{.QuestionUrl}}'>{{.QuestionTitle}}</a><br><small> 标签类别: ({{.Tags}})</small><br><small><b>{{.Tip}}</b></small><br><p style='font-size:small;-webkit-text-size-adjust:none;color:#666;'>—<br>该邮件为系统自动发送, 请勿直接回复<br>了解<a href='https://ai.assetbun.com' rel='noopener' target='_blank'>点识成金<sup>AI</sup></a>与<a href='https://cloud.assetbun.com' rel='noopener' target='_blank'>资产包子云盘</a>或 <a href='{{.UnsubscribeUrl}}' rel='noopener' target='_blank'>取消订阅</a></p>"
+        other: "User {{.DisplayName}} published new {{.ContentType}}: <a href='{{.QuestionUrl}}'>{{.QuestionTitle}}</a><br><small> Tag Category: ({{.Tags}})</small><br><small><b>{{.Tip}}</b></small><br><p style='font-size:small;-webkit-text-size-adjust:none;color:#666;'>—<br>This email is automatically generated, please do not reply directly<br>Learn more about <a href='https://ai.assetbun.com' rel='noopener' target='_blank'>Point Recognition AI</a> and <a href='https://cloud.assetbun.com' rel='noopener' target='_blank'>Asset Bun Cloud Drive</a> or <a href='{{.UnsubscribeUrl}}' rel='noopener' target='_blank'>Unsubscribe</a></p>"
     pass_reset:
       title:
-        other: "[{{.SiteName}}AI 与 资产包子云盘] 重置密码"
+        other: "[{{.SiteName}}AI and Asset Bun Cloud Drive] Reset Password"
       body:
-        other: "有人要求在 [{{.SiteName}}AI 与 资产包子云盘] 上重置你的密码。<br><br>\n\n如果这不是你的操作，请安心忽略此电子邮件。<br><br>\n\n请点击以下链接设置一个新密码：<br>\n<a href='{{.PassResetUrl}}' target='_blank'>{{.PassResetUrl}}</a>\n"
+        other: "Someone requested to reset your password on [{{.SiteName}}AI and Asset Bun Cloud Drive].<br><br>\n\nIf this wasn't you, feel free to ignore this email.<br><br>\n\nPlease click the link below to set a new password:<br>\n<a href='{{.PassResetUrl}}' target='_blank'>{{.PassResetUrl}}</a>\n"
     register:
       title:
-        other: "[{{.SiteName}}AI 与 资产包子云盘] 确认你的新账户"
+        other: "[{{.SiteName}}AI and Asset Bun Cloud Drive] Confirm your new account"
       body:
-        other: "欢迎加入 {{.SiteName}}AI 与 资产包子云盘！<br><br>\n\n请点击以下链接确认并激活你的新账户：<br>\n<a href='{{.RegisterUrl}}' target='_blank'>{{.RegisterUrl}}</a><br><br>\n\n如果上面的链接不能点击，请将其复制并粘贴到你的浏览器地址栏中。\n"
+        other: "Welcome to {{.SiteName}}AI and Asset Bun Cloud Drive!<br><br>\n\nPlease click the link below to confirm and activate your new account:<br>\n<a href='{{.RegisterUrl}}' target='_blank'>{{.RegisterUrl}}</a><br><br>\n\nIf the link above does not work, please copy and paste it into your browser's address bar.\n"
     test:
       title:
-        other: "[{{.SiteName}}AI 与 资产包子云盘] 测试邮件"
+        other: "[{{.SiteName}}AI and Asset Bun Cloud Drive] Test Email"
       body:
-        other: "这是一封测试邮件。"
+        other: "This is a test email."
   action_activity_type:
     upvote:
-      other: 点赞
+      other: Upvote
     upvoted:
-      other: 点赞
+      other: Upvoted
     downvote:
-      other: 点踩
+      other: Downvote
     downvoted:
-      other: 点踩
+      other: Downvoted
     accept:
-      other: 采纳
+      other: Accept
     accepted:
-      other: 已采纳
+      other: Accepted
     edit:
-      other: 编辑
+      other: Edit
   review:
     queued_post:
-      other: 排队的帖子
+      other: Queued post
     flagged_post:
-      other: 举报的帖子
+      other: Flagged post
     suggested_post_edit:
-      other: 建议的编辑
+      other: Suggested edit
 # The following fields are used for interface presentation(Front-end)
 ui:
   how_to_format:
-    title: 基础排版
+    title: Basic Formatting
     desc: >-
-      <ul class="mb-0"><li><p class="mb-2">添加链接</p><pre class="mb-2"><code>&lt;https://url.com&gt;<br/><br/>[标题](https://url.com)</code></pre></li><li><p class="mb-2">段落之间使用空行分隔</p></li><li><p class="mb-2"><em>_斜体_</em> 或者 **<strong>粗体</strong>**</p></li><li><p class="mb-2">使用 4 个空格缩进代码</p></li><li><p class="mb-2">在行首添加 <code>&gt;</code> 表示引用</p></li><li><p class="mb-2">反引号进行转义 <code>`像 _这样_`</code></p></li><li><p class="mb-2">使用 <code>```</code> 创建代码块</p><pre class="mb-0"><code>```<br/>这是代码块<br/>```</code></pre></li></ul>
+      <ul class="mb-0"><li><p class="mb-2">Add links</p><pre class="mb-2"><code><https://url.com><br/><br/>[Title](https://url.com)</code></pre></li><li><p class="mb-2">Separate paragraphs with an empty line</p></li><li><p class="mb-2"><em>_Italic_</em> or **<strong>Bold</strong>**</p></li><li><p class="mb-2">Use 4 spaces to indent code</p></li><li><p class="mb-2">Add <code>></code> at the start of a line to indicate a quote</p></li><li><p class="mb-2">Escape with backticks <code>`like _this_`</code></p></li><li><p class="mb-2">Use <code>```</code> to create a code block</p><pre class="mb-0"><code>```<br/>This is a code block<br/>```</code></pre></li></ul>
   formula_to_format:
-    title: 数学公式
+    title: Mathematical Formulas
     desc: >-
-      <ul class="mb-0"> <li> <p class="mb-2">使用<code>$</code>将公式嵌入行内$E = mc^2$</p> <pre class="mb-0"><code>$E = mc^2$</code></pre> </li> <li> <p class="mb-2">使用<code>$$</code>将公式独立成行$$E = mc^2$$</p> <pre class="mb-0"><code>$$E = mc^2$$</code></pre> </li> <li> <p class="mb-2">上标使用<code>^</code>下标使用<code>_</code>$x_i^2$</p> <pre class="mb-0"><code>$x_i^2$</code></pre> </li> <li> <p class="mb-2">使用<code>\frac{分子}{分母}</code>表示分数$\frac{1}{2}$</p> <pre class="mb-0"><code>$\frac{1}{2}$</code></pre> </li> <li> <p class="mb-2">使用<code>\sqrt[n]{表达式}</code>对表达式开n次方$\sqrt[3]{x}$</p> <pre class="mb-0"><code>$\sqrt[3]{x}$</code></pre> </li> <li> <p class="mb-2">使用<code>\int_{下限}^{上限} f(x)dx</code>表示积分$\int_0^\infty e^{-x}dx$</p> <pre class="mb-0"><code>$\int_0^\infty e^{-x}dx$</code></pre> </li> <li> <p class="mb-2">使用<code>\sum_{i=1}^{n} a_i</code>表示求和$\sum_{i=1}^{n} a_i$</p> <pre class="mb-0"><code>$\sum_{i=1}^{n} a_i$</code></pre> </li> <li> <p class="mb-2">使用<code>\begin{matrix} ... \end{matrix}</code>求矩阵$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$</p> <pre class="mb-0">// 元素之间用&分隔,每行结束用\\<br/><code>$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$</code></pre> </li> <li> <p class="mb-2">使用<code>\times</code>($\times$)<code>\div</code>($\div$)<code>\pm</code>($\pm$)显示运算字符$a \times b \div c \pm d$</p> <pre class="mb-0">$a \times b \div c \pm d$</code></pre> </li></ul>
+      <ul class="mb-0"> <li> <p class="mb-2">Embed inline formulas using<code>$</code>$E = mc^2$</p> <pre class="mb-0"><code>$E = mc^2$</code></pre> </li> <li> <p class="mb-2">Use<code>$$</code>to place formulas on their own line$$E = mc^2$$</p> <pre class="mb-0"><code>$$E = mc^2$$</code></pre> </li> <li> <p class="mb-2">Use<code>^</code> for superscripts and<code>_</code> for subscripts$x_i^2$</p> <pre class="mb-0"><code>$x_i^2$</code></pre> </li> <li> <p class="mb-2">Express fractions using<code>\frac{numerator}{denominator}</code> $\frac{1}{2}$</p> <pre class="mb-0"><code>$\frac{1}{2}$</code></pre> </li> <li> <p class="mb-2">Use<code>\sqrt[n]{expression}</code> for nth roots$\sqrt[3]{x}$</p> <pre class="mb-0"><code>$\sqrt[3]{x}$</code></pre> </li> <li> <p class="mb-2">Indicate integrals using<code>\int_{lower}^{upper} f(x)dx</code> $\int_0^\infty e^{-x}dx$</p> <pre class="mb-0"><code>$\int_0^\infty e^{-x}dx$</code></pre> </li> <li> <p class="mb-2">Use<code>\sum_{i=1}^{n} a_i</code> for summation$\sum_{i=1}^{n} a_i$</p> <pre class="mb-0"><code>$\sum_{i=1}^{n} a_i$</code></pre> </li> <li> <p class="mb-2">Use<code>\begin{matrix} ... \end{matrix}</code> to define matrices$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$</p> <pre class="mb-0">// Separate elements with &, end each row with \\<br/><code>$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$</code></pre> </li> <li> <p class="mb-2">Use<code>\times</code>($\times$)<code>\div</code>($\div$)<code>\pm</code>($\pm$) to show operation symbols$a \times b \div c \pm d$</p> <pre class="mb-0">$a \times b \div c \pm d$</code></pre> </li></ul>
   pagination:
-    prev: 上一页
-    next: 下一页
+    prev: Previous page
+    next: Next page
   page_title:
-    question: 问题
-    questions: 主题
-    article: 文章
-    bounty: 项目需求
-    assetbun: 云盘资源
-    aipic: 图片
-    tag: 标签
-    tags: 标签
-    tag_wiki: 标签维基
-    create_tag: 创建标签
-    edit_tag: 编辑标签
-    ask_a_question: 提问题
-    edit_question: 编辑问题
-    edit_answer: 编辑回复
-    search: 搜索
-    posts_containing: 帖子包含
-    settings: 设置
-    notifications: 通知
-    login: 登录
-    sign_up: 注册
-    account_recovery: 账号恢复
-    account_activation: 账号激活
-    confirm_email: 确认电子邮件
-    account_suspended: 账号已被封禁
-    admin: 后台管理
-    change_email: 修改邮箱
-    install: Answer 安装
-    upgrade: Answer 升级
-    maintenance: 网站维护
-    users: 用户
-    oauth_callback: 处理中
-    http_404: HTTP 错误 404
-    http_50X: HTTP 错误 500
-    http_403: HTTP 错误 403
-    logout: 退出
+    question: Question
+    questions: Topics
+    article: Article
+    bounty: Project Requirement
+    assetbun: Cloud Drive Resource
+    aipic: Image
+    tag: Tag
+    tags: Tags
+    tag_wiki: Tag Wiki
+    create_tag: Create Tag
+    edit_tag: Edit Tag
+    ask_a_question: Ask a Question
+    edit_question: Edit Question
+    edit_answer: Edit Answer
+    search: Search
+    posts_containing: Posts Containing
+    settings: Settings
+    notifications: Notifications
+    login: Login
+    sign_up: Sign Up
+    account_recovery: Account Recovery
+    account_activation: Account Activation
+    confirm_email: Confirm Email
+    account_suspended: Account has been suspended
+    admin: Admin Management
+    change_email: Change Email
+    install: Answer Installation
+    upgrade: Answer Upgrade
+    maintenance: Website Maintenance
+    users: Users
+    oauth_callback: Processing
+    http_404: HTTP Error 404
+    http_50X: HTTP Error 500
+    http_403: HTTP Error 403
+    logout: Logout
   notifications:
-    title: 通知
-    inbox: 收件箱
-    you: 您
-    achievement: 成就
-    new_alerts: 新通知
-    all_read: 全部标记为已读
-    show_more: 显示更多
-    someone: 有人
+    title: Notifications
+    inbox: Inbox
+    you: You
+    achievement: Achievements
+    new_alerts: New Notifications
+    all_read: Mark all as read
+    show_more: Show more
+    someone: Someone
     inbox_type:
-      all: 全部
-      posts: 帖子
-      invites: 邀请
-      votes: 点赞
-      integrals: 积分
-      entry: 入驻
+      all: All
+      posts: Posts
+      invites: Invites
+      votes: Votes
+      integrals: Points
+      entry: Entry
   suspended:
-    title: 你的账号账号已被封禁
-    until_time: "你的账号被封禁直到 {{ time }}。"
-    forever: 你的账号已被永久封禁。
-    end: 你违反了我们的社区准则。
-    contact_us: 联系我们
+    title: Your account has been suspended
+    until_time: "Your account is suspended until {{ time }}."
+    forever: Your account has been permanently suspended.
+    end: You violated our community guidelines.
+    contact_us: Contact Us
   editor:
     blockquote:
-      text: 引用
+      text: Quote
     bold:
-      text: 粗体
+      text: Bold
     chart:
-      text: 图表
-      flow_chart: 流程图
-      sequence_diagram: 时序图
-      class_diagram: 类图
-      state_diagram: 状态图
-      entity_relationship_diagram: 实体关系图
-      user_defined_diagram: 用户自定义图表
-      gantt_chart: 甘特图
-      pie_chart: 饼图
+      text: Chart
+      flow_chart: Flow Chart
+      sequence_diagram: Sequence Diagram
+      class_diagram: Class Diagram
+      state_diagram: State Diagram
+      entity_relationship_diagram: Entity Relationship Diagram
+      user_defined_diagram: User Defined Diagram
+      gantt_chart: Gantt Chart
+      pie_chart: Pie Chart
     code:
-      text: 代码块
-      add_code: 添加代码块
+      text: Code Block
+      add_code: Add Code Block
       form:
         fields:
           code:
-            label: 代码块
+            label: Code Block
             msg:
-              empty: 代码块不能为空
+              empty: Code block cannot be empty
           language:
-            label: 语言
-            placeholder: 自动识别
-      btn_cancel: 取消
-      btn_confirm: 添加
+            label: Language
+            placeholder: Auto-detect
+      btn_cancel: Cancel
+      btn_confirm: Add
     formula:
-      text: 公式
+      text: Formula
       options:
-        inline: 行内公式
-        block: 块级公式
+        inline: Inline Formula
+        block: Block Formula
     heading:
-      text: 标题
+      text: Title
       options:
-        h1: 标题 1
-        h2: 标题 2
-        h3: 标题 3
-        h4: 标题 4
-        h5: 标题 5
-        h6: 标题 6
+        h1: Title 1
+        h2: Title 2
+        h3: Title 3
+        h4: Title 4
+        h5: Title 5
+        h6: Title 6
     help:
-      text: 帮助
+      text: Help
     hr:
-      text: 水平线
+      text: Horizontal Line
     image:
-      text: 图片
-      add_image: 添加图片
-      tab_image: 上传图片
+      text: Image
+      add_image: Add Image
+      tab_image: Upload Image
       form_image:
         fields:
           file:
-            label: 图像文件
-            btn: 选择图片
+            label: Image File
+            btn: Choose Image
             msg:
-              empty: 请选择图片文件。
-              only_image: 只能上传图片文件。
-              max_size: 文件大小不能超过 4 MB。
+              empty: Please select an image file.
+              only_image: Only image files can be uploaded.
+              max_size: File size cannot exceed 4 MB.
           desc:
-            label: 描述
-      tab_url: 图片地址
+            label: Description
+      tab_url: Image URL
       form_url:
         fields:
           url:
-            label: 图片地址
+            label: Image URL
             msg:
-              empty: 图片地址不能为空
+              empty: Image URL cannot be empty
           name:
-            label: 描述
-      btn_cancel: 取消
-      btn_confirm: 添加
-      uploading: 上传中
+            label: Description
+      btn_cancel: Cancel
+      btn_confirm: Add
+      uploading: Uploading
     indent:
-      text: 缩进
+      text: Indent
     outdent:
-      text: 减少缩进
+      text: Remove Indent
     italic:
-      text: 斜体
+      text: Italic
     link:
-      text: 超链接
-      add_link: 添加超链接
+      text: Hyperlink
+      add_link: Add Hyperlink
       form:
         fields:
           url:
-            label: 链接
+            label: Link
             msg:
-              empty: 链接不能为空。
+              empty: Link cannot be empty.
           name:
-            label: 描述
-      btn_cancel: 取消
-      btn_confirm: 添加
+            label: Description
+      btn_cancel: Cancel
+      btn_confirm: Add
     ordered_list:
-      text: 有序列表
+      text: Ordered List
     unordered_list:
-      text: 无序列表
+      text: Unordered List
     table:
-      text: 表格
-      heading: 表头
-      cell: 单元格
+      text: Table
+      heading: Table Header
+      cell: Cell
   close_modal:
-    title: 关闭原因是...
-    btn_cancel: 取消
-    btn_submit: 提交
+    title: The reason for closure is...
+    btn_cancel: Cancel
+    btn_submit: Submit
     remark:
-      empty: 不能为空。
+      empty: Cannot be empty.
     msg:
-      empty: 请选择一个原因。
+      empty: Please select a reason.
   report_modal:
-    flag_title: 我举报这篇帖子的原因是...
-    close_title: 我关闭这篇帖子的原因是...
-    review_question_title: 审查问题
-    review_answer_title: 审查回复
-    review_comment_title: 审查评论
-    btn_cancel: 取消
-    btn_submit: 提交
+    flag_title: The reason I report this post is...
+    close_title: The reason I close this post is...
+    review_question_title: Review Question
+    review_answer_title: Review Reply
+    review_comment_title: Review Comment
+    btn_cancel: Cancel
+    btn_submit: Submit
     remark:
-      empty: 不能为空
+      empty: Cannot be empty
     msg:
-      empty: 请选择一个原因。
-      not_a_url: URL 格式不正确。
-      url_not_match: URL 来源与当前网站不匹配。
+      empty: Please select a reason.
+      not_a_url: URL format is incorrect.
+      url_not_match: URL origin does not match the current website.
   tag_modal:
-    title: 创建新标签
+    title: Create New Tag
     form:
       fields:
         display_name:
-          label: 显示名称
+          label: Display Name
           msg:
-            empty: 显示名称不能为空。
-            range: 显示名称不能超过 35 个字符。
+            empty: Display name cannot be empty.
+            range: Display name cannot exceed 35 characters.
         slug_name:
-          label: URL 固定链接
-          desc: URL 固定链接不能超过 35 个字符。
+          label: URL Slug
+          desc: URL Slug cannot exceed 35 characters.
           msg:
-            empty: URL 固定链接不能为空。
-            range: URL 固定链接不能超过 35 个字符。
-            character: URL 固定链接包含非法字符。
+            empty: URL Slug cannot be empty.
+            range: URL Slug cannot exceed 35 characters.
+            character: URL Slug contains illegal characters.
         desc:
-          label: 描述
+          label: Description
         revision:
-          label: 编辑历史
+          label: Edit History
         edit_summary:
-          label: 编辑备注
+          label: Edit Notes
           placeholder: >-
-            简单描述更改原因（更正拼写、修复语法、改进格式）
-    btn_cancel: 取消
-    btn_submit: 提交
-    btn_post: 发布新标签
+            Briefly describe the reason for the change (correct spelling, fix grammar, improve format)
+    btn_cancel: Cancel
+    btn_submit: Submit
+    btn_post: Publish New Tag
   tag_info:
-    created_at: 创建于
-    edited_at: 编辑于
-    history: 历史
+    created_at: Created At
+    edited_at: Edited At
+    history: History
     synonyms:
-      title: 同义词
-      text: 以下标签将被重置到
-      empty: 此标签目前没有同义词。
-      btn_add: 添加同义词
-      btn_edit: 编辑
-      btn_save: 保存
-    synonyms_text: 以下标签将被重置到
+      title: Synonyms
+      text: The following tags will be reset to
+      empty: This tag currently has no synonyms.
+      btn_add: Add Synonym
+      btn_edit: Edit
+      btn_save: Save
+    synonyms_text: The following tags will be reset to
     delete:
-      title: 删除标签
+      title: Delete Tag
       tip_with_posts: >-
-        <p>我们不允许 <strong>删除带有帖子的标签</strong>。</p> <p>请先从帖子中移除此标签。</p>
+        <p>We do not allow <strong>deleting tags with posts</strong>.</p> <p>Please first remove this tag from posts.</p>
       tip_with_synonyms: >-
-        <p>我们不允许 <strong>删除带有同义词的标签</strong>。</p> <p>请先从此标签中删除同义词。</p>
-      tip: 确定要删除吗？
-      close: 关闭
+        <p>We do not allow <strong>deleting tags with synonyms</strong>.</p> <p>Please first remove synonyms from this tag.</p>
+      tip: Are you sure you want to delete?
+      close: Close
   edit_tag:
-    title: 编辑标签
-    default_reason: 编辑标签
-    default_first_reason: 添加标签
-    btn_save_edits: 保存更改
-    btn_cancel: 取消
+    title: Edit Tag
+    default_reason: Edit Tag
+    default_first_reason: Add Tag
+    btn_save_edits: Save Changes
+    btn_cancel: Cancel
   dates:
-    long_date: MM 月 DD 日
-    long_date_with_year: "YYYY 年 MM 月 DD 日"
-    long_date_with_time: "YYYY 年 MM 月 DD 日 HH:mm"
-    now: 刚刚
-    x_seconds_ago: "{{count}} 秒前"
-    x_minutes_ago: "{{count}} 分钟前"
-    x_hours_ago: "{{count}} 小时前"
-    hour: 小时
-    day: 天
-    hours: 小时
-    days: 日
+    long_date: MM DD
+    long_date_with_year: "YYYY MM DD"
+    long_date_with_time: "YYYY MM DD HH:mm"
+    now: Just now
+    x_seconds_ago: "{{count}} seconds ago"
+    x_minutes_ago: "{{count}} minutes ago"
+    x_hours_ago: "{{count}} hours ago"
+    hour: Hour
+    day: Day
+    hours: Hours
+    days: Days
   reaction:
-    heart: 爱心
-    smile: 微笑
-    frown: 愁
-    btn_label: 添加或删除回应。
-    undo_emoji: 撤销 {{ emoji }} 回应
-    react_emoji: 用 {{ emoji }} 回应
-    unreact_emoji: 撤销 {{ emoji }}
+    heart: Heart
+    smile: Smile
+    frown: Frown
+    btn_label: Add or remove reaction.
+    undo_emoji: Undo {{ emoji }} reaction
+    react_emoji: React with {{ emoji }}
+    unreact_emoji: Undo {{ emoji }}
   comment:
-    btn_add_subject_comment: 添加主题描述
-    btn_add_comment: 添加评论
-    btn_ai_add_comment: 请AI回复
-    reply_to: 回复
-    btn_reply: 回复
-    private_reply: 私密
-    btn_ai_reply: AI回复
-    btn_dis_ai_reply: AI已回复
-    ai_commented: 此评论为AI回复
-    btn_edit: 编辑
-    btn_delete: 删除
-    btn_flag: 举报
-    btn_save_edits: 保存更改
-    btn_cancel: 取消
-    show_more: "{{count}} 条剩余评论"
+    btn_add_subject_comment: Add Subject Description
+    btn_add_comment: Add Comment
+    btn_ai_add_comment: Have AI reply
+    reply_to: Reply
+    btn_reply: Reply
+    private_reply: Private
+    btn_ai_reply: AI Reply
+    btn_dis_ai_reply: AI has replied
+    ai_commented: This comment is an AI reply
+    btn_edit: Edit
+    btn_delete: Delete
+    btn_flag: Report
+    btn_save_edits: Save Changes
+    btn_cancel: Cancel
+    show_more: "{{count}} remaining comments"
     tip_question: >-
-      对主题有新的疑问或提供更多关于该主题的信息，AI与参与者回复该主题时才能更精准。应避免在评论里回复主题。
+      For new doubts about the topic or additional information about it, AI and participants can reply more accurately. Avoid replying in comments to the topic.
     tip_answer: >-
-      使用评论对参与者进行回复，如果要补充或者完善问题的内容，请在原问题或主题描述区域中更改。也可以使用AI回复参与者的问题。
-    tip_vote: 它给帖子添加了一些有用的内容
+      Use comments to reply to participants; if you wish to supplement or refine the content of the question, please make changes in the original question or topic description area. You can also use AI to respond to participants' questions.
+    tip_vote: It adds some useful content to the post.
   edit_answer:
-    title: 编辑回复
-    default_reason: 编辑回复
-    default_first_reason: 添加回复
+    title: Edit Reply
+    default_reason: Edit Reply
+    default_first_reason: Add Reply
     form:
       fields:
         revision:
-          label: 编辑历史
+          label: Edit History
         answer:
-          label: 回复内容
+          label: Reply Content
           feedback:
-            characters: 内容长度至少 6 个字符
+            characters: Content must be at least 6 characters long.
         edit_summary:
-          label: 编辑摘要
+          label: Edit Summary
           placeholder: >-
-            简单描述更改原因（更正拼写、修复语法、改进格式）
-    btn_save_edits: 保存更改
-    btn_cancel: 取消
+            Briefly describe the reason for the change (correcting spelling, fixing grammar, improving format).
+    btn_save_edits: Save Changes
+    btn_cancel: Cancel
   tags:
-    title: 标签
+    title: Tags
     sort_buttons:
-      popular: 热门
-      name: 名称
-      newest: 最新
-    button_follow: 关注
-    button_following: 已关注
-    tag_label: 个主题
-    search_placeholder: 通过标签名称过滤
-    no_desc: 此标签无描述。
-    more: 更多
+      popular: Popular
+      name: Name
+      newest: Newest
+    button_follow: Follow
+    button_following: Following
+    tag_label: Topics
+    search_placeholder: Filter by tag name
+    no_desc: This tag has no description.
+    more: More
   ask:
-    title: 新增问题
-    article_title: 新增文章
-    bounty_title: 新增项目需求
-    answer_integral: 用积分让更多人协助(1积分≈0.1元,可提现)。
-    assetbun_integral: 让需要该资源的人为你支付积分(1积分≈0.1元,可提现)，以便下载完整资源。
-    article_integral: 让要查看该文章的人为你支付积分(1积分≈0.1元,可提现)，以便查看完整文章。
-    bounty_integral: 用积分让更多人协助(1积分≈0.1元,可提现)。
-    attention: (被采纳者获得积分,采纳后积分不可修改)
-    recharge: 去充值
-    edit_title: 编辑问题
-    edit_article_title: 编辑文章
-    edit_assetbun_title: 编辑云盘资源描述
-    edit_bounty_title: 编辑项目需求
-    default_reason: 编辑问题
-    default_article_reason: 编辑文章
-    default_bounty_reason: 编辑项目需求
-    default_first_reason: 新增问题
-    default_first_article_reason: 新增文章
-    default_first_bounty_reason: 新增项目需求
-    similar_questions: 相似问题
-    similar_articles: 相似文章
-    similar_bounties: 相似项目需求
+    title: Add New Question
+    article_title: Add New Article
+    bounty_title: Add New Project Requirement
+    answer_integral: Use points to let more people assist (1 point ≈ 0.1¥, cashable).
+    assetbun_integral: Let those who need the resource pay points (1 point ≈ 0.1¥, cashable) to download the full resource.
+    article_integral: Let those who want to view the article pay points (1 point ≈ 0.1¥, cashable) to see the full article.
+    bounty_integral: Use points to let more people assist (1 point ≈ 0.1¥, cashable).
+    attention: (Point reward for acceptors, points cannot be modified after acceptance).
+    recharge: Go recharge.
+    edit_title: Edit Question
+    edit_article_title: Edit Article
+    edit_assetbun_title: Edit Cloud Resource Description
+    edit_bounty_title: Edit Project Requirement
+    default_reason: Edit Question
+    default_article_reason: Edit Article
+    default_bounty_reason: Edit Project Requirement
+    default_first_reason: Add Question
+    default_first_article_reason: Add Article
+    default_first_bounty_reason: Add Project Requirement
+    similar_questions: Similar Questions
+    similar_articles: Similar Articles
+    similar_bounties: Similar Project Requirements
     form:
       fields:
         revision:
-          label: 修订版本
+          label: Revision
         integral:
-          label: 积分
+          label: Points
         title:
-          label: 标题
-          placeholder: 请详细描述你的问题，想象你在问一个人
+          label: Title
+          placeholder: Please describe your question in detail, imagine you are asking someone.
           msg:
-            empty: 标题不能为空。
-            range: 标题最多 150 个字符
+            empty: Title cannot be empty.
+            range: Title cannot exceed 150 characters.
         article_title:
-          placeholder: 请详细描述你的文章，想象你在写一篇生动的小说
+          placeholder: Please describe your article in detail, imagine you are writing a vivid novel
         assetbun_title:
-          placeholder: 请详细描述你的资产包子云盘资源
+          placeholder: Please describe your cloud resource in detail.
         bounty_title:
-          placeholder: 请详细描述你的项目需求，想象你在广发英雄帖
+          placeholder: Please describe your project requirement in detail, imagine you are broadening your hero's call.
         body:
-          label: 内容
+          label: Content
           msg:
-            empty: 内容不能为空。
+            empty: Content cannot be empty.
         tags:
-          label: 标签
+          label: Tags
           msg:
-            empty: 必须选择一个标签
+            empty: At least one tag must be selected.
         answer:
-          label: 回复内容
+          label: Reply Content
           msg:
-            empty: 回复内容不能为空
+            empty: Reply content cannot be empty.
         edit_summary:
-          label: 编辑备注
+          label: Edit Notes
           placeholder: >-
-            简单描述更改原因（更正拼写、修复语法、改进格式）
-    btn_post_question: 提交问题
-    btn_post_article: 提交文章
-    btn_post_assetbun: 提交资源描述
-    btn_post_bounty: 提交项目需求
-    btn_save_edits: 保存更改
-    answer_question: 回复自己的问题
-    post_question&answer: 提交问题和回复
+            Briefly describe the reason for the change (correcting spelling, fixing grammar, improving format).
+    btn_post_question: Submit Question
+    btn_post_article: Submit Article
+    btn_post_assetbun: Submit Resource Description
+    btn_post_bounty: Submit Project Requirement
+    btn_save_edits: Save Changes
+    answer_question: Reply to your own question
+    post_question&answer: Submit Question and Reply
   tag_selector:
-    add_btn: 添加标签
-    create_btn: 创建新标签
-    search_tag: 搜索标签
-    hint: "描述您的主题是关于什么，至少需要一个标签。"
-    no_result: 没有匹配的标签
-    tag_required_text: 必选标签（至少一个）
+    add_btn: Add Tag
+    create_btn: Create New Tag
+    search_tag: Search Tag
+    hint: "Describe what your topic is about, at least one tag is required."
+    no_result: No matching tags found.
+    tag_required_text: Required tags (at least one).
   header:
     nav:
-      question: 问题
-      article: 文章
-      assetbun: 云盘资源
-      bounty: 项目需求
-      tag: 标签
-      user: 用户
-      profile: 用户主页
-      setting: 账号设置
-      rankToScore: 声望兑积分
-      realName: 实名认证
-      withdrawal: 积分提现
-      platformEntry: 平台入驻
-      logout: 退出
-      admin: 后台管理
-      review: 审查
-      bookmark: 收藏夹
-      moderation: 管理
+      question: Question
+      article: Article
+      assetbun: Cloud Drive Resource
+      bounty: Project Requirement
+      tag: Tag
+      user: User
+      profile: User Profile
+      setting: Account Settings
+      rankToScore: Reputation to Points
+      realName: Real Name Verification
+      withdrawal: Points Withdrawal
+      platformEntry: Platform Entry
+      logout: Logout
+      admin: Admin Management
+      review: Review
+      bookmark: Bookmarks
+      moderation: Moderation
     search:
-      placeholder: 搜索
+      placeholder: Search
   footer:
     build_on: >-
-      Copyright © 2024.深圳市大瞳世界科技有限公司 粤ICP备2023062274号-2  <br />人工智能助力知识分享 © {{cc}}AI x 资产包子云盘
+      Copyright © 2024. Shenzhen Datong World Technology Co., Ltd. 粤ICP备2023062274号-2 <br /> AI-powered knowledge sharing © {{cc}}AI x Asset Bun Cloud Drive
   upload_img:
-    name: 更改
-    loading: 加载中...
+    name: Change
+    loading: Loading...
   pic_auth_code:
-    title: 验证码
-    placeholder: 输入图片中的文字
+    title: CAPTCHA
+    placeholder: Enter the text in the image
     msg:
-      empty: 验证码不能为空。
+      empty: CAPTCHA cannot be empty.
   inactive:
     first: >-
-      就差一步！我们发送了一封激活邮件到 <bold>{{mail}}</bold>。请按照邮件中的说明激活你的账户。
-    info: "如果没有收到，请检查你的垃圾邮件文件夹。"
+      Just one more step! We have sent an activation email to <bold>{{mail}}</bold>. Please follow the instructions in the email to activate your account.
+    info: "If you didn't receive it, please check your spam folder."
     another: >-
-      我们向你的邮箱 <bold>{{mail}}</bold> 发送了另一封激活电子邮件。可能需要几分钟才能到达；请务必检查您的垃圾邮件箱。
-    btn_name: 重新发送激活邮件
-    change_btn_name: 更改邮箱
+      We have sent another activation email to your mailbox <bold>{{mail}}</bold>. It may take a few minutes to arrive; please be sure to check your junk mail box.
+    btn_name: Resend activation email
+    change_btn_name: Change Email
     msg:
-      empty: 不能为空。
+      empty: Cannot be empty.
     resend_email:
-      url_label: 确定要重新发送激活邮件吗？
-      url_text: 你也可以将上面的激活链接给该用户。
+      url_label: Are you sure you want to resend the activation email?
+      url_text: You can also give the above activation link to this user.
   login:
-    login_to_continue: 登录以继续
-    info_sign: 没有账户？<1>注册</1>
-    info_login: 已经有账户？<1>登录</1>
-    info_assetbun: 或有资源需要存储? <1>资产包子云盘</1>
-    info_answer: 或有疑问需要AI帮忙? <1>点识成金</1>
-    agreements: 登录即表示您同意<1>隐私政策</1>和<3>服务条款</3>。
-    forgot_pass: 忘记密码?
+    login_to_continue: Log in to continue
+    info_sign: No account? <1>Register</1>
+    info_login: Already have an account? <1>Log in</1>
+    info_assetbun: Or have resources that need storage? <1>Asset Bun Cloud Drive</1>
+    info_answer: Or have questions that need AI assistance? <1>Point Recognition</1>
+    agreements: By logging in you agree to the <1>Privacy Policy</1> and <3>Terms of Service</3>.
+    forgot_pass: Forgot password?
     name:
-      label: 名字
+      label: Name
       msg:
-        empty: 名字不能为空
-        range: 名字最多 30 个字符
-        character: '只能由 "a-z"、"0-9"、" - . _" 组成'
+        empty: Name cannot be empty.
+        range: Name can be up to 30 characters.
+        character: 'Can only contain "a-z", "0-9", " - . _"'
     email:
-      label: 邮箱
+      label: Email
       msg:
-        empty: 邮箱不能为空
+        empty: Email cannot be empty.
     password:
-      label: 密码
+      label: Password
       msg:
-        empty: 密码不能为空
-        different: 两次输入密码不一致
+        empty: Password cannot be empty.
+        different: Passwords do not match.
   account_forgot:
-    page_title: 忘记密码
-    btn_name: 发送恢复邮件
+    page_title: Forgot Password
+    btn_name: Send Recovery Email
     send_success: >-
-      如果存在邮箱为 <strong>{{mail}}</strong> 账户，你将很快收到一封重置密码的说明邮件。
+      If an account with the email <strong>{{mail}}</strong> exists, you will soon receive an email with instructions to reset your password.
     email:
-      label: 邮箱
+      label: Email
       msg:
-        empty: 邮箱不能为空
+        empty: Email cannot be empty.
   change_email:
-    btn_cancel: 取消
-    btn_update: 更新电子邮件地址
+    btn_cancel: Cancel
+    btn_update: Update Email Address
     send_success: >-
-      如果存在邮箱为 <strong>{{mail}}</strong> 的账户，你将很快收到一封重置密码的说明邮件。
+      If an account with the email <strong>{{mail}}</strong> exists, you will soon receive an email with instructions to reset your password.
     email:
-      label: 新的电子邮件地址
+      label: New Email Address
       msg:
-        empty: 邮箱不能为空。
+        empty: Email cannot be empty.
   oauth:
-    connect: 连接到 {{ auth_name }}
-    remove: 移除 {{ auth_name }}
+    connect: Connect to {{ auth_name }}
+    remove: Remove {{ auth_name }}
   oauth_bind_email:
-    subtitle: 向你的账户添加恢复邮件地址。
-    btn_update: 更新电子邮件地址
+    subtitle: Add a recovery email address to your account.
+    btn_update: Update Email Address
     email:
-      label: 邮箱
+      label: Email
       msg:
-        empty: 邮箱不能为空。
-    modal_title: 邮箱已经存在。
-    modal_content: 该电子邮件地址已经注册。你确定要连接到已有账户吗？
-    modal_cancel: 更改邮箱
-    modal_confirm: 连接到已有账户
+        empty: Email cannot be empty.
+    modal_title: Email Already Exists.
+    modal_content: This email address is already registered. Are you sure you want to connect to an existing account?
+    modal_cancel: Change Email
+    modal_confirm: Connect to Existing Account
   password_reset:
-    page_title: 密码重置
-    btn_name: 重置我的密码
+    page_title: Password Reset
+    btn_name: Reset My Password
     reset_success: >-
-      你已经成功更改密码；你将被重定向到登录页面。
+      You have successfully changed your password; you will be redirected to the login page.
     link_invalid: >-
-      抱歉，此密码重置链接已失效。也许是你已经重置过密码了？
-    to_login: 前往登录页面
+      Sorry, this password reset link has expired. Maybe you have already reset the password?
+    to_login: Go to login page
     password:
-      label: 密码
+      label: Password
       msg:
-        empty: 密码不能为空。
-        length: 密码长度在8-32个字符之间
-        different: 两次输入密码不一致
+        empty: Password cannot be empty.
+        length: Password length must be between 8-32 characters.
+        different: Passwords do not match.
     password_confirm:
-      label: 确认新密码
+      label: Confirm New Password
   settings:
-    page_title: 设置
-    goto_modify: 前往修改
+    page_title: Settings
+    goto_modify: Go to Modify
     nav:
-      profile: 我的资料
-      notification: 通知
-      email_notification: 邮件通知
-      account: 账号
-      interface: 界面
+      profile: My Profile
+      notification: Notifications
+      email_notification: Email Notifications
+      account: Account
+      interface: Interface
     profile:
-      heading: 个人资料
-      btn_name: 保存
+      heading: Profile
+      btn_name: Save
       display_name:
-        label: 显示名称
-        msg: 昵称不能为空。
-        msg_range: 显示名称不能超过 30 个字符。
+        label: Display Name
+        msg: Nickname cannot be empty.
+        msg_range: Display name cannot exceed 30 characters.
       username:
-        label: 用户名
-        caption: 用户可以通过 "@用户名" 来提及你。
-        msg: 用户名不能为空
-        msg_range: 用户名不能超过 30 个字符。
-        character: '用户名只能由 "a-z"、"0-9"、" - . _" 组成'
+        label: Username
+        caption: Users can mention you via "@username".
+        msg: Username cannot be empty.
+        msg_range: Username cannot exceed 30 characters.
+        character: 'Username can only contain "a-z", "0-9", " - . _"'
       avatar:
-        label: 头像
+        label: Avatar
         gravatar: Gravatar
-        gravatar_text: 你可以更改图像在
-        custom: 自定义
-        custom_text: 你可以上传你的图片。
-        default: 系统
-        msg: 请上传头像
+        gravatar_text: You can change the image at
+        custom: Custom
+        custom_text: You can upload your image.
+        default: System
+        msg: Please upload an avatar
       bio:
-        label: 关于我
+        label: About Me
       website:
-        label: 网站
+        label: Website
         placeholder: "https://example.com"
-        msg: 网址格式不正确
+        msg: Website format is incorrect.
       location:
-        label: 位置
-        placeholder: "城市，国家"
+        label: Location
+        placeholder: "City, Country"
     notification:
-      title: 通知
-      heading: 平台通知
-      email_heading: 邮件通知
-      turn_on: 开启
+      title: Notifications
+      heading: Platform Notifications
+      email_heading: Email Notifications
+      turn_on: Turn on
       inbox:
-        label: 收件箱通知
-        description: 你的主题有新的回复，评论，邀请回复和其他。
+        label: Inbox Notifications
+        description: Your topics have new replies, comments, invites to reply, and others.
       all_new_subject:
-        label: 所有新发布的主题
-        description: 获取所有新发布的主题通知。每周最多有50个主题。
+        label: All Newly Posted Topics
+        description: Get notified of all newly posted topics. Up to 50 topics per week.
       all_email_new_subject:
-        label: 选择需要邮件通知的主题类型
-        description: 选取的主题类型将通过邮件通知您。
-        placeholder: 请选择主题类型
-        displayText: 个主题类型
+        label: Select the types of topics for email notifications
+        description: Selected topic types will notify you via email.
+        placeholder: Please select topic types
+        displayText: Topic types
       all_new_question:
-        title: 非积分问题
-        label: 所有新发布的非积分问题
-        description: 获取所有新发布的非积分问题通知。每周最多有50个非积分问题。
+        title: Non-Score Questions
+        label: All Newly Posted Non-Score Questions
+        description: Get notified of all newly posted non-score questions. Up to 50 non-score questions per week.
       all_new_score_question:
-        title: 积分问题
-        label: 所有新发布的积分问题
-        description: 获取所有新发布的积分问题通知。每周最多有50个积分问题。
+        title: Score Questions
+        label: All Newly Posted Score Questions
+        description: Get notified of all newly posted score questions. Up to 50 score questions per week.
       all_new_article:
-        title: 非积分文章
-        label: 所有新发布的非积分文章
-        description: 获取所有新发布的非积分文章通知。每周最多有50个非积分文章。
+        title: Non-Score Articles
+        label: All Newly Posted Non-Score Articles
+        description: Get notified of all newly posted non-score articles. Up to 50 non-score articles per week.
       all_new_score_article:
-        title: 积分文章
-        label: 所有新发布的积分文章
-        description: 获取所有新发布的积分文章通知。每周最多有50个积分文章。
+        title: Score Articles
+        label: All Newly Posted Score Articles
+        description: Get notified of all newly posted score articles. Up to 50 score articles per week.
       all_new_bounty:
-        title: 项目需求
-        label: 所有新发布的项目需求
-        description: 获取所有新发布的项目需求通知。每周最多有50个项目需求。
+        title: Project Requirements
+        label: All Newly Posted Project Requirements
+        description: Get notified of all newly posted project requirements. Up to 50 project requirements per week.
       all_new_assetbun:
-        title: 非积分云盘资源
-        label: 所有新发布的非积分云盘资源
-        description: 获取所有新发布的非积分云盘资源通知。每周最多有50个非积分云盘资源。
+        title: Non-Score Cloud Drive Resources
+        label: All Newly Posted Non-Score Cloud Drive Resources
+        description: Get notified of all newly posted non-score cloud drive resources. Up to 50 non-score cloud drive resources per week.
       all_new_score_assetbun:
-        title: 积分云盘资源
-        label: 所有新发布的积分云盘资源
-        description: 获取所有新发布的积分云盘资源通知。每周最多有50个积分云盘资源。
+        title: Score Cloud Drive Resources
+        label: All Newly Posted Score Cloud Drive Resources
+        description: Get notified of all newly posted score cloud drive resources. Up to 50 score cloud drive resources per week.
       all_new_pic:
-        title: 非积分图片
-        label: 所有新发布的非积分图片
-        description: 获取所有新发布的非积分图片通知。每周最多有50个非积分图片。
+        title: Non-Score Images
+        label: All Newly Posted Non-Score Images
+        description: Get notified of all newly posted non-score images. Up to 50 non-score images per week.
       all_new_score_pic:
-        title: 积分图片
-        label: 所有新发布的积分图片
-        description: 获取所有新发布的积分图片通知。每周最多有50个积分图片。
+        title: Score Images
+        label: All Newly Posted Score Images
+        description: Get notified of all newly posted score images. Up to 50 score images per week.
       all_new_subject_for_following_tags:
-        title: 关注标签的新主题
-        label: 所有关注标签的新主题
-        description: 获取关注的标签下新主题通知。
+        title: New Topics for Followed Tags
+        label: All New Topics for Followed Tags
+        description: Get notifications for new topics under supported tags.
       all_new_none_score_subject_for_following_tags:
-        title: 关注标签的非积分新主题
-        label: 所有关注标签的非积分新主题
-        description: 获取关注的标签下非积分新主题通知。
+        title: Non-Score New Topics for Followed Tags
+        label: All Non-Score New Topics for Followed Tags
+        description: Get notifications for non-score new topics under supported tags.
       all_new_score_subject_for_following_tags:
-        title: 关注标签的积分新主题
-        label: 所有关注标签的积分新主题
-        description: 获取关注的标签下积分新主题通知。
+        title: Score New Topics for Followed Tags
+        label: All Score New Topics for Followed Tags
+        description: Get notifications for score new topics under supported tags.
     account:
-      heading: 账号
-      change_email_btn: 更改邮箱
-      change_pass_btn: 更改密码
+      heading: Account
+      change_email_btn: Change Email
+      change_pass_btn: Change Password
       change_email_info: >-
-        邮件已发送。请根据指引完成验证。
+        Email has been sent. Please follow the instructions to complete verification.
       email:
-        label: 新的电子邮件地址
-        msg: 新邮箱不能为空。
+        label: New Email Address
+        msg: New email cannot be empty.
       pass:
-        label: 当前密码
-        msg: 密码不能为空。
-      password_title: 密码
+        label: Current Password
+        msg: Password cannot be empty.
+      password_title: Password
       current_pass:
-        label: 当前密码
+        label: Current Password
         msg:
-          empty: 当前密码不能为空
-          length: 密码长度必须在 8 至 32 之间
-          different: 两次输入的密码不匹配
+          empty: Current Password cannot be empty.
+          length: Password length must be between 8 to 32 characters.
+          different: The two entered passwords do not match.
       new_pass:
-        label: 新密码
+        label: New Password
       pass_confirm:
-        label: 确认新密码
+        label: Confirm New Password
     interface:
-      heading: 界面
+      heading: Interface
       lang:
-        label: 界面语言
-        text: 设置用户界面语言，在刷新页面后生效。
+        label: Interface Language
+        text: Set the user interface language, effective after refreshing the page.
     my_logins:
-      title: 我的登录
-      label: 使用这些账户登录或注册本网站。
-      modal_title: 移除登录
-      modal_content: 你确定要从账户里移除该登录？
-      modal_confirm_btn: 移除
-      remove_success: 移除成功
+      title: My Logins
+      label: Log in or register on this website using these accounts.
+      modal_title: Remove Login
+      modal_content: Are you sure you want to remove this login from your account?
+      modal_confirm_btn: Remove
+      remove_success: Removed successfully.
   toast:
-    update: 更新成功
-    failed: 操作失败
-    rank_score_short: 积分兑换至少需要为1积分才可兑换
-    invalid_rank_score: 声望兑积分功能暂时关闭
-    need_entry: 请先完成平台入驻
-    update_password: 密码更新成功。
-    flag_success: 感谢标记。
-    forbidden_operate_self: 禁止对自己执行操作
-    review: 您的修订将在审阅通过后显示。
-    sent_success: 发送成功
+    update: Update successful.
+    failed: Operation failed.
+    rank_score_short: At least 1 point is required for the exchange for points.
+    invalid_rank_score: Reputation to points feature is temporarily disabled.
+    need_entry: Please complete platform entry first.
+    update_password: Password updated successfully.
+    flag_success: Thank you for flagging.
+    forbidden_operate_self: Forbidden to perform operations on oneself.
+    review: Your revision will show after it passes review.
+    sent_success: Sent successfully.
   related_question:
-    title: 相关问题
-    answers: 个回复
-    integral: 积分
+    title: Related Questions
+    answers: Replies
+    integral: Points
   related_article:
-    title: 相关文章
-    answers: 个回复
-    integral: 积分
+    title: Related Articles
+    answers: Replies
+    integral: Points
   related_assetbun:
-    title: 相关资源
-    answers: 个回复
-    integral: 积分
+    title: Related Resources
+    answers: Replies
+    integral: Points
   related_bounty:
-    title: 相关项目需求
-    answers: 个回复
-    integral: 积分
+    title: Related Project Requirements
+    answers: Replies
+    integral: Points
   invite_to_answer:
-    title: 受邀人
-    desc: 邀请你认为可能知道答案的人。
-    invite: 邀请回复
-    add: 添加人员
-    search: 搜索人员
+    title: Invited People
+    desc: Invite those who you think might know the answer.
+    invite: Invite to reply
+    add: Add person
+    search: Search for person
   question_detail:
-    action: 操作
-    best_answer: 最佳回复
-    accept_title: 是否采纳回复
-    warn_accept: 采纳该回复会把当前积分给到该用户，并且后续无法取消采纳，是否采纳该回复?
-    not_accept: 花费积分的帖子对回复采纳后无法进行取消采纳的操作
-    resolve_tip: 此回复属于私密方案，内容已被锁定并隐藏。您当前无权查看
-    resolve_type: 此回复为私密方案
-    accept: 采纳
-    integral: 积分
-    ai_reply: 请AI回复该主题
-    ai_reply_him: 请AI回复他
-    ai_commented: 此评论为AI回复
-    ok: 确定
-    Asked: 提交于
-    asked: 提交于
-    update: 修改于
-    edit: 编辑于
-    commented: 评论
-    Views: 阅读次数
-    Follow: 关注此主题
-    Following: 已关注
-    follow_tip: 关注此主题以接收通知
-    answered: 回复于
-    closed_in: 关闭于
-    show_exist: 查看类似问题。
-    useful: 有用的
-    question_useful: 它是有用和明确的
-    question_un_useful: 它不明确或没用的
-    question_bookmark: 收藏该问题
-    answer_useful: 这是有用的
-    answer_un_useful: 它是没有用的
+    action: Action
+    best_answer: Best Reply
+    accept_title: Do you want to accept the reply?
+    warn_accept: Accepting this reply will give the current points to this user and cannot be canceled later; do you want to accept this reply?
+    not_accept: Posts that cost points cannot have their replies accepted after acceptance.
+    resolve_tip: This reply is part of a private plan. The content has been locked and hidden from view. You currently do not have the right to view.
+    resolve_type: This reply is a private plan.
+    accept: Accept
+    integral: Points
+    ai_reply: Please have AI reply to this topic.
+    ai_reply_him: Please have AI reply to him.
+    ai_commented: This comment is an AI reply.
+    ok: Okay
+    Asked: Submitted on
+    asked: Submitted on
+    update: Modified on
+    edit: Edited on
+    commented: Commented
+    Views: Number of views
+    Follow: Follow this topic
+    Following: Following
+    follow_tip: Follow this topic to receive notifications.
+    answered: Replied on
+    closed_in: Closed on
+    show_exist: View similar questions.
+    useful: Useful
+    question_useful: It is useful and clear.
+    question_un_useful: It is unclear or useless.
+    question_bookmark: Bookmark this question.
+    answer_useful: This is useful.
+    answer_un_useful: It is not useful.
     answers:
-      title: 个回复
-      score: 评分
-      newest: 最新
-      oldest: 最旧
-      btn_accept: 采纳
-      btn_accepted: 已被采纳
+      title: Replies
+      score: Score
+      newest: Newest
+      oldest: Oldest
+      btn_accept: Accept
+      btn_accepted: Accepted
     write_answer:
-      title: 你的回复
-      edit_answer: 编辑回复
-      edit_resolve: 编辑方案
-      btn_name: 提交回复
-      btn_resolve_name: 私密方案
-      btn_ai_name: 请AI回复
-      ai_answered: AI已回复
-      add_another_answer: 添加其它回复
-      resolve_option_title: 提交解决方案
-      resolve_option_content: 该回复作为解决方案后，完整信息仅对主题作者可见，并对其他用户私密隐藏
-      submit: 提交
-      confirm_title: 继续回复
-      continue: 继续
+      title: Your Reply
+      edit_answer: Edit Reply
+      edit_resolve: Edit Plan
+      btn_name: Submit Reply
+      btn_resolve_name: Private Plan
+      btn_ai_name: Please have AI reply.
+      ai_answered: AI has replied.
+      add_another_answer: Add Other Replies
+      resolve_option_title: Submit Solution
+      resolve_option_content: This reply will only be visible to the topic author as a solution and hidden from other users.
+      submit: Submit
+      confirm_title: Continue Replying
+      continue: Continue
       confirm_info: >-
-        <p>你确定要提交一个新的回复吗？</p><p>作为替代，你可以通过编辑来完善和改进之前的回复。</p>
-      empty: 回复内容不能为空。
-      characters: 内容长度至少 6 个字符。
+        <p>Are you sure you want to submit a new reply?</p><p>As an alternative, you can improve and refine your previous reply by editing.</p>
+      empty: Reply content cannot be empty.
+      characters: Content must be at least 6 characters long.
       tips:
-        header_1: 感谢你的回复
-        li1_1: 请务必确定在 <strong>回复主题</strong>。提供详细信息并分享你的研究。
-        li1_2: 用参考资料或个人经历来支持你所做的任何陈述。
-        header_2: 但是 <strong>请避免</strong>...
-        li2_1: 请求帮助，寻求澄清，或答复其他答案。
+        header_1: Thank you for your reply.
+        li1_1: Please ensure to <strong>reply to the topic</strong>. Provide detailed information and share your research.
+        li1_2: Use references or personal experiences to support any statements you make.
+        header_2: But <strong>please avoid</strong>...
+        li2_1: Asking for help, seeking clarification, or responding to other answers.
     reopen:
-      confirm_btn: 重新打开
-      title: 重新打开这个帖子
-      content: 确定要重新打开吗？
+      confirm_btn: Reopen
+      title: Reopen this post
+      content: Are you sure you want to reopen it?
     list:
-      confirm_btn: 列表显示
-      title: 列表中显示这个帖子
-      content: 确定要列表中显示这个帖子吗？
+      confirm_btn: Show in List
+      title: Show this post in the list
+      content: Are you sure you want to display this post in the list?
     unlist:
-      confirm_btn: 列表隐藏
-      title: 从列表中隐藏这个帖子
-      content: 确定要从列表中隐藏这个帖子吗？
+      confirm_btn: Hide from List
+      title: Hide this post from the list
+      content: Are you sure you want to hide this post from the list?
     pin:
-      title: 置顶该帖子
-      content: 你确定要全局置顶吗？这个帖子将出现在所有帖子列表的顶部。
-      confirm_btn: 置顶
+      title: Pin this post
+      content: Are you sure you want to globally pin it? This post will appear at the top of all post lists.
+      confirm_btn: Pin
   delete:
-    title: 删除
+    title: Delete
     question_score: >-
-      我们不建议 <strong>删除有回复的帖子</strong>。因为这样做会使得后来的读者无法从该帖子中获得帮助。</p><p>如果删除过多有回复的帖子，你的账号将会被禁止提问。你确定要删除吗？<strong>(删除后积分将返还至您的账户)</strong>
+      We do not recommend <strong>deleting posts with replies</strong>. Doing so prevents future readers from receiving help from that post.</p><p>If too many posts with replies are deleted, your account will be prohibited from asking questions. Are you sure you want to delete? <strong>(Points will be refunded to your account after deletion)</strong>
     question: >-
-      我们不建议 <strong>删除有回复的帖子</strong>。因为这样做会使得后来的读者无法从该帖子中获得帮助。</p><p>如果删除过多有回复的帖子，你的账号将会被禁止提问。你确定要删除吗？
+      We do not recommend <strong>deleting posts with replies</strong>. Doing so prevents future readers from receiving help from that post.</p><p>If too many posts with replies are deleted, your account will be prohibited from asking questions. Are you sure you want to delete?
     answer_accepted: >-
-      <p>我们不建议<strong>删除被采纳的回复</strong>。因为这样做会使得后来的读者无法从该帖子中获得帮助。</p>如果删除过多被采纳的回复，你的账号将会被禁止回复任何提问。你确定要删除吗？
-    other: 你确定要删除？
-    other_score: 你确定要删除？<strong>(删除后积分将返还至您的账户)</strong>
-    answer_other: 你确定要删除？
-    tip_answer_deleted: 该回复已被删除
-    undelete_title: 撤销删除本帖
-    undelete_desc: 你确定你要撤销删除吗？
+      <p>We do not recommend<strong>deleting accepted replies</strong>. Doing so prevents future readers from receiving help from that post.</p>If too many accepted replies are deleted, your account will be prohibited from replying to any questions. Are you sure you want to delete?
+    other: Are you sure you want to delete?
+    other_score: Are you sure you want to delete? <strong>(Points will be refunded to your account after deletion)</strong>
+    answer_other: Are you sure you want to delete?
+    tip_answer_deleted: This reply has been deleted.
+    undelete_title: Undo deletion of this post.
+    undelete_desc: Are you sure you want to undo the deletion?
   ranks:
-    exchange_confirm: 确认兑换积分?
-    modal_title: 声望兑积分
-    platform_entry_title: 平台入驻
-    platform_entry_tip: 声望：入驻所需声望值；权益：入驻后，兑换每1积分所需声望值
-    default_option: 请选择可以入驻的等级
-    not_enough_option: 当前声望不足无法入驻
-    contract_option: "{{title}} | 声望: {{redeem_rank_points}} | 权益: {{rank_to_point}}:1"
-    creator_level_selection: 创作者入驻等级选择
-    exchange_val: 兑换积分值
-    placeholder: 输入想兑换的积分值
-    confirm: 确认
-    close: 关闭
-    exchange: 兑换
-    entry: 入驻
-    entered: " (已入驻)"
-    content: "您有 {{rank}} 声望,最多可兑 {{maxScore}} 积分,兑换后剩余 {{remaining}} 声望"
-    content_confirm: "您有 {{rank}} 声望，兑换 {{currScore}} 积分后剩余 {{remaining}} 声望"
+    exchange_confirm: Confirm point exchange?
+    modal_title: Reputation to Points
+    platform_entry_title: Platform Entry
+    platform_entry_tip: Reputation: Required reputation value for entry; Rights: Required reputation for exchanging every 1 point after entry
+    default_option: Please select a level that allows entry.
+    not_enough_option: Current reputation is insufficient for entry.
+    contract_option: "{{title}} | Reputation: {{redeem_rank_points}} | Rights: {{rank_to_point}}:1"
+    creator_level_selection: Creator Entry Level Selection
+    exchange_val: Exchange point value
+    placeholder: Enter the points you wish to exchange
+    confirm: Confirm
+    close: Close
+    exchange: Exchange
+    entry: Entry
+    entered: " (Entered)"
+    content: "You have {{rank}} reputation, can exchange up to {{maxScore}} points, remaining {{remaining}} reputation after exchange."
+    content_confirm: "You have {{rank}} reputation, remaining {{remaining}} reputation after exchanging {{currScore}} points."
   btns:
-    confirm: 确认
-    cancel: 取消
-    edit: 编辑
-    save: 保存
-    delete: 删除
-    undelete: 撤消删除
-    list: 列表显示
-    unlist: 列表隐藏
-    unlisted: 已隐藏
-    login: 登录
-    signup: 注册
-    logout: 退出
-    verify: 验证
-    add_question: 我要提问
-    add_publish: 我要发布
-    approve: 批准
-    reject: 拒绝
-    skip: 跳过
-    discard_draft: 丢弃草稿
-    pinned: 已置顶
-    all: 全部
-    question: 问题
-    answer: 回复
-    comment: 评论
-    refresh: 刷新
-    resend: 重新发送
-    deactivate: 取消激活
-    active: 激活
-    suspend: 已封禁
-    unsuspend: 解禁
-    close: 关闭
-    reopen: 重新打开
-    ok: 确定
-    light: 浅色
-    dark: 深色
-    system_setting: 跟随系统
-    default: 默认
-    reset: 重置
-    tag: 标签
-    post_lowercase: 帖子
-    filter: 筛选
-    ignore: 忽略
-    submit: 提交
-    normal: 正常
-    closed: 已关闭
-    view: 视图
-    card: 卡片模式
-    compact: 简洁模式
-    deleted: 已删除
-    pending: 等待处理
+    confirm: Confirm
+    cancel: Cancel
+    edit: Edit
+    save: Save
+    delete: Delete
+    undelete: Undo Delete
+    list: Show in List
+    unlist: Hide from List
+    unlisted: Hidden
+    login: Login
+    signup: Sign Up
+    logout: Logout
+    verify: Verify
+    add_question: I want to ask a question
+    add_publish: I want to publish
+    approve: Approve
+    reject: Reject
+    skip: Skip
+    discard_draft: Discard Draft
+    pinned: Pinned
+    all: All
+    question: Question
+    answer: Reply
+    comment: Comment
+    refresh: Refresh
+    resend: Resend
+    deactivate: Deactivate
+    active: Activate
+    suspend: Suspended
+    unsuspend: Unsuspended
+    close: Close
+    reopen: Reopen
+    ok: Okay
+    light: Light
+    dark: Dark
+    system_setting: Follow System
+    default: Default
+    reset: Reset
+    tag: Tag
+    post_lowercase: post
+    filter: Filter
+    ignore: Ignore
+    submit: Submit
+    normal: Normal
+    closed: Closed
+    view: View
+    card: Card Mode
+    compact: Compact Mode
+    deleted: Deleted
+    pending: Pending
   search:
-    title: 搜索结果
-    keywords: 关键词
-    options: 选项
-    follow: 关注
-    following: 已关注
-    counts: "{{count}} 个结果"
-    more: 更多
+    title: Search Results
+    keywords: Keywords
+    options: Options
+    follow: Follow
+    following: Following
+    counts: "{{count}} results"
+    more: More
     sort_btns:
-      relevance: 相关性
-      newest: 最新的
-      active: 活跃的
-      score: 评分
-      more: 更多
+      relevance: Relevance
+      newest: Newest
+      active: Active
+      score: Score
+      more: More
     tips:
-      title: 高级搜索提示
-      tag: "<1>[tag]</1> 在指定标签中搜索"
-      user: "<1>user:username</1> 根据作者搜索"
-      answer: "<1>answers:0</1> 搜索未回复的问题"
-      score: "<1>score:3</1> 评分 3+ 的帖子"
-      question: "<1>is:question</1> 搜索问题"
-      is_answer: "<1>is:answer</1> 搜索回复"
-    empty: 找不到任何相关的内容。<br /> 请尝试其他关键字，或者减少查找内容的长度。
+      title: Advanced Search Tips
+      tag: "<1>[tag]</1> Search within specified tags"
+      user: "<1>user:username</1> Search by author"
+      answer: "<1>answers:0</1> Search for unanswered questions"
+      score: "<1>score:3</1> Posts with a score of 3+"
+      question: "<1>is:question</1> Search for questions"
+      is_answer: "<1>is:answer</1> Search for answers"
+    empty: No related content found.<br /> Please try other keywords or reduce the length of the search content.
   share:
-    name: 分享
-    copy: 复制链接
-    via: 分享到...
-    copied: 已复制
-    facebook: 分享到 Facebook
-    twitter: 分享到 Twitter
-  cannot_vote_for_self: 你不能给自己的帖子投票。
+    name: Share
+    copy: Copy link
+    via: Share to...
+    copied: Copied
+    facebook: Share to Facebook
+    twitter: Share to Twitter
+  cannot_vote_for_self: You cannot vote for your own posts.
   modal_confirm:
-    title: 发生错误...
+    title: An error occurred...
   account_result:
-    success: 你的账号已通过验证，可以点击按钮返回主页。
-    link: 返回主页
+    success: Your account has been verified, you can click the button to return to the homepage.
+    link: Return to homepage
     invalid: >-
-      抱歉，此验证链接已失效。也许你的账号已经激活了？
-    confirm_new_email: 你的电子邮箱已更新
+      Sorry, this verification link has expired. Maybe your account has already been activated?
+    confirm_new_email: Your email address has been updated.
     confirm_new_email_invalid: >-
-      抱歉，此验证链接已失效。也许是你的邮箱已经成功更改了？
+      Sorry, this verification link has expired. Maybe your email has been successfully changed?
   unsubscribe:
-    page_title: 退订
-    success_title: 退订成功
-    success_desc: 您已成功退订，并且将不会再收到我们的邮件。
-    link: 更改设置
+    page_title: Unsubscribe
+    success_title: Unsubscribed Successfully
+    success_desc: You have successfully unsubscribed and will no longer receive our emails.
+    link: Change settings
   question:
-    following_tags: 已关注的标签
-    edit: 编辑
-    save: 保存
-    follow_tag_tip: 关注标签来筛选你的问题列表。
-    hot_questions: 热门主题
-    all_questions: 全部问题
-    score_payment: 积分付款解锁内容
-    is_score_payment: 该帖子需要积分付款才可解锁，是否解锁?(如积分不足会自动跳转至积分充值界面)
-    unlock: 解锁
-    qustions: 问题
-    articles: 文章
-    assetbuns: 网盘资源
-    bounties: 项目需求
-    aipics: AI图集
-    all_articles: 全部文章
-    hot_articles: 热门文章
-    all_assetbuns: 全部云盘资源
-    hot_assetbuns: 热门资源
-    all_bounties: 全部项目需求
-    hot_bounties: 热门项目需求
-    all_aipics: 全部AI图集
-    hot_aipics: 热门AI图集
-    x_questions: "{{ count }} 个问题"
-    x_answers: "{{ count }} 个回复"
-    x_integral: "{{ count }} 个积分"
-    questions: 问题
-    answers: 回复
-    newest: 最新
-    active: 活跃
-    frequent: 浏览量
-    score: 评分
-    integral: 积分
-    non-integral: 非积分
-    all: 全部
-    unanswered: 未回复
-    modified: 更新于
-    answered: 回复于
-    asked: 提交于
-    closed: 已关闭
-    follow_a_tag: 关注一个标签
-    more: 更多
+    following_tags: Followed Tags
+    edit: Edit
+    save: Save
+    follow_tag_tip: Follow tags to filter your question list.
+    hot_questions: Hot Topics
+    all_questions: All Questions
+    score_payment: Points payment to unlock content
+    is_score_payment: This post requires point payment to unlock, do you wish to unlock? (If points are insufficient, it will automatically redirect to the points recharge page.)
+    unlock: Unlock
+    qustions: Questions
+    articles: Articles
+    assetbuns: Cloud Drive Resources
+    bounties: Project Requirements
+    aipics: AI Gallery
+    all_articles: All Articles
+    hot_articles: Hot Articles
+    all_assetbuns: All Cloud Drive Resources
+    hot_assetbuns: Hot Resources
+    all_bounties: All Project Requirements
+    hot_bounties: Hot Project Requirements
+    all_aipics: All AI Galleries
+    hot_aipics: Hot AI Galleries
+    x_questions: "{{ count }} questions"
+    x_answers: "{{ count }} replies"
+    x_integral: "{{ count }} points"
+    questions: Questions
+    answers: Replies
+    newest: Newest
+    active: Active
+    frequent: View count
+    score: Score
+    integral: Points
+    non-integral: Non-Points
+    all: All
+    unanswered: Unanswered
+    modified: Updated on
+    answered: Replied on
+    asked: Submitted on
+    closed: Closed
+    follow_a_tag: Follow a tag
+    more: More
   personal:
-    overview: 概览
-    answers: 回复
-    answer: 回复
-    questions: 问题
-    articles: 文章
-    assetbuns: 资源
-    bounties: 项目
-    question: 问题
-    bookmarks: 收藏
-    reputation: 声望
-    comments: 评论
-    votes: 得票
-    newest: 最新
-    score: 评分
-    integral: 积分
-    edit_profile: 编辑资料
-    visited_x_days: "已访问 {{ count }} 天"
-    viewed: 浏览次数
-    joined: 加入于
-    last_login: 上次登录
-    about_me: 关于我
+    overview: Overview
+    answers: Replies
+    answer: Reply
+    questions: Questions
+    articles: Articles
+    assetbuns: Resources
+    bounties: Projects
+    question: Question
+    bookmarks: Bookmarks
+    reputation: Reputation
+    comments: Comments
+    votes: Votes
+    newest: Newest
+    score: Score
+    integral: Points
+    edit_profile: Edit Profile
+    visited_x_days: "Visited {{ count }} days"
+    viewed: View count
+    joined: Joined on
+    last_login: Last login
+    about_me: About me
     about_me_empty: "// Hello, World!"
-    top_answers: 高分回复
-    top_questions: 高分问题
-    stats: 状态
-    list_empty: 没有找到相关的内容。<br />试试看其他选项卡？
-    accepted: 已采纳
-    answered: 回复于
-    asked: 提交于
-    downvoted: 点踩
-    mod_short: 版主
-    mod_long: 版主
-    x_reputation: 声望
-    x_votes: 得票
-    x_answers: 个回复
-    x_questions: 个问题
-    x_integral: 个积分
-    User: 普通用户
-    Admin: 管理员
+    top_answers: Top Replies
+    top_questions: Top Questions
+    stats: Stats
+    list_empty: No related content found.<br />Try other tabs?
+    accepted: Accepted
+    answered: Replied on
+    asked: Submitted on
+    downvoted: Downvoted
+    mod_short: Moderator
+    mod_long: Moderator
+    x_reputation: Reputation
+    x_votes: Votes
+    x_answers: Replies
+    x_questions: Questions
+    x_integral: Points
+    User: Regular User
+    Admin: Admin
   install:
-    title: 回复
-    next: 下一步
-    done: 完成
-    config_yaml_error: 无法创建 config.yaml 文件。
+    title: Reply
+    next: Next
+    done: Done
+    config_yaml_error: Unable to create config.yaml file.
     lang:
-      label: 请选择一种语言
+      label: Please select a language
     db_type:
-      label: 数据库引擎
+      label: Database Engine
     db_username:
-      label: 用户名
+      label: Username
       placeholder: root
-      msg: 用户名不能为空
+      msg: Username cannot be empty
     db_password:
-      label: 密码
+      label: Password
       placeholder: root
-      msg: 密码不能为空
+      msg: Password cannot be empty
     db_host:
-      label: 数据库主机
+      label: Database Host
       placeholder: "db:3306"
-      msg: 数据库地址不能为空
+      msg: Database address cannot be empty
     db_name:
-      label: 数据库名
-      placeholder: 回复
-      msg: 数据库名称不能为空。
+      label: Database Name
+      placeholder: Reply
+      msg: Database name cannot be empty.
     db_file:
-      label: 数据库文件
+      label: Database File
       placeholder: /data/answer.db
-      msg: 数据库文件不能为空。
+      msg: Database file cannot be empty.
     config_yaml:
-      title: 创建 config.yaml
-      label: 已创建 config.yaml 文件。
+      title: Create config.yaml
+      label: config.yaml file created.
       desc: >-
-        你可以手动在 <1>/var/wwww/xxx/</1> 目录中创建 <1>config.yaml</1> 文件并粘贴以下文本。
-      info: 完成后，点击“下一步”按钮。
-    site_information: 站点信息
-    admin_account: 管理员账号
+        You can manually create a <1>config.yaml</1> file in the <1>/var/www/xxx/</1> directory and paste the text below.
+      info: Click “Next” after completion.
+    site_information: Site Information
+    admin_account: Admin Account
     site_name:
-      label: 站点名称
-      msg: 站点名称不能为空。
-      msg_max_length: 站点名称长度不得超过 30 个字符。
+      label: Site Name
+      msg: Site name cannot be empty.
+      msg_max_length: Site name length cannot exceed 30 characters.
     site_url:
-      label: 网站网址
-      text: 此网站的网址。
+      label: Website URL
+      text: The URL of this website.
       msg:
-        empty: 网址不能为空。
-        incorrect: 网址格式不正确。
-        max_length: 网址长度不得超过 512 个字符。
+        empty: URL cannot be empty.
+        incorrect: URL format is incorrect.
+        max_length: URL length cannot exceed 512 characters.
     contact_email:
-      label: 联系邮箱
-      text: 负责本网站的主要联系人的电子邮件地址。
+      label: Contact Email
+      text: The email address of the primary contact person responsible for this website.
       msg:
-        empty: 联系人邮箱不能为空。
-        incorrect: 联系人邮箱地址不正确。
+        empty: Contact person's email cannot be empty.
+        incorrect: Contact person's email address is incorrect.
     login_required:
-      label: 私有的
-      switch: 需要登录
-      text: 只有登录用户才能访问这个社区。
+      label: Private
+      switch: Requires login
+      text: Only logged-in users can access this community.
     admin_name:
-      label: 名字
-      msg: 名字不能为空。
-      character: '只能由 "a-z", "0-9", " - . _" 组成'
-      msg_max_length: 名字长度不能超过 30 个字符。
+      label: Name
+      msg: Name cannot be empty.
+      character: 'Can only contain "a-z", "0-9", " - . _"'
+      msg_max_length: Name length cannot exceed 30 characters.
     admin_password:
-      label: 密码
+      label: Password
       text: >-
-        您需要此密码才能登录。请将其存储在一个安全的位置。
-      msg: 密码不能为空。
-      msg_min_length: 密码必须至少 8 个字符长。
-      msg_max_length: 密码长度不能超过 32 个字符。
+        You will need this password to log in. Please store it safely.
+      msg: Password cannot be empty.
+      msg_min_length: Password must be at least 8 characters long.
+      msg_max_length: Password length cannot exceed 32 characters.
     admin_email:
-      label: 邮箱
-      text: 您需要此电子邮件才能登录。
+      label: Email
+      text: You will need this email to log in.
       msg:
-        empty: 邮箱不能为空。
-        incorrect: 邮箱格式不正确。
-    ready_title: 你的 Answer 已经准备好了!
+        empty: Email cannot be empty.
+        incorrect: Email format is incorrect.
+    ready_title: Your Answer is Ready!
     ready_desc: >-
-      如果你想改变更多的设置，请访问 <1>管理区域</1>；在网站菜单中找到它。
-    good_luck: "玩得愉快，祝你好运！"
-    warn_title: 警告
+      If you want to change more settings, please visit the <1>admin area</1>; find it in the website menu.
+    good_luck: "Have fun, good luck!"
+    warn_title: Warning
     warn_desc: >-
-      文件 <1>config.yaml</1> 已存在。如果你要重置该文件中的任何配置项，请先删除它。
-    install_now: 您可以尝试 <1>现在安装</1>。
-    installed: 已安裝
+      The file <1>config.yaml</1> already exists. If you want to reset any configuration in this file, please delete it first.
+    install_now: You can try <1>install now</1>.
+    installed: Installed
     installed_desc: >-
-      你似乎已经安装过了。如果要重新安装，请先清除旧的数据库表。
-    db_failed: 数据连接异常！
+      You seem to have already installed. If you want to reinstall, please clear the old database tables first.
+    db_failed: Database connection failed!
     db_failed_desc: >-
-      这或者意味着数据库信息在 <1>config.yaml</1> 文件不正确，或者无法与数据库服务器建立联系。这可能意味着你的主机数据库服务器故障。
+      This may mean the database information in the <1>config.yaml</1> file is incorrect, or that a connection to the database server cannot be established. It might mean that your host's database server has failed.
   counts:
-    views: 次浏览
-    votes: 个点赞
-    score: 积分
-    answers: 个回复
-    accepted: 已被采纳
+    views: Views
+    votes: Upvotes
+    score: Points
+    answers: Replies
+    accepted: Accepted
   page_error:
-    http_error: HTTP 错误 {{ code }}
-    desc_403: 您无权访问此页面。
-    desc_404: 很抱歉，此页面不存在。
-    desc_50X: 服务器遇到了一个错误，无法完成你的请求。
-    back_home: 返回首页
+    http_error: HTTP Error {{ code }}
+    desc_403: You do not have permission to access this page.
+    desc_404: Sorry, this page does not exist.
+    desc_50X: The server encountered an error and could not complete your request.
+    back_home: Return to Homepage
   page_maintenance:
-    desc: "我们正在进行维护，我们将很快回来。"
+    desc: "We are undergoing maintenance and will be back soon."
   nav_menus:
-    dashboard: 后台管理
-    contents: 内容管理
-    questions: 问题
-    answers: 回复
-    users: 用户管理
-    flags: 举报管理
-    settings: 站点设置
-    general: 一般
-    interface: 界面
+    dashboard: Admin Management
+    contents: Content Management
+    questions: Questions
+    answers: Replies
+    users: User Management
+    flags: Report Management
+    settings: Site Settings
+    general: General
+    interface: Interface
     smtp: SMTP
-    branding: 品牌
-    legal: 法律条款
-    write: 撰写
-    tos: 服务条款
-    privacy: 隐私政策
+    branding: Branding
+    legal: Legal Terms
+    write: Write
+    tos: Terms of Service
+    privacy: Privacy Policy
     seo: SEO
-    customize: 自定义
-    themes: 主题
+    customize: Customize
+    themes: Themes
     css_html: CSS/HTML
-    login: 登录
-    privileges: 特权
-    plugins: 插件
-    installed_plugins: 已安装插件
-  website_welcome: 欢迎来到 {{site_name}}
+    login: Login
+    privileges: Privileges
+    plugins: Plugins
+    installed_plugins: Installed Plugins
+  website_welcome: Welcome to {{site_name}}
   user_center:
-    login: 登录
-    qrcode_login_tip: 请使用 {{ agentName }} 扫描二维码并登录。
-    login_failed_email_tip: 登录失败，请允许此应用访问您的邮箱信息，然后重试。
+    login: Login
+    qrcode_login_tip: Please use {{ agentName }} to scan the QR code and log in.
+    login_failed_email_tip: Login failed, please allow this app access to your
   admin:
     admin_header:
-      title: 后台管理
+      title: Admin Management
     dashboard:
-      title: 后台管理
-      welcome: 欢迎来到 Answer 后台管理！
-      site_statistics: 站点统计
-      questions: "问题:"
-      answers: "回复:"
-      comments: "评论:"
-      votes: "投票:"
-      users: "用户:"
-      flags: "举报:"
-      reviews: "审查:"
-      site_health: 网站健康
-      version: "版本"
+      title: Admin Dashboard
+      welcome: Welcome to Answer Admin Dashboard!
+      site_statistics: Site Statistics
+      questions: "Questions:"
+      answers: "Replies:"
+      comments: "Comments:"
+      votes: "Votes:"
+      users: "Users:"
+      flags: "Reports:"
+      reviews: "Reviews:"
+      site_health: Site Health
+      version: "Version"
       https: "HTTPS:"
-      upload_folder: "上传文件夹："
-      run_mode: "运行模式："
-      private: 私有
-      public: 公开
+      upload_folder: "Upload Folder:"
+      run_mode: "Run Mode:"
+      private: Private
+      public: Public
       smtp: "SMTP:"
-      timezone: "时区："
-      system_info: 系统信息
-      go_version: "Go版本："
-      database: "数据库："
-      database_size: "数据库大小："
-      storage_used: "已用存储空间："
-      uptime: "运行时间："
-      links: 链接
-      plugins: 插件
+      timezone: "Timezone:"
+      system_info: System Information
+      go_version: "Go Version:"
+      database: "Database:"
+      database_size: "Database Size:"
+      storage_used: "Storage Used:"
+      uptime: "Uptime:"
+      links: Links
+      plugins: Plugins
       github: GitHub
-      blog: 博客
-      contact: 联系
-      forum: 论坛
-      documents: 文档
-      feedback: 用户反馈
-      support: 帮助
-      review: 审查
-      config: 配置
-      update_to: 更新到
-      latest: 最新版本
-      check_failed: 校验失败
-      "yes": "是"
-      "no": "否"
-      not_allowed: 拒绝
-      allowed: 允许
-      enabled: 已启用
-      disabled: 停用
-      writable: 可写
-      not_writable: 不可写
+      blog: Blog
+      contact: Contact
+      forum: Forum
+      documents: Documentation
+      feedback: User Feedback
+      support: Help
+      review: Review
+      config: Configuration
+      update_to: Update to
+      latest: Latest Version
+      check_failed: Verification Failed
+      "yes": "Yes"
+      "no": "No"
+      not_allowed: Denied
+      allowed: Allowed
+      enabled: Enabled
+      disabled: Disabled
+      writable: Writable
+      not_writable: Not Writable
     flags:
-      title: 举报
-      pending: 等待处理
-      completed: 已完成
-      flagged: 被举报内容
-      flagged_type: 标记了 {{ type }}
-      created: 创建于
-      action: 操作
-      review: 审查
+      title: Reports
+      pending: Pending
+      completed: Completed
+      flagged: Flagged Content
+      flagged_type: Marked as {{ type }}
+      created: Created At
+      action: Action
+      review: Review
     user_role_modal:
-      title: 更改用户状态为...
-      btn_cancel: 取消
-      btn_submit: 提交
+      title: Change User Status to...
+      btn_cancel: Cancel
+      btn_submit: Submit
     new_password_modal:
-      title: 设置新密码
+      title: Set New Password
       form:
         fields:
           password:
-            label: 密码
-            text: 用户将被退出，需要再次登录。
-            msg: 密码的长度必须是8-32个字符。
-      btn_cancel: 取消
-      btn_submit: 提交
+            label: Password
+            text: User will be logged out and need to log in again.
+            msg: Password length must be 8-32 characters.
+      btn_cancel: Cancel
+      btn_submit: Submit
     user_modal:
-      title: 添加新用户
+      title: Add New User
       form:
         fields:
           users:
-            label: 批量添加用户
+            label: Bulk Add Users
             placeholder: "John Smith, john@example.com, BUSYopr2\nAlice, alice@example.com, fpDntV8q"
-            text: 用逗号分隔“name, email, password”，每行一个用户。
-            msg: "请输入用户的邮箱，每行一个。"
+            text: Separate “name, email, password” with commas, one user per line.
+            msg: "Please enter the user’s email, one per line."
           display_name:
-            label: 显示名称
-            msg: 显示名称长度必须为 4-30 个字符
+            label: Display Name
+            msg: Display name length must be 4-30 characters.
           email:
-            label: 邮箱
-            msg: 邮箱无效。
+            label: Email
+            msg: Invalid email.
           password:
-            label: 密码
-            msg: 密码的长度必须是8-32个字符。
-      btn_cancel: 取消
-      btn_submit: 提交
+            label: Password
+            msg: Password length must be 8-32 characters.
+      btn_cancel: Cancel
+      btn_submit: Submit
     users:
-      title: 用户
-      name: 名称
-      email: 邮箱
-      reputation: 声望
-      created_at: 创建时间
-      delete_at: 删除时间
-      suspend_at: 封禁时间
-      status: 状态
-      role: 角色
-      action: 操作
-      change: 更改
-      all: 全部
-      staff: 工作人员
-      more: 更多
-      inactive: 不活跃
-      suspended: 已封禁
-      deleted: 已删除
-      normal: 正常
-      Moderator: 版主
-      Admin: 管理员
-      User: 用户
+      title: Users
+      name: Name
+      email: Email
+      reputation: Reputation
+      created_at: Created At
+      delete_at: Deleted At
+      suspend_at: Suspended At
+      status: Status
+      role: Role
+      action: Action
+      change: Change
+      all: All
+      staff: Staff
+      more: More
+      inactive: Inactive
+      suspended: Suspended
+      deleted: Deleted
+      normal: Normal
+      Moderator: Moderator
+      Admin: Administrator
+      User: User
       filter:
-        placeholder: "按名称筛选，用户：id"
-      set_new_password: 设置新密码
-      change_status: 更改状态
-      change_role: 更改角色
-      show_logs: 显示日志
-      add_user: 添加用户
+        placeholder: "Filter by name, user: id"
+      set_new_password: Set New Password
+      change_status: Change Status
+      change_role: Change Role
+      show_logs: Show Logs
+      add_user: Add User
       deactivate_user:
-        title: 停用用户
-        content: 未激活的用户必须重新验证他们的邮箱。
+        title: Deactivate User
+        content: Inactive users must re-verify their email.
       delete_user:
-        title: 删除此用户
-        content: 确定要删除此用户？此操作无法撤销！
-        remove: 移除内容
-        label: 删除所有问题、 回复、 评论等
-        text: 如果你只想删除用户账户，请不要选中此项。
+        title: Delete This User
+        content: Are you sure you want to delete this user? This action cannot be undone!
+        remove: Remove Content
+        label: Delete all questions, replies, comments, etc.
+        text: Do not check this box if you only want to delete the user account.
       suspend_user:
-        title: 挂起此用户
-        content: 被封禁的用户将无法登录。
+        title: Suspend This User
+        content: A banned user will no longer be able to log in.
     questions:
-      page_title: 问题
-      question: 问题
-      article: 文章
-      bounty: 项目需求
-      assetbun: 云盘资源
-      aipic: 图片
-      unlisted: 已隐藏
-      post: 标题
-      votes: 得票数
-      answers: 回复数
-      created: 创建于
-      status: 状态
-      action: 操作
-      change: 更改
-      pending: 等待处理
+      page_title: Questions
+      question: Question
+      article: Article
+      bounty: Project Requirement
+      assetbun: Cloud Drive Resource
+      aipic: Image
+      unlisted: Unlisted
+      post: Title
+      votes: Vote Count
+      answers: Reply Count
+      created: Created At
+      status: Status
+      action: Action
+      change: Change
+      pending: Pending
       filter:
-        placeholder: "按标题过滤，问题:id"
+        placeholder: "Filter by title, question: id"
     answers:
-      page_title: 回复
-      post: 标题
-      votes: 得票数
-      created: 创建于
-      status: 状态
-      action: 操作
-      change: 更改
+      page_title: Replies
+      post: Title
+      votes: Vote Count
+      created: Created At
+      status: Status
+      action: Action
+      change: Change
       filter:
-        placeholder: "按标题筛选，回复:id"
+        placeholder: "Filter by title, reply: id"
     general:
-      page_title: 一般
+      page_title: General
       name:
-        label: 站点名称
-        msg: 不能为空
-        text: "站点的名称，作为站点的标题。"
+        label: Site Name
+        msg: Cannot be empty.
+        text: "The name of the site, serving as the title of the site."
       site_url:
-        label: 网站网址
-        msg: 网站网址不能为空。
-        validate: 请输入一个有效的 URL。
-        text: 此网站的地址。
+        label: Website URL
+        msg: Website URL cannot be empty.
+        validate: Please enter a valid URL.
+        text: The address of this site.
       short_desc:
-        label: 简短站点描述
-        msg: 简短网站描述不能为空。
-        text: "简短的标语，作为网站主页的标题（Html 的 title 标签）。"
+        label: Short Site Description
+        msg: Short site description cannot be empty.
+        text: "A brief slogan, serving as the title for the homepage (HTML title tag)."
       desc:
-        label: 站点描述
-        msg: 网站描述不能为空。
-        text: "使用一句话描述本站，作为网站的描述（Html 的 meta 标签）。"
+        label: Site Description
+        msg: Site description cannot be empty.
+        text: "Describe this site in one sentence, serving as the site description (HTML meta tag)."
       contact_email:
-        label: 联系邮箱
-        msg: 联系人邮箱不能为空。
-        validate: 联系人邮箱无效。
-        text: 本网站的主要联系邮箱地址。
+        label: Contact Email
+        msg: Contact's email cannot be empty.
+        validate: Contact's email is invalid.
+        text: Primary contact email address for this website.
       check_update:
-        label: 软件更新
-        text: 自动检查软件更新
+        label: Software Update
+        text: Automatically check for software updates.
     interface:
-      page_title: 界面
+      page_title: Interface
       language:
-        label: 界面语言
-        msg: 不能为空
-        text: 设置用户界面语言，在刷新页面后生效。
+        label: Interface Language
+        msg: Cannot be empty.
+        text: Set the user interface language, effective after refreshing the page.
       time_zone:
-        label: 时区
-        msg: 时区不能为空。
-        text: 选择一个与您相同时区的城市。
+        label: Time Zone
+        msg: Time zone cannot be empty.
+        text: Choose a city in your same time zone.
     smtp:
       page_title: SMTP
       from_email:
-        label: 发件人邮箱
-        msg: 发件人邮箱不能为空。
-        text: 用于发送邮件的地址。
+        label: Sender Email
+        msg: Sender's email cannot be empty.
+        text: The address used for sending emails.
       from_name:
-        label: 发件人
-        msg: 不能为空
-        text: 发件人的名字。
+        label: Sender
+        msg: Cannot be empty.
+        text: The name of the sender.
       smtp_host:
-        label: SMTP 主机
-        msg: 不能为空
-        text: 邮件服务器
+        label: SMTP Host
+        msg: Cannot be empty.
+        text: Email server.
       encryption:
-        label: 加密
-        msg: 不能为空
-        text: 对于大多数服务器而言，SSL 是推荐开启的。
+        label: Encryption
+        msg: Cannot be empty.
+        text: SSL is recommended to be enabled for most servers.
         ssl: SSL
-        none: 无加密
+        none: No Encryption
       smtp_port:
-        label: SMTP 端口
-        msg: SMTP 端口必须在 1 ~ 65535 之间。
-        text: 邮件服务器的端口号。
+        label: SMTP Port
+        msg: SMTP port must be between 1 and 65535.
+        text: The port number for the email server.
       smtp_username:
-        label: SMTP 用户名
-        msg: 不能为空
+        label: SMTP Username
+        msg: Cannot be empty.
       smtp_password:
-        label: SMTP 密码
-        msg: 不能为空
+        label: SMTP Password
+        msg: Cannot be empty.
       test_email_recipient:
-        label: 测试收件邮箱
-        text: 提供用于接收测试邮件的邮箱地址。
-        msg: 测试收件邮箱无效
+        label: Test Recipient Email
+        text: Provide the email address for receiving test emails.
+        msg: Test recipient email is invalid.
       smtp_authentication:
-        label: 启用身份验证
-        title: SMTP 身份验证
-        msg: 不能为空
-        "yes": "是"
-        "no": "否"
+        label: Enable Authentication
+        title: SMTP Authentication
+        msg: Cannot be empty.
+        "yes": "Yes"
+        "no": "No"
     branding:
-      page_title: 品牌
+      page_title: Branding
       logo:
-        label: 网站标志（Logo）
-        msg: 图标不能为空。
-        text: 在你的网站左上方的Logo图标。使用一个高度为56，长宽比大于3:1的宽长方形图像。如果留空，将显示网站标题文本。
+        label: Website Logo
+        msg: Icon cannot be empty.
+        text: Logo icon at the top left of your website. Use a wide rectangular image with a height of 56 and an aspect ratio greater than 3:1. If left blank, the site title text will be displayed.
       mobile_logo:
-        label: 移动端 Logo
-        text: 在你的网站的移动版上使用的标志。使用一个高度为56的宽矩形图像。如果留空，将使用 "Logo"设置中的图像。
+        label: Mobile Logo
+        text: Logo used on the mobile version of your site. Use a wide rectangular image with a height of 56. If left blank, the image in the "Logo" setting will be used.
       square_icon:
-        label: 方形图标
-        msg: 方形图标不能为空。
-        text: 用作元数据图标的基础的图像。最好是大于512x512。
+        label: Square Icon
+        msg: Square icon cannot be empty.
+        text: Image to be used as the base for the metadata icon. Ideally, it should be larger than 512x512.
       favicon:
-        label: 收藏夹图标
-        text: 网站的图标。要在 CDN 正常工作，它必须是 png。 将调整大小到32x32。如果留空，将使用“方形图标”。
+        label: Favicon
+        text: The icon for the site. It needs to be png for the CDN to work properly. It will be resized to 32x32. If left blank, the "Square Icon" will be used.
     legal:
-      page_title: 法律条款
+      page_title: Legal Terms
       terms_of_service:
-        label: 服务条款
-        text: "您可以在此添加服务内容的条款。如果您已经在别处托管了文档，请在这里提供完整的URL。"
+        label: Terms of Service
+        text: "You can add the terms of service for your services here. If you have the document hosted elsewhere, please provide the full URL here."
       privacy_policy:
-        label: 隐私政策
-        text: "您可以在此添加隐私政策内容。如果您已经在别处托管了文档，请在这里提供完整的URL。"
+        label: Privacy Policy
+        text: "You can add your privacy policy here. If you have the document hosted elsewhere, please provide the full URL here."
     write:
-      page_title: 编辑
+      page_title: Edit
       restrict_answer:
-        title: 限制一个回复
-        label: 每个用户对于每个问题只能有一个回复
-        text: "用户可以使用编辑按钮优化已有的回复"
+        title: Limit to One Reply
+        label: Each user can only have one reply per question.
+        text: "Users can use the edit button to optimize an existing reply."
       recommend_tags:
-        label: 推荐标签
-        text: "请在上方输入标签固定链接，每行一个标签。"
+        label: Recommended Tags
+        text: "Please enter the tag slug in the above, one tag per line."
       required_tag:
-        title: 必需的标签
-        label: 根据需要设置推荐标签
-        text: "每个新问题必须至少有一个推荐标签。"
+        title: Required Tags
+        label: Set recommended tags as needed.
+        text: "Each new question must have at least one recommended tag."
       reserved_tags:
-        label: 保留标签
-        text: "保留的标签只能由版主添加到一个帖子中。"
+        label: Reserved Tags
+        text: "Reserved tags can only be added to a post by moderators."
     seo:
-      page_title: 搜索引擎优化
+      page_title: Search Engine Optimization
       permalink:
-        label: 固定链接
-        text: 自定义URL结构可以提高可用性，以及你的链接的向前兼容性。
+        label: Permalink
+        text: Custom URL structures can improve usability and the forward compatibility of your links.
       robots:
         label: robots.txt
-        text: 这将永久覆盖任何相关的网站设置。
+        text: This will permanently override any relevant site settings.
     themes:
-      page_title: 主题
+      page_title: Themes
       themes:
-        label: 主题
-        text: 选择一个现有主题。
+        label: Themes
+        text: Select an existing theme.
       color_scheme:
-        label: 配色方案
+        label: Color Scheme
       navbar_style:
-        label: 导航栏样式
+        label: Navbar Style
       primary_color:
-        label: 主色调
-        text: 修改您主题使用的颜色
+        label: Primary Color
+        text: Change the colors used by your theme.
     css_and_html:
-      page_title: CSS 与 HTML
+      page_title: CSS and HTML
       custom_css:
-        label: 自定义 CSS
+        label: Custom CSS
         text: >
 
       head:
-        label: 头部
+        label: Head
         text: >
 
       header:
-        label: 页眉
+        label: Header
         text: >
 
       footer:
-        label: 页脚
-        text: 这将在 </body> 之前插入.
+        label: Footer
+        text: This will be inserted before </body>.
       sidebar:
-        label: 侧边栏
-        text: 这将插入侧边栏中。
+        label: Sidebar
+        text: This will be inserted in the sidebar.
     login:
-      page_title: 登录
+      page_title: Login
       membership:
-        title: 会员
-        label: 允许新注册
-        text: 关闭以防止任何人创建新账户。
+        title: Membership
+        label: Allow New Registration
+        text: Turn off to prevent anyone from creating a new account.
       email_registration:
-        title: 邮箱注册
-        label: 允许邮箱注册
-        text: 关闭以阻止任何人通过邮箱创建新账户。
+        title: Email Registration
+        label: Allow Email Registration
+        text: Turn off to prevent anyone from creating a new account via email.
       allowed_email_domains:
-        title: 允许的邮箱域
-        text: 允许注册账户的邮箱域。每行一个域名。留空时忽略。
+        title: Allowed Email Domains
+        text: The email domains allowed to register accounts. One domain per line. Ignore when left empty.
       private:
-        title: 非公开的
-        label: 需要登录
-        text: 只有登录用户才能访问这个社区。
+        title: Private
+        label: Requires login
+        text: Only logged-in users can access this community.
       password_login:
-        title: 密码登录
-        label: 允许使用邮箱和密码登录
-        text: "警告：如果您未配置过其他登录方式，关闭密码登录后您则可能无法登录。"
+        title: Password Login
+        label: Allow login with email and password.
+        text: "Warning: If you have not configured other login methods, turning off password login may prevent you from logging in."
     installed_plugins:
-      title: 已安装插件
-      plugin_link: Answer 插件扩展功能。您可以在<1>Answer Plugin 仓库</1>中找到插件。
+      title: Installed Plugins
+      plugin_link: Answer plugin extension. You can find plugins in the <1>Answer Plugin Repository</1>.
       filter:
-        all: 全部
-        active: 已启用
-        inactive: 未启用
-        outdated: 已过期
+        all: All
+        active: Active
+        inactive: Inactive
+        outdated: Outdated
       plugins:
-        label: 插件
-        text: 选择一个现有的插件。
-      name: 名称
-      version: 版本
-      status: 状态
-      action: 操作
-      deactivate: 停用
-      activate: 启用
-      settings: 设置
+        label: Plugins
+        text: Select an existing plugin.
+      name: Name
+      version: Version
+      status: Status
+      action: Action
+      deactivate: Deactivate
+      activate: Activate
+      settings: Settings
     settings_users:
-      title: 用户
+      title: Users
       avatar:
-        label: 默认头像
-        text: 没有自定义头像的用户。
+        label: Default Avatar
+        text: Users without a custom avatar.
       gravatar_base_url:
-        label: Gravatar 根路径 URL
-        text: Gravatar 提供商的 API 基础的 URL。当为空时忽略。
+        label: Gravatar Base URL
+        text: The base URL for the Gravatar provider's API. Ignore if empty.
       profile_editable:
-        title: 个人资料可编辑
+        title: Profile Editable
       allow_update_display_name:
-        label: 允许用户修改显示名称
+        label: Allow users to modify display names.
       allow_update_username:
-        label: 允许用户修改用户名
+        label: Allow users to modify usernames.
       allow_update_avatar:
-        label: 允许用户修改个人头像
+        label: Allow users to modify personal avatars.
       allow_update_bio:
-        label: 允许用户修改个人介绍
+        label: Allow users to modify personal introductions.
       allow_update_website:
-        label: 允许用户修改个人主页网址
+        label: Allow users to modify personal homepage URLs.
       allow_update_location:
-        label: 允许用户更改位置
+        label: Allow users to change locations.
     privilege:
-      title: 特权
+      title: Privileges
       level:
-        label: 级别所需声望
-        text: 选择特权所需的声望值
+        label: Required Reputation for Level
+        text: Select the required reputation value for privileges.
   form:
-    optional: (选填)
-    empty: 不能为空
-    invalid: 是无效的
-    btn_submit: 保存
-    not_found_props: "所需属性 {{ key }} 未找到。"
-    select: 选择
+    optional: (Optional)
+    empty: Cannot be empty
+    invalid: Is invalid
+    btn_submit: Save
+    not_found_props: "Required property {{ key }} not found."
+    select: Select
   page_review:
-    review: 评论
-    proposed: 提案
-    question_edit: 问题编辑
-    answer_edit: 回复编辑
-    tag_edit: '标签管理: 编辑标签'
-    edit_summary: 编辑备注
-    edit_question: 编辑问题
-    edit_answer: 编辑回复
-    edit_tag: 编辑标签
-    empty: 没有剩余的审核任务。
-    approve_revision_tip: 您是否批准此修订？
-    approve_flag_tip: 您是否批准此举报？
-    approve_post_tip: 您是否批准此帖子？
-    approve_user_tip: 您是否批准此修订？
-    suggest_edits: 建议的编辑
-    flag_post: 举报帖子
-    flag_user: 举报用户
-    queued_post: 排队的帖子
-    queued_user: 排队用户
-    filter_label: 类型
-    reputation: 声望值
-    flag_post_type: 举报这个帖子的类型是 {{ type }}
-    flag_user_type: 举报这个用户的类型是 {{ type }}
-    edit_post: 编辑帖子
-    list_post: 文章列表
-    unlist_post: 隐藏的帖子
+    review: Reviews
+    proposed: Proposals
+    question_edit: Question Edit
+    answer_edit: Reply Edit
+    tag_edit: 'Tag Management: Edit Tag'
+    edit_summary: Edit Notes
+    edit_question: Edit Question
+    edit_answer: Edit Reply
+    edit_tag: Edit Tag
+    empty: No remaining review tasks.
+    approve_revision_tip: Do you approve this revision?
+    approve_flag_tip: Do you approve this report?
+    approve_post_tip: Do you approve this post?
+    approve_user_tip: Do you approve this revision?
+    suggest_edits: Suggested Edits
+    flag_post: Report Post
+    flag_user: Report User
+    queued_post: Queued Post
+    queued_user: Queued User
+    filter_label: Type
+    reputation: Reputation Points
+    flag_post_type: The type of report for this post is {{ type }}
+    flag_user_type: The type of report for this user is {{ type }}
+    edit_post: Edit Post
+    list_post: Post List
+    unlist_post: Hidden Posts
   timeline:
-    undeleted: 取消删除
-    deleted: 删除
-    downvote: 反对
-    upvote: 点赞
-    accept: 采纳
-    cancelled: 已取消
-    commented: '评论:'
-    rollback: 回滚
-    edited: 最后编辑于
-    answered: 回复于
-    asked: 提交于
-    closed: 关闭
-    reopened: 重新开启
-    created: 创建于
-    pin: 已置顶
-    unpin: 取消置頂
-    show: 已显示
-    hide: 已隐藏
-    title: "历史记录"
-    tag_title: "时间线"
-    show_votes: "显示投票"
+    undeleted: Undelete
+    deleted: Delete
+    downvote: Dislike
+    upvote: Like
+    accept: Accept
+    cancelled: Cancelled
+    commented: 'Comment:'
+    rollback: Rollback
+    edited: Last edited on
+    answered: Replied on
+    asked: Submitted on
+    closed: Closed
+    reopened: Reopened
+    created: Created on
+    pin: Pinned
+    unpin: Unpinned
+    show: Shown
+    hide: Hidden
+    title: "History"
+    tag_title: "Timeline"
+    show_votes: "Show Votes"
     n_or_a: N/A
-    title_for_question: "时间线"
-    title_for_answer: "{{ title }} 的 {{ author }} 回复时间线"
-    title_for_tag: "时间线"
-    datetime: 日期时间
-    type: 类型
-    by: 由
-    comment: 评论
-    no_data: "空空如也"
+    title_for_question: "Timeline"
+    title_for_answer: "{{ title }}'s {{ author }} Reply Timeline"
+    title_for_tag: "Timeline"
+    datetime: DateTime
+    type: Type
+    by: By
+    comment: Comment
+    no_data: "Empty"
   users:
-    title: 用户
-    users_with_the_most_reputation: 本周声望最高的用户
-    users_with_the_most_vote: 本周投票最多的用户
-    staffs: 我们的社区工作人员
-    reputation: 声望值
-    votes: 投票
+    title: Users
+    users_with_the_most_reputation: Users with the highest reputation this week
+    users_with_the_most_vote: Users with the most votes this week
+    staffs: Our Community Staff
+    reputation: Reputation Points
+    votes: Votes
   prompt:
-    leave_page: 确定要离开此页面？
-    changes_not_save: 您的更改尚未保存
+    leave_page: Are you sure you want to leave this page?
+    changes_not_save: Your changes have not been saved.
   draft:
-    discard_confirm: 您确定要丢弃您的草稿吗？
+    discard_confirm: Are you sure you want to discard your draft?
   messages:
-    post_deleted: 该帖子已被删除。
-    post_pin: 该帖子已被置顶。
-    post_unpin: 该帖子已被取消置顶。
-    post_hide_list: 此帖子已经从列表中隐藏。
-    post_show_list: 该帖子已显示到列表中。
-    post_reopen: 这个帖子已被重新打开.
-    post_list: 这个帖子已经被显示
-    post_unlist: 这个帖子已经被隐藏
-    post_pending: 您的帖子正在等待审核。它将在它获得批准后可见。
+    post_deleted: This post has been deleted.
+    post_pin: This post has been pinned.
+    post_unpin: This post has been unpinned.
+    post_hide_list: This post has been hidden from the list.
+    post_show_list: This post has been displayed in the list.
+    post_reopen: This post has been reopened.
+    post_list: This post has been shown.
+    post_unlist: This post has been hidden.
+    post_pending: Your post is awaiting review. It will be visible once approved.
 
 plugin:
   github_connector:
@@ -2287,134 +2287,134 @@ plugin:
         other: GitHub
       info:
         name:
-          other: GitHub 连接器
+          other: GitHub Connector
         description:
-          other: 用于接入 GitHub 第三方登录
+          other: Connect to GitHub third-party login.
       config:
         client_id:
           title:
-            other: ClientID
+            other: Client ID
           description:
-            other: GitHub 创建的应用后获取的 Client ID
+            other: Client ID obtained after creating the app in GitHub.
         client_secret:
           title:
-            other: ClientSecret
+            other: Client Secret
           description:
-            other: GitHub 创建的应用后获取的 Client Secret
+            other: Client Secret obtained after creating the app in GitHub.
   dingtalk_connector:
     backend:
       name:
-        other: 钉钉
+        other: DingTalk
       info:
         name:
-          other: 钉钉连接器
+          other: DingTalk Connector
         description:
-          other: 用于接入钉钉第三方登录
+          other: Connect to DingTalk third-party login.
       config:
         client_id:
           title:
-            other: ClientID
+            other: Client ID
           description:
-            other: 钉钉创建的应用后获取的 Client ID
+            other: Client ID obtained after creating the app in DingTalk.
         client_secret:
           title:
-            other: ClientSecret
+            other: Client Secret
           description:
-            other: 钉钉创建的应用后获取的 Client Secret
+            other: Client Secret obtained after creating the app in DingTalk.
   google_connector:
     backend:
       name:
         other: Google
       info:
         name:
-          other: Google 连接器
+          other: Google Connector
         description:
-          other: 用于接入 Google 第三方登录
+          other: Connect to Google third-party login.
       config:
         client_id:
           title:
-            other: ClientID
+            other: Client ID
           description:
-            other: Google 创建的应用后获取的 Client ID
+            other: Client ID obtained after creating the app in Google.
         client_secret:
           title:
-            other: ClientSecret
+            other: Client Secret
           description:
-            other: Google 创建的应用后获取的 Client Secret
+            other: Client Secret obtained after creating the app in Google.
   aliyunoss_storage:
     backend:
       info:
         name:
-          other: 阿里云OSS存储
+          other: Alibaba Cloud OSS Storage
         description:
-          other: 上传文件到阿里云OSS存储
+          other: Upload files to Alibaba Cloud OSS Storage.
       config:
         endpoint:
           title:
             other: Endpoint
           description:
-            other: 阿里云OSS存储的Endpoint
+            other: The Endpoint of Alibaba Cloud OSS storage.
         bucket_name:
           title:
-            other: Bucket名称
+            other: Bucket Name
           description:
-            other: 阿里云OSS存储的Bucket名称
+            other: The name of the Bucket in Alibaba Cloud OSS storage.
         object_key_prefix:
           title:
-            other: 对象Key前缀
+            other: Object Key Prefix
           description:
-            other: 对象键的前缀，如'answer/data/'，以'/'结尾
+            other: Prefix for object keys, such as 'answer/data/', and must end with '/'.
         access_key_id:
           title:
-            other: AccessKeyID
+            other: Access Key ID
           description:
-            other: 阿里云OSS存储的AccessKeyID
+            other: Access Key ID for Alibaba Cloud OSS storage.
         access_key_secret:
           title:
-            other: AccessKeySecret
+            other: Access Key Secret
           description:
-            other: 阿里云OSS存储的AccessKeySecret
+            other: Access Key Secret for Alibaba Cloud OSS storage.
         visit_url_prefix:
           title:
-            other: 访问URL前缀
+            other: Access URL Prefix
           description:
-            other: 上传文件最终访问地址的前缀，以 '/' 结尾 https://example.com/xxx/
+            other: The prefix for the final access address of uploaded files, must end with '/' (e.g., https://example.com/xxx/).
         max_file_size:
           title:
-            other: 最大文件大小(MB)
+            other: Maximum File Size (MB)
           description:
-            other: 限制上传文件的最大大小，单位为MB，默认为 10MB
+            other: Restrict the maximum size of uploaded files, in MB, default is 10 MB.
       err:
         mis_storage_config:
-          other: 错误的存储配置导致上传失败
+          other: Incorrect storage configuration caused upload failure.
         file_not_found:
-          other: 文件未找到
+          other: File not found.
         unsupported_file_type:
-          other: 不支持的文件类型
+          other: Unsupported file type.
         over_file_size_limit:
-          other: 超过文件大小限制
+          other: Exceeded file size limit.
         upload_file_failed:
-          other: 上传文件失败
+          other: File upload failed.
   redis_cache:
     backend:
       info:
         name:
-          other: Redis缓存
+          other: Redis Cache
         description:
-          other: 使用Redis作为缓存
+          other: Use Redis as a cache.
       config:
         endpoint:
           title:
             other: Endpoint
           description:
-            other: Redis的链接地址，如：127.0.0.1:6379
+            other: Link address of Redis, such as: 127.0.0.1:6379
         username:
           title:
-            other: 用户名
+            other: Username
           description:
-            other: Redis 用户名
+            other: Redis Username
         password:
           title:
-            other: 密码
+            other: Password
           description:
-            other: Redis 密码
+            other: Redis Password
