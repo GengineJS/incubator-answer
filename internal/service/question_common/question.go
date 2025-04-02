@@ -447,6 +447,7 @@ func (qs *QuestionCommon) FormatQuestionsPage(
 				item.Operator.Username = userInfo.Username
 				item.Operator.Rank = userInfo.Rank
 				item.Operator.Status = userInfo.Status
+				item.Operator.Avatar = userInfo.Avatar
 			}
 		}
 

@@ -19,6 +19,8 @@
 
 package plugin
 
+import "bytes"
+
 type UploadSource string
 
 const (
@@ -54,6 +56,7 @@ var (
 type UploadFileResponse struct {
 	// FullURL is the URL that can be used to access the file
 	FullURL string
+	Buffer  *bytes.Buffer
 	// OriginalError is the error returned by the storage plugin. It is used for debugging.
 	OriginalError error
 	// DisplayErrorMsg is the error message that will be displayed to the user.

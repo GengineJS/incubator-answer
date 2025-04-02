@@ -58,6 +58,16 @@ func IsImageFile(filename string) bool {
 	}
 }
 
+func IsImageExcludeGif(filename string) bool {
+	ext := strings.ToLower(filepath.Ext(filename))
+	switch ext {
+	case ".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".webp":
+		return true
+	default:
+		return false
+	}
+}
+
 // IsPngFile 根据文件名判断是否为PNG图片
 func IsPngFile(filename string) bool {
 	ext := strings.ToLower(filepath.Ext(filename))

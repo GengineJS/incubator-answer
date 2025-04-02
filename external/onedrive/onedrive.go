@@ -158,12 +158,6 @@ type ShareCreateService struct {
 var ctxUUIDKey = "ctxUuidKey"
 
 func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource) (resp plugin.UploadFileResponse) {
-	//logFile := filepath.Join("./", "app.log") // 假设日志文件在项目根目录下的 logs 文件夹中
-	//err := util.InitGlobalLogger(logFile)
-	// if err != nil {
-	// 	log.Fatalf("create logger failed: %v", err)
-	// }
-
 	resp = plugin.UploadFileResponse{}
 	file, err := ctx.FormFile("file")
 	path := ctx.PostForm("path")
@@ -196,25 +190,17 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 	}
 	defer src.Close()
 	var buf bytes.Buffer
-	if !util.IsImageFile(fileName) {
+	if !util.IsImageExcludeGif(fileName) {
 		// 使用 io.Copy 从 file 复制数据到 buf
 		if _, err := io.Copy(&buf, src); err != nil {
 			// util.GlobalLogger.Error(err)
 			return
 		}
 	} else {
-		// Decode the image
-		//img, _, err := image.Decode(src)
-		//if err != nil {
-		//	ctx.String(http.StatusInternalServerError, "Error decoding image: %s", err.Error())
-		//	return
-		//}
 		markText := "@" + userName
 		if watermark != "true" {
 			markText = ""
 		}
-		// userInfo, exist := ctx.Get(ctxUUIDKey)
-
 		currWidth, err := strconv.Atoi(maxWidth)
 		if err != nil {
 			// util.GlobalLogger.Error(err)
@@ -222,13 +208,9 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 		}
 		// Add watermark
 		buffer, _ := request.GenerateThumbnailWithWatermark(file, currWidth, markText)
+		resp.Buffer = buffer
 		buf = *buffer
 	}
-	//fileHeader, err := bufferToMultipartFile(buf, file.Filename, contentType)
-	//if err != nil {
-	//	ctx.String(http.StatusInternalServerError, "Error converting buffer to multipart file header: %s", err.Error())
-	//	return
-	//}
 
 	taskData := TaskData{
 		Path:         path,
@@ -287,8 +269,8 @@ func (s *Storage) UploadFile(ctx *plugin.GinContext, source plugin.UploadSource)
 		} else {
 			uploadUrl := response.Data.UploadURLs[0]
 			if util.IsImageFile(taskData.Name) || util.IsVideoFile(taskData.Name) {
-				// request.UploadChunksFromBuffer(ctx, uploadUrl, buf, response.Data.SessionID, host)
-				resp.FullURL = request.UploadChunksFromBuffer(ctx, uploadUrl, &buf, response.Data.SessionID, host) // request.UploadChunksFromFile(ctx, uploadUrl, fileHeader, response.Data.SessionID, host)
+				// resp.FullURL = request.UploadChunksFromBuffer(ctx, uploadUrl, &buf, response.Data.SessionID, host)
+				go request.UploadChunksFromBuffer(ctx, uploadUrl, &buf, response.Data.SessionID, host)
 			} else {
 				go request.UploadChunksFromBuffer(ctx, uploadUrl, &buf, response.Data.SessionID, host)
 				shareCreate := ShareCreateService{

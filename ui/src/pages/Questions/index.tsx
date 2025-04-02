@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { useMatch, Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -34,7 +34,7 @@ import {
   loggedUserInfoStore,
   loginSettingStore,
 } from '@/stores';
-import { useQuestionList } from '@/services';
+import { getAppSettings, useQuestionList } from '@/services';
 import * as Type from '@/common/interface';
 import { userCenter, floppyNavigation, Storage } from '@/utils';
 import {
@@ -59,9 +59,15 @@ const Questions: FC = () => {
   if (curOrder !== storageOrder) {
     Storage.set(QUESTIONS_ORDER_STORAGE_KEY, curOrder);
   }
+  const [pageSize, setPageSize] = useState(20);
+  useEffect(() => {
+    getAppSettings().then((value) => {
+      setPageSize(value.pageSize);
+    });
+  }, []);
   const curOrderType = urlSearchParams.get('order_type') || TYPE_ORDER_KEYS[0];
   const reqParams: Type.QueryQuestionsReq = {
-    page_size: 20,
+    page_size: pageSize,
     page: curPage,
     order: curOrder as Type.QuestionOrderBy,
     order_type: curOrderType,
@@ -88,6 +94,11 @@ const Questions: FC = () => {
           source="questions"
           data={listData}
           order={curOrder}
+          orderList={
+            loggedUser.username
+              ? QUESTION_ORDER_KEYS
+              : QUESTION_ORDER_KEYS.filter((key) => key !== 'recommend')
+          }
           isLoading={listLoading}
         />
       </Col>

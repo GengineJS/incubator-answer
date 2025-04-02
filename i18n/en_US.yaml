@@ -1540,6 +1540,9 @@ ui:
     submit: 提交
     normal: 正常
     closed: 已关闭
+    view: 视图
+    card: 卡片模式
+    compact: 简洁模式
     deleted: 已删除
     pending: 等待处理
   search:

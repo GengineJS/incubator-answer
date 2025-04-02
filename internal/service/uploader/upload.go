@@ -67,6 +67,7 @@ var (
 )
 
 type UploaderService interface {
+	handleBufferUpload(ctx *gin.Context, buff *bytes.Buffer, savePath string) (string, error)
 	UploadAvatarFile(ctx *gin.Context) (url string, err error)
 	UploadPostFile(ctx *gin.Context) (url string, err error)
 	UploadBrandingFile(ctx *gin.Context) (url string, err error)
@@ -96,14 +97,17 @@ func NewUploaderService(serviceConfig *service_config.ServiceConfig,
 
 // UploadAvatarFile upload avatar file
 func (us *uploaderService) UploadAvatarFile(ctx *gin.Context) (url string, err error) {
-	url, err = us.tryToUploadByPlugin(ctx, plugin.UserAvatar)
+	url, buff, err := us.tryToUploadByPlugin(ctx, plugin.UserAvatar)
 	if err != nil {
 		return "", err
 	}
-	if len(url) > 0 {
+	if len(url) > 0 && buff == nil {
 		return url, nil
 	}
 
+	if buff != nil {
+		return us.handleBufferUpload(ctx, buff, avatarSubPath)
+	}
 	// max size
 	ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, 5*1024*1024)
 	file, fileHeader, err := ctx.Request.FormFile("file")
@@ -173,14 +177,48 @@ func (us *uploaderService) AvatarThumbFile(ctx *gin.Context, fileName string, si
 	return saveFilePath, nil
 }
 
-func (us *uploaderService) UploadPostFile(ctx *gin.Context) (
-	url string, err error) {
-	url, err = us.tryToUploadByPlugin(ctx, plugin.UserPost)
+// 新增的buffer處理函數
+func (us *uploaderService) handleBufferUpload(
+	ctx *gin.Context,
+	buff *bytes.Buffer,
+	savePath string,
+) (string, error) {
+	siteGeneral, err := us.siteInfoService.GetSiteGeneral(ctx)
 	if err != nil {
 		return "", err
 	}
-	if len(url) > 0 {
+
+	// 构造完整存储路径
+	newFilename := fmt.Sprintf("%s.png", uid.IDStr12()) // 固定为png示例
+	fullPath := path.Join(us.serviceConfig.UploadPath, savePath, newFilename)
+
+	// 创建存储目录
+	if err := os.MkdirAll(path.Dir(fullPath), 0755); err != nil {
+		return "", errors.InternalServer(reason.UnknownError).WithError(err)
+	}
+
+	// 直接写入文件系统
+	if err := os.WriteFile(fullPath, buff.Bytes(), 0644); err != nil {
+		return "", errors.InternalServer(reason.UnknownError).WithError(err)
+	}
+
+	// 构造访问URL（与uploadFile保持格式一致）
+	return fmt.Sprintf("%s/%s/%s", siteGeneral.SiteUrl, "uploads/"+savePath, newFilename), nil
+
+}
+
+func (us *uploaderService) UploadPostFile(ctx *gin.Context) (
+	url string, err error) {
+	url, buff, err := us.tryToUploadByPlugin(ctx, plugin.UserPost)
+	if err != nil {
+		return "", err
+	}
+	if len(url) > 0 && buff == nil {
 		return url, nil
+	}
+
+	if buff != nil {
+		return us.handleBufferUpload(ctx, buff, postSubPath)
 	}
 
 	// max size
@@ -202,14 +240,17 @@ func (us *uploaderService) UploadPostFile(ctx *gin.Context) (
 
 func (us *uploaderService) UploadBrandingFile(ctx *gin.Context) (
 	url string, err error) {
-	url, err = us.tryToUploadByPlugin(ctx, plugin.AdminBranding)
+	url, buff, err := us.tryToUploadByPlugin(ctx, plugin.AdminBranding)
 	if err != nil {
 		return "", err
 	}
-	if len(url) > 0 {
+	if len(url) > 0 && buff == nil {
 		return url, nil
 	}
 
+	if buff != nil {
+		return us.handleBufferUpload(ctx, buff, brandingSubPath)
+	}
 	// max size
 	ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, 10*1024*1024)
 	file, fileHeader, err := ctx.Request.FormFile("file")
@@ -257,7 +298,7 @@ func (us *uploaderService) uploadFile(ctx *gin.Context, file *multipart.FileHead
 }
 
 func (us *uploaderService) tryToUploadByPlugin(ctx *gin.Context, source plugin.UploadSource) (
-	url string, err error) {
+	url string, buff *bytes.Buffer, err error) {
 	_ = plugin.CallStorage(func(fn plugin.Storage) error {
 		resp := fn.UploadFile(ctx, source)
 		if resp.OriginalError != nil {
@@ -266,9 +307,10 @@ func (us *uploaderService) tryToUploadByPlugin(ctx *gin.Context, source plugin.U
 		} else {
 			url = resp.FullURL
 		}
+		buff = resp.Buffer
 		return nil
 	})
-	return url, err
+	return url, buff, err
 }
 
 // removeExif remove exif

@@ -215,6 +215,7 @@ type SiteInfoResp struct {
 	Write         *SiteWriteResp         `json:"site_write"`
 	Version       string                 `json:"version"`
 	Revision      string                 `json:"revision"`
+	PageSize      int                    `json:"pageSize"`
 }
 type TemplateSiteInfoResp struct {
 	General       *SiteGeneralResp       `json:"general"`

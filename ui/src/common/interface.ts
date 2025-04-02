@@ -320,7 +320,8 @@ export type QuestionOrderBy =
   | 'active'
   | 'frequent'
   | 'score'
-  | 'unanswered';
+  | 'unanswered'
+  | 'recommend';
 
 export type QuestionTypeBy = 'all' | 'integral' | 'non-integral';
 
@@ -439,6 +440,7 @@ export interface SiteSettings {
   site_write: AdminSettingsWrite;
   version: string;
   revision: string;
+  pageSize: number;
 }
 
 export interface AdminSettingBranding {

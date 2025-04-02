@@ -16,20 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-export const REACT_BASE_PATH = process.env.REACT_APP_BASE_URL || '';
-export const RouteAlias = {
-  home: '/',
-  login: '/users/login',
-  signUp: '/users/register',
-  inactive: '/users/login?status=inactive',
-  accountRecovery: '/users/account-recovery',
-  changeEmail: '/users/change-email',
-  passwordReset: '/users/password-reset',
-  accountActivation: '/users/account-activation',
-  activationSuccess: '/users/account-activation/success',
-  activationFailed: '/users/account-activation/failed',
-  suspended: '/users/account-suspended',
-  confirmNewEmail: '/users/confirm-new-email',
-  confirmEmail: '/users/confirm-email',
-  authLanding: '/users/auth-landing',
-};
+
+.md-show {
+  display: flex !important;
+}
+.md-hide {
+  display: none;
+}
+
+
+@media screen and (max-width: 768px) {
+  .md-show {
+    display: none !important;
+  }
+  .md-hide {
+    display: block;
+  }
+}

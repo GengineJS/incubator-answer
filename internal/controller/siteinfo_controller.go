@@ -91,7 +91,13 @@ func (sc *SiteInfoController) GetSiteInfo(ctx *gin.Context) {
 	if err != nil {
 		log.Error(err)
 	}
-
+	var pageSize int
+	err = sc.siteInfoService.GetSiteInfoByType(ctx, "pageSize", &pageSize)
+	if err != nil {
+		resp.PageSize = 20
+	} else {
+		resp.PageSize = pageSize
+	}
 	handler.HandleResponse(ctx, nil, resp)
 }
 

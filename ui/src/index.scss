@@ -48,7 +48,7 @@ a {
 }
 // If the image does not have a `src` attribute, it must break and may not trigger the `onerror` event.
 // With or without the `alt` attribute, it is visually hidden directly.
-img[src=''] {
+img[src=""] {
   visibility: hidden !important;
 }
 
@@ -258,7 +258,8 @@ img[src=''] {
   pre {
     background-color: var(--an-e9ecef);
     border-radius: 0.25rem;
-    padding: 1px;
+    padding: 1rem;
+    max-height: 38rem;
   }
   blockquote {
     border-left: 0.25rem solid #ced4da;
@@ -278,10 +279,7 @@ img[src=''] {
       word-break: initial;
     }
   }
-  ol ol,
-  ol ul,
-  ul ol,
-  ul ul {
+  ol ol,ol ul,ul ol,ul ul {
     margin-bottom: 1rem;
   }
 }
@@ -340,8 +338,8 @@ img[src=''] {
   animation: bg-fade-out 2s ease 0.3s;
 }
 
-.btnSvg,
-.btnSvg:hover {
+
+.btnSvg, .btnSvg:hover {
   display: inline-block;
   font-size: 16px;
   width: 16px;
@@ -356,4 +354,45 @@ img[src=''] {
 
 .alert-exist {
   color: var(--an-alert-exist-color);
+}
+
+.bronze {
+  color: #CD7F32;
+}
+.silver {
+  color: #C0C0C0;
+}
+.gold {
+  color: #FFD700;
+}
+
+
+
+.view-level1 {
+  color: $orange-600;
+}
+
+.view-level2 {
+  color: $orange-700;
+}
+
+.view-level3 {
+  color: $orange-800;
+}
+
+.mb-12 {
+  margin-bottom: 12px;
+}
+
+.a-code-wrap:hover .a-code-tool {
+  display: block;
+}
+.a-code-tool {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 16px;
+  z-index: 1;
+  display: none;
+  line-height: 1;
 }
