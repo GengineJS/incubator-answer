@@ -136,7 +136,7 @@ module.exports = {
       new TerserPlugin({
         terserOptions: {
           compress: {
-            // drop_console: true, // 添加这一行来移除所有的console.log
+            drop_console: true, // 添加这一行来移除所有的console.log
           },
         },
       })
@@ -147,7 +147,7 @@ module.exports = {
       moduleScopePlugin.allowedPaths.push(i18nPath);
     }
     if (env === 'production') {
-      // config.devtool = false;
+      config.devtool = false;
     }
     return config;
   },
