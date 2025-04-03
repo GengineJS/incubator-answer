@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Button } from 'react-bootstrap';
 import { useMatch, Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -126,7 +126,7 @@ const Questions: FC = () => {
         <InfiniteScroll
           dataLength={questionList?.list?.length || 0}
           next={handleLoadMore}
-          hasMore={hasMore}
+          hasMore={false}
           loader={
             <div
               style={{ color: 'rgb(85, 117, 246)' }}
@@ -149,6 +149,16 @@ const Questions: FC = () => {
             isLoading={isLoading}
           />
         </InfiniteScroll>
+        {hasMore && (
+          <div className="d-flex justify-content-center align-items-center py-3">
+            <Button
+              variant="link"
+              className="btn-no-border"
+              onClick={handleLoadMore}>
+              {t2('show_more', { keyPrefix: 'notifications' })}
+            </Button>
+          </div>
+        )}
       </Col>
       <Col className="page-right-side mt-4 mt-xl-0">
         <CustomSidebar />
