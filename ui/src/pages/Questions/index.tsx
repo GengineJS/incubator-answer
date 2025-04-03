@@ -73,6 +73,7 @@ const Questions: FC = () => {
     order_type: curOrderType,
   };
   reqParams.content_type = getUrlQuestionType();
+  const [questionList, setQuestionList] = useState<Type.ListResult>();
   const { data: listData, isLoading: listLoading } = useQuestionList(reqParams);
   const isIndexPage = useMatch('/');
   let pageTitle = t(I18nContentType[reqParams.content_type], {

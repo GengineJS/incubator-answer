@@ -273,6 +273,7 @@ const QuestionList: FC<Props> = ({
                       votes: li.vote_count,
                       answers: li.answer_count,
                       views: li.view_count,
+                      score: li.score,
                     }}
                     isAccepted={li.accepted_answer_id >= 1}
                     className="mt-2 mt-md-0"

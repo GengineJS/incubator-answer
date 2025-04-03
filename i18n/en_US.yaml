@@ -1100,8 +1100,8 @@ ui:
     nav:
       question: Question
       article: Article
-      assetbun: Cloud Drive Resource
-      bounty: Project Requirement
+      assetbun: Resource
+      bounty: Bounty
       tag: Tag
       user: User
       profile: User Profile
@@ -1119,7 +1119,7 @@ ui:
       placeholder: Search
   footer:
     build_on: >-
-      Copyright © 2024. Shenzhen Datong World Technology Co., Ltd. 粤ICP备2023062274号-2 <br /> AI-powered knowledge sharing © {{cc}}AI x Asset Bun Cloud Drive
+      Copyright © 2024. Shenzhen Datong World Technology Co. Ltd. 粤ICP备2023062274号-2 <br /> AI-powered knowledge sharing © {{cc}}AI x Asset Bun Cloud Drive
   upload_img:
     name: Change
     loading: Loading...
@@ -1480,7 +1480,7 @@ ui:
     exchange_confirm: Confirm point exchange?
     modal_title: Reputation to Points
     platform_entry_title: Platform Entry
-    platform_entry_tip: Reputation: Required reputation value for entry; Rights: Required reputation for exchanging every 1 point after entry
+    platform_entry_tip: Reputation:Required reputation value for entry; Rights:Required reputation for exchanging every 1 point after entry
     default_option: Please select a level that allows entry.
     not_enough_option: Current reputation is insufficient for entry.
     contract_option: "{{title}} | Reputation: {{redeem_rank_points}} | Rights: {{rank_to_point}}:1"
@@ -1509,7 +1509,7 @@ ui:
     logout: Logout
     verify: Verify
     add_question: I want to ask a question
-    add_publish: I want to publish
+    add_publish: publish
     approve: Approve
     reject: Reject
     skip: Skip
@@ -2407,7 +2407,7 @@ plugin:
           title:
             other: Endpoint
           description:
-            other: Link address of Redis, such as: 127.0.0.1:6379
+            other: Link address of Redis, such as:127.0.0.1:6379
         username:
           title:
             other: Username
