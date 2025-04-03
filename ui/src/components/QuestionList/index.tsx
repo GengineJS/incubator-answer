@@ -63,6 +63,7 @@ interface Props {
   data;
   orderList?: Type.QuestionOrderBy[];
   isLoading: boolean;
+  isPageList?: boolean;
 }
 let currContentType = 1;
 const QuestionList: FC<Props> = ({
@@ -71,6 +72,7 @@ const QuestionList: FC<Props> = ({
   data,
   orderList,
   isLoading = false,
+  isPageList = true,
 }) => {
   const { t } = useTranslation('translation', { keyPrefix: 'question' });
   const [urlSearchParams] = useSearchParams();
@@ -285,14 +287,16 @@ const QuestionList: FC<Props> = ({
         )}
       </ListGroup>
       {count <= 0 && !isLoading && <Empty />}
-      <div className="mt-4 mb-2 d-flex justify-content-center">
-        <Pagination
-          currentPage={curPage}
-          totalSize={count}
-          pageSize={pageSize}
-          pathname={source === 'questions' ? '/questions' : ''}
-        />
-      </div>
+      {isPageList && (
+        <div className="mt-4 mb-2 d-flex justify-content-center">
+          <Pagination
+            currentPage={curPage}
+            totalSize={count}
+            pageSize={pageSize}
+            pathname={source === 'questions' ? '/questions' : ''}
+          />
+        </div>
+      )}
     </div>
   );
 };

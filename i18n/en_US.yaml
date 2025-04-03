@@ -1632,6 +1632,7 @@ ui:
     asked: Submitted on
     closed: Closed
     follow_a_tag: Follow a tag
+    loading: Loading...
     more: More
   personal:
     overview: Overview

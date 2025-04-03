@@ -117,10 +117,10 @@ const Index = () => {
   ]);
 
   const handleDescriptionChange = (value: string) =>
-    setFormData({
-      ...formData,
-      description: { ...formData.description, value },
-    });
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      description: { ...prevFormData.description, value },
+    }));
 
   const checkValidated = (): boolean => {
     let bol = true;

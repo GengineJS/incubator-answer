@@ -1632,6 +1632,7 @@ ui:
     asked: 提交于
     closed: 已关闭
     follow_a_tag: 关注一个标签
+    loading: 加载中...
     more: 更多
   personal:
     overview: 概览
