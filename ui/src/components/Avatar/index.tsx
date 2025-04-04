@@ -22,6 +22,7 @@ import { memo, FC } from 'react';
 import classNames from 'classnames';
 
 import DefaultAvatar from '@/assets/images/default-avatar.svg';
+import { getDefaultAvatarPic } from '@/common/functions';
 
 interface IProps {
   /** avatar url */
@@ -43,12 +44,14 @@ const Index: FC<IProps> = ({
   let url = '';
   if (typeof avatar === 'string') {
     if (avatar.length > 1) {
-      url = `${avatar}?${searchStr}${
-        avatar?.includes('gravatar') ? '&d=identicon' : ''
-      }`;
+      if (avatar?.includes('cravatar')) {
+        url = getDefaultAvatarPic();
+      } else {
+        url = `${avatar}?${searchStr}${''}`;
+      }
     }
   } else if (avatar?.type === 'gravatar' && avatar.gravatar) {
-    url = `${avatar.gravatar}?${searchStr}&d=identicon`;
+    url = getDefaultAvatarPic();
   } else if (avatar?.type === 'custom' && avatar.custom) {
     url = `${avatar.custom}?${searchStr}`;
   }

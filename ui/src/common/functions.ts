@@ -32,6 +32,29 @@ export function needQuestionToLoginOrUp(question, userInfo): void {
   }
 }
 
+class QuestionHistoryManager {
+  private static instance: QuestionHistoryManager;
+
+  private data: any = {};
+
+  static getInstance(): QuestionHistoryManager {
+    if (!QuestionHistoryManager.instance) {
+      QuestionHistoryManager.instance = new QuestionHistoryManager();
+    }
+    return QuestionHistoryManager.instance;
+  }
+
+  setData(data: any) {
+    this.data = data;
+  }
+
+  getData(): any {
+    return this.data;
+  }
+}
+
+export const historyManager = QuestionHistoryManager.getInstance();
+
 export const formatNumber = (num, length, isEnd = true) => {
   const numStr = String(num);
   if (numStr.length < length) {
@@ -46,6 +69,11 @@ export const formatNumber = (num, length, isEnd = true) => {
   }
   return String(num);
 };
+
+export function getDefaultAvatarPic() {
+  const randomNumber = Math.floor(Math.random() * 10) + 1;
+  return `https://ai.assetbun.com/uploads/avatar/avatar${randomNumber}.png`;
+}
 
 export function appendSingleResources(
   cssUrl,

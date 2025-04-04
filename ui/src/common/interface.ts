@@ -98,6 +98,43 @@ export interface ListResult<T = any> {
   list: T[];
 }
 
+export interface TypeHistoryResult {
+  page: number;
+  data: ListResult;
+  contentType: ContentType;
+}
+
+export interface HistoryTypeMap {
+  [ContentType.QUESTION]: TypeHistoryResult;
+  [ContentType.ARTICLE]: TypeHistoryResult;
+  [ContentType.BOUNTY]: TypeHistoryResult;
+  [ContentType.ASSETBUN]: TypeHistoryResult;
+}
+
+// contentTypeMap 定义
+export const contentTypeMap: HistoryTypeMap = {
+  [ContentType.QUESTION]: {
+    page: 1,
+    data: { list: [], count: 0 },
+    contentType: ContentType.QUESTION,
+  },
+  [ContentType.ARTICLE]: {
+    page: 1,
+    data: { list: [], count: 0 },
+    contentType: ContentType.ARTICLE,
+  },
+  [ContentType.BOUNTY]: {
+    page: 1,
+    data: { list: [], count: 0 },
+    contentType: ContentType.BOUNTY,
+  },
+  [ContentType.ASSETBUN]: {
+    page: 1,
+    data: { list: [], count: 0 },
+    contentType: ContentType.ASSETBUN,
+  },
+};
+
 export interface AnswerParams extends ImgCodeReq {
   content: string;
   html: string;
