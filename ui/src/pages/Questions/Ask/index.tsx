@@ -71,6 +71,8 @@ interface FormDataItem {
   content: Type.FormValue<string>;
   answer_content: Type.FormValue<string>;
   edit_summary: Type.FormValue<string>;
+  covers: Type.FormValue<string[]>;
+  cover_min_size: Type.FormValue<number>;
 }
 
 const saveDraft = new SaveDraft({ type: 'question' });
@@ -89,6 +91,16 @@ const Ask = () => {
     },
     tags: {
       value: [],
+      isInvalid: false,
+      errorMsg: '',
+    },
+    covers: {
+      value: [],
+      isInvalid: false,
+      errorMsg: '',
+    },
+    cover_min_size: {
+      value: 180000,
       isInvalid: false,
       errorMsg: '',
     },
@@ -239,6 +251,8 @@ const Ask = () => {
     contentPlaceHolder = '请详细描述你的项目需求，项目周期及交付方式';
   }
   const [acceptedID, setAcceptedID] = useState('');
+  const [isCustomCover, setIsCustomCover] = useState(false); // 是否自定义封面
+  const [imageUrls, setImageUrls] = useState<string[]>([]); // 提取的图片 URL
   useEffect(() => {
     if (!isEdit) {
       return;
@@ -247,6 +261,13 @@ const Ask = () => {
       setAcceptedID(res.accepted_answer_id);
       formData.title.value = res.title;
       formData.content.value = res.content;
+      formData.covers.value = (res.covers || []).map((coverUrl) => {
+        // 使用 decodeURIComponent 解码整个 URL
+        // 或者使用 replace 方法替换 &amp; 为 &
+        return decodeURIComponent(coverUrl).replace(/&amp;/g, '&');
+      });
+      formData.cover_min_size.value = res.cover_min_size || 0;
+      setIsCustomCover(!formData.cover_min_size.value);
       formData.tags.value = res.tags.map((item) => {
         return {
           ...item,
@@ -432,6 +453,8 @@ const Ask = () => {
       tags: formData.tags.value,
       score: formData.integral.value,
       content_type: getUrlQuestionType(),
+      cover_min_size: formData.cover_min_size.value,
+      covers: formData.covers.value,
     };
 
     if (isEdit) {
@@ -469,6 +492,41 @@ const Ask = () => {
   usePageTags({
     title: pageTitle,
   });
+
+  // 提取内容中的图片 URL
+  useEffect(() => {
+    const extractImageUrls = (content: string) => {
+      const regex = /!\[.*?\]\((.*?)\)/g; // 匹配 Markdown 图片
+      return Array.from(content.matchAll(regex), (match) => match[1]);
+    };
+
+    const urls = extractImageUrls(formData.content.value);
+    setImageUrls(urls);
+  }, [formData.content.value]);
+
+  const handleCustomCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const { checked } = e.target;
+    setIsCustomCover(!checked); // 如果勾选，则关闭自定义封面
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      cover_min_size: {
+        ...prevFormData.cover_min_size,
+        value: checked ? 180000 : 0, // 勾选时设置为系统自动选取封面
+      },
+    }));
+  };
+
+  const handleCoverSelectionChange = (selectedUrls: string[]) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      covers: {
+        ...prevFormData.covers,
+        value: selectedUrls,
+      },
+    }));
+  };
+
   return (
     <div className="pt-4 mb-5">
       <h3 className="mb-4">
@@ -605,6 +663,74 @@ const Ask = () => {
                 </Form.Control.Feedback>
               </Form.Group>
             )}
+
+            {/* 自定义封面复选框 */}
+            <Form.Group controlId="customCover" className="my-3">
+              <Form.Check
+                type="checkbox"
+                label={t('form.fields.custom_cover.label')}
+                checked={!isCustomCover}
+                onChange={handleCustomCoverChange}
+              />
+            </Form.Group>
+
+            {/* 自定义封面选择 */}
+            {isCustomCover && (
+              <Form.Group controlId="coverSelection" className="my-3">
+                <Form.Label>{t('form.fields.select_cover.label')}</Form.Label>
+                <div
+                  className="d-flex flex-nowrap"
+                  style={{
+                    overflowX: 'auto', // 允许横向滚动
+                    scrollbarWidth: 'none', // 隐藏滚动条（适用于 Firefox）
+                    msOverflowStyle: 'none', // 隐藏滚动条（适用于 IE 和 Edge）
+                    padding: '4px', // 可选：为内容添加一些内边距
+                  }}>
+                  {imageUrls.map((url, index) => (
+                    <div
+                      // eslint-disable-next-line react/no-array-index-key
+                      key={`cover_${index}`}
+                      className="me-2 mb-2 position-relative">
+                      {/* 隐藏的 checkbox */}
+                      <Form.Check
+                        type="checkbox"
+                        id={`cover-${index}`}
+                        label="" // 确保没有额外的文本标签影响布局
+                        style={{ display: 'none' }} // 直接隐藏整个 Form.Check 输入部分
+                        checked={formData.covers.value.includes(url)}
+                        onChange={(e) => {
+                          const selectedUrls = e.target.checked
+                            ? [...formData.covers.value, url]
+                            : formData.covers.value.filter(
+                                (item) => item !== url,
+                              );
+                          handleCoverSelectionChange(selectedUrls);
+                        }}
+                      />
+                      {/* 图片作为独立的 label */}
+                      <label
+                        htmlFor={`cover-${index}`}
+                        style={{ cursor: 'pointer', display: 'inline-block' }}>
+                        <img
+                          src={url}
+                          alt={`Cover ${index + 1}`}
+                          style={{
+                            width: '120px',
+                            height: '80px',
+                            objectFit: 'cover',
+                            border: formData.covers.value.includes(url)
+                              ? '3px solid #007bff'
+                              : '1px solid #ccc',
+                            borderRadius: '4px',
+                          }}
+                        />
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </Form.Group>
+            )}
+
             {!checked && (
               <div className="mt-3">
                 <Button type="submit" className="me-2">

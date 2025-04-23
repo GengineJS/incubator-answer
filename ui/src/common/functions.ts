@@ -370,3 +370,11 @@ export function closeNavbarIfOpen() {
 }
 
 export const iframeManager = new IframeManager();
+
+export function convertMarkdownLinks(markdown: string): string {
+  const regex = /\[([^\]]+)\]\(([^)]+)\)/g; // 使用 'g' 标志来匹配所有链接
+
+  return markdown.replace(regex, (match, text, url) => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${text}</a>`;
+  });
+}

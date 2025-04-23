@@ -91,11 +91,13 @@ type QuestionAdd struct {
 	// user id
 	UserID string `json:"-"`
 	QuestionPermission
-	CaptchaID   string `json:"captcha_id"` // captcha_id
-	CaptchaCode string `json:"captcha_code"`
-	IP          string `json:"-"`
-	Score       int    `json:"score"`
-	UserAgent   string `json:"-"`
+	CaptchaID    string   `json:"captcha_id"` // captcha_id
+	CaptchaCode  string   `json:"captcha_code"`
+	IP           string   `json:"-"`
+	Score        int      `json:"score"`
+	CoverMinSize int      `json:"cover_min_size"`
+	Covers       []string `json:"covers"`
+	UserAgent    string   `json:"-"`
 }
 
 func (req *QuestionAdd) Check() (errFields []*validator.FormErrorField, err error) {
@@ -124,10 +126,12 @@ type QuestionAddByAnswer struct {
 	UserID              string   `json:"-"`
 	MentionUsernameList []string `validate:"omitempty" json:"mention_username_list"`
 	QuestionPermission
-	CaptchaID   string `json:"captcha_id"` // captcha_id
-	CaptchaCode string `json:"captcha_code"`
-	IP          string `json:"-"`
-	UserAgent   string `json:"-"`
+	CaptchaID    string   `json:"captcha_id"` // captcha_id
+	CaptchaCode  string   `json:"captcha_code"`
+	IP           string   `json:"-"`
+	UserAgent    string   `json:"-"`
+	CoverMinSize int      `json:"cover_min_size"`
+	Covers       []string `json:"covers"`
 }
 
 func (req *QuestionAddByAnswer) Check() (errFields []*validator.FormErrorField, err error) {
@@ -192,9 +196,11 @@ type QuestionUpdate struct {
 	UserID       string `json:"-"`
 	NoNeedReview bool   `json:"-"`
 	QuestionPermission
-	CaptchaID   string `json:"captcha_id"` // captcha_id
-	CaptchaCode string `json:"captcha_code"`
-	Score       int    `json:"score"`
+	CaptchaID    string   `json:"captcha_id"` // captcha_id
+	CaptchaCode  string   `json:"captcha_code"`
+	Score        int      `json:"score"`
+	CoverMinSize int      `json:"cover_min_size"`
+	Covers       []string `json:"covers"`
 }
 
 type QuestionRecoverReq struct {
@@ -268,6 +274,8 @@ type QuestionInfoResp struct {
 	AIAnswerReplied      bool           `json:"ai_answer_replied"`
 	AICommentReplied     bool           `json:"ai_comment_replied"`
 	BuyerUserIds         []string       `json:"buyer_user_ids"`
+	Covers               []string       `json:"covers"`
+	CoverMinSize         int            `json:"cover_min_size"`
 	// MemberActions
 	MemberActions  []*PermissionMemberAction `json:"member_actions"`
 	ExtendsActions []*PermissionMemberAction `json:"extends_actions"`
@@ -434,6 +442,7 @@ type QuestionPageResp struct {
 	Operator      *QuestionPageRespOperator `json:"operator"`
 	OperationType string                    `json:"operation_type"`
 	BuyerUserIds  []string                  `json:"buyer_user_ids"`
+	Covers        []string                  `json:"covers"`
 }
 
 type QuestionPageRespOperator struct {

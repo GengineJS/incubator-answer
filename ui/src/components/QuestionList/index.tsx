@@ -36,10 +36,10 @@ import {
 import { QuestionOrderBy } from '@/common/interface';
 import * as Type from '@/common/interface';
 import { useSkeletonControl } from '@/hooks';
-import { getUrlQuestionType } from '@/common/functions';
+import { convertMarkdownLinks, getUrlQuestionType } from '@/common/functions';
 import { ContentTypeStrQuery } from '@/common/i18n';
 import IntegralLink from '@/components/IntegralLink';
-import { isModerator, LIST_VIEW_STORAGE_KEY } from '@/common/constants';
+import { isUserPay, LIST_VIEW_STORAGE_KEY } from '@/common/constants';
 import Storage from '@/utils/storage';
 import { loggedUserInfoStore } from '@/stores';
 import handleOpenPayScore from '@/components/Pay';
@@ -194,6 +194,7 @@ const QuestionList: FC<Props> = ({
           <QuestionListLoader />
         ) : (
           renderData?.map((li) => {
+            const desc = convertMarkdownLinks(li.description);
             const integral = li.score;
             return (
               <ListGroup.Item
@@ -231,25 +232,52 @@ const QuestionList: FC<Props> = ({
                       score={integral}
                       t={t}
                       contentType={contentType}
-                      isPay={
-                        isModerator(li, user) ||
-                        li.buyer_user_ids.indexOf(user.id) !== -1
-                      }
+                      isPay={isUserPay(li, user)}
                     />
                     {li.status === 2 ? ` [${t('closed')}]` : ''}
                   </NavLink>
                 </h5>
-                {viewType === 'card' && (
-                  <div className="text-truncate-2 mb-2">
-                    <NavLink
+                {Array.isArray(li.covers) && li.covers.length > 0 && (
+                  <div className="mb-3">
+                    <div
                       onClick={(event) => {
                         event.preventDefault();
                         handleOpenPayScore(t, navigate, user, li);
                       }}
-                      to="."
-                      className="d-block small text-body"
-                      dangerouslySetInnerHTML={{ __html: li.description }}
-                    />
+                      className="cover-carousel d-flex overflow-auto">
+                      {li.covers.map((cover, idx) => (
+                        <img
+                          key={`Cover ${idx + 1}`}
+                          src={cover}
+                          alt={`Cover ${idx + 1}`}
+                          className="rounded me-2"
+                          style={{
+                            width: '120px',
+                            height: '80px',
+                            objectFit: 'cover',
+                            flexShrink: 0,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {viewType === 'card' && (
+                  <div className="text-truncate-2 mb-2">
+                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                    <a
+                      href="#"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        handleOpenPayScore(t, navigate, user, li);
+                      }}
+                      className="d-block small text-body">
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: desc,
+                        }}
+                      />
+                    </a>
                   </div>
                 )}
 

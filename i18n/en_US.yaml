@@ -921,6 +921,10 @@ ui:
           label: Description
         revision:
           label: Edit History
+        custom_cover:
+          label: System auto-selects cover
+        select_cover:
+          label: Select Cover (If there is no cover, please upload an image in the content section)
         edit_summary:
           label: Edit Notes
           placeholder: >-
@@ -1007,6 +1011,10 @@ ui:
           label: Reply Content
           feedback:
             characters: Content must be at least 6 characters long.
+        custom_cover:
+          label: System auto-selects cover
+        select_cover:
+          label: Select Cover (If there is no cover, please upload an image in the content section)
         edit_summary:
           label: Edit Summary
           placeholder: >-
@@ -1078,6 +1086,10 @@ ui:
           label: Reply Content
           msg:
             empty: Reply content cannot be empty.
+        custom_cover:
+          label: System auto-selects cover
+        select_cover:
+          label: Select Cover (If there is no cover, please upload an image in the content section)
         edit_summary:
           label: Edit Notes
           placeholder: >-

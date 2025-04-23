@@ -396,3 +396,36 @@ img[src=""] {
   display: none;
   line-height: 1;
 }
+
+/* 隐藏滚动条但保留滚动功能 */
+.cover-carousel {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.cover-carousel::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+
+pre {
+  .vditor-wysiwyg__preview {
+    overflow: hidden !important;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  .vditor-wysiwyg__pre {
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    max-height: none !important;
+  }
+}
+
+article > pre > code {
+    overflow-y: hidden !important;
+}
+

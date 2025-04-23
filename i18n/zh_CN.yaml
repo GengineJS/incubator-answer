@@ -921,6 +921,10 @@ ui:
           label: 描述
         revision:
           label: 编辑历史
+        custom_cover:
+          label: 系统自动选取封面(宽x高大于430x430图片,要自定义封面则取消勾选)
+        select_cover:
+          label: 选择封面(如果没有封面，请在内容栏中上传图片)
         edit_summary:
           label: 编辑备注
           placeholder: >-
@@ -1007,6 +1011,10 @@ ui:
           label: 回复内容
           feedback:
             characters: 内容长度至少 6 个字符
+        custom_cover:
+          label: 系统自动选取封面(宽x高大于430x430图片,要自定义封面则取消勾选)
+        select_cover:
+          label: 选择封面(如果没有封面，请在内容栏中上传图片)
         edit_summary:
           label: 编辑摘要
           placeholder: >-
@@ -1078,6 +1086,10 @@ ui:
           label: 回复内容
           msg:
             empty: 回复内容不能为空
+        custom_cover:
+          label: 系统自动选取封面(宽x高大于430x430图片,要自定义封面则取消勾选)
+        select_cover:
+          label: 选择封面(如果没有封面，请在内容栏中上传图片)
         edit_summary:
           label: 编辑备注
           placeholder: >-

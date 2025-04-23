@@ -17,11 +17,11 @@ export const config = {
     packages: { '[+]': ['html'] },
     inlineMath: [
       ['$', '$'],
-      ['\\(', '\\)'],
+      ['(', ')'],
     ],
     displayMath: [
       ['$$', '$$'],
-      ['\\[', '\\]'],
+      ['[', ']'],
     ],
   },
   startup: {

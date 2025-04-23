@@ -20,6 +20,11 @@
 package controller
 
 import (
+	"fmt"
+	"image"
+	"mime/multipart"
+	"net/url"
+
 	"github.com/apache/incubator-answer/internal/base/handler"
 	"github.com/apache/incubator-answer/internal/base/reason"
 	"github.com/apache/incubator-answer/internal/schema"
@@ -50,6 +55,37 @@ func NewUploadController(uploaderService uploader.UploaderService) *UploadContro
 	}
 }
 
+func appendDimensionsToURL(imageURL string, width, height int) string {
+	u, err := url.Parse(imageURL)
+	if err != nil {
+		return imageURL // 如果解析失败，返回原始 URL
+	}
+	query := u.Query()
+	query.Set("width", fmt.Sprintf("%d", width))
+	query.Set("height", fmt.Sprintf("%d", height))
+	u.RawQuery = query.Encode()
+	return u.String()
+}
+
+func getImageDimensionsFromFile(file multipart.File) (int, int, error) {
+	// 使用 image.DecodeConfig 获取图片的宽高
+	config, _, err := image.DecodeConfig(file)
+	if err != nil {
+		return 0, 0, err
+	}
+	return config.Width, config.Height, nil
+}
+
+func isImageContentType(contentType string) bool {
+	switch contentType {
+	case "image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp",
+		"image/tiff", "image/svg+xml", "image/x-icon", "image/heic", "image/avif":
+		return true
+	default:
+		return false
+	}
+}
+
 // UploadFile upload file
 // @Summary upload file
 // @Description upload file
@@ -69,6 +105,23 @@ func (uc *UploadController) UploadFile(ctx *gin.Context) {
 	source := ctx.PostForm("source")
 	isVditor := ctx.PostForm("isVditor")
 	name := ctx.PostForm("name")
+
+	// 获取上传的文件
+	file, header, err := ctx.Request.FormFile("file")
+	if err != nil {
+		handler.HandleResponse(ctx, errors.BadRequest(reason.UploadFileSourceUnsupported), nil)
+		return
+	}
+	defer file.Close()
+
+	// 检查文件是否为图片
+	contentType := header.Header.Get("Content-Type")
+	width, height := 0, 0
+	if isImageContentType(contentType) {
+		// 如果是图片文件，获取宽高
+		width, height, _ = getImageDimensionsFromFile(file)
+	}
+
 	switch source {
 	case fileFromAvatar:
 		url, err = uc.uploaderService.UploadAvatarFile(ctx)
@@ -83,6 +136,10 @@ func (uc *UploadController) UploadFile(ctx *gin.Context) {
 	if err != nil {
 		handler.HandleResponse(ctx, err, nil)
 		return
+	}
+	if width > 0 && height > 0 {
+		// 将宽高信息附加到 URL 中
+		url = appendDimensionsToURL(url, width, height)
 	}
 	if isVditor == "true" {
 		responseData := map[string]interface{}{

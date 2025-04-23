@@ -22,12 +22,20 @@ package content
 import (
 	"encoding/json"
 	"fmt"
-	metacommon "github.com/apache/incubator-answer/internal/service/meta_common"
+	"html"
 	"math"
+	"strconv"
 	"strings"
 	"time"
 
+	metacommon "github.com/apache/incubator-answer/internal/service/meta_common"
+
 	"github.com/apache/incubator-answer/internal/service/assetbun"
+
+	"image"
+	"net/http"
+	"net/url"
+	"regexp"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/base/handler"
@@ -367,10 +375,13 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 	question.Pin = entity.QuestionUnPin
 	question.Show = questionShow
 	question.ContentType = int(req.ContentType)
-	isPayType := false
-	if req.ContentType != entity.TypeArticle && req.ContentType != entity.TypeAiPic {
+	coversJSON, _ := json.Marshal(req.Covers)
+	question.Covers = string(coversJSON)
+	question.CoverMinSize = req.CoverMinSize
+	// isPayType := false
+	if req.ContentType != entity.TypeArticle && req.ContentType != entity.TypeAssetBun && req.ContentType != entity.TypeAiPic {
 		err = qs.assetbunRepo.SubScore(ctx, req.UserID, req.Score)
-		isPayType = true
+		// isPayType = true
 		if err != nil {
 			return
 		}
@@ -421,7 +432,8 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 			log.Errorf("update user question count error %v", err)
 		}
 	}
-	if isPayType && req.Score > 0 {
+	// 只要是积分相关的内容都发邮件
+	if req.Score > 0 { // isPayType &&
 		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, req.UserID, question.ID, req.UserID, question.Title, constant.NotificationSubIntegral, 0, req.Score)
 	}
 	qs.activityQueueService.Send(ctx, &schema.ActivityMsg{
@@ -923,13 +935,21 @@ func (qs *QuestionService) UpdateQuestion(ctx context.Context, req *schema.Quest
 	question.PostUpdateTime = now
 	question.UserID = dbinfo.UserID
 	question.LastEditUserID = req.UserID
+	coversJSON, _ := json.Marshal(req.Covers)
+	question.Covers = string(coversJSON)
+	question.CoverMinSize = req.CoverMinSize
+	if question.CoverMinSize != dbinfo.CoverMinSize || question.Covers != dbinfo.Covers {
+		canUpdate = true
+	}
 	// currScore := qs.assetbunRepo.GetScore(ctx, dbinfo.UserID)
-	offsetScore := dbinfo.Score - req.Score
-	qs.assetbunRepo.OffsetScore(ctx, dbinfo.UserID, offsetScore)
-	if offsetScore > 0 {
-		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, dbinfo.UserID, question.ID, dbinfo.UserID, question.Title, constant.NotificationUpdateBackIntegral, 0, offsetScore)
-	} else if offsetScore < 0 {
-		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, dbinfo.UserID, question.ID, dbinfo.UserID, question.Title, constant.NotificationUpdateSubIntegral, 0, int(math.Abs(float64(offsetScore))))
+	if dbinfo.ContentType != int(entity.TypeAssetBun) && dbinfo.ContentType != int(entity.TypeAiPic) && dbinfo.ContentType != int(entity.TypeArticle) {
+		offsetScore := dbinfo.Score - req.Score
+		qs.assetbunRepo.OffsetScore(ctx, dbinfo.UserID, offsetScore)
+		if offsetScore > 0 {
+			qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, dbinfo.UserID, question.ID, dbinfo.UserID, question.Title, constant.NotificationUpdateBackIntegral, 0, offsetScore)
+		} else if offsetScore < 0 {
+			qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, dbinfo.UserID, question.ID, dbinfo.UserID, question.Title, constant.NotificationUpdateSubIntegral, 0, int(math.Abs(float64(offsetScore))))
+		}
 	}
 	question.Score = req.Score
 	oldTags, tagerr := qs.tagCommon.GetObjectEntityTag(ctx, question.ID)
@@ -948,9 +968,12 @@ func (qs *QuestionService) UpdateQuestion(ctx context.Context, req *schema.Quest
 	}
 
 	isChange := qs.tagCommon.CheckTagsIsChange(ctx, tagNameList, oldtagNameList)
-	isChange = isChange || req.Score != dbinfo.Score
+	scoreChange := req.Score != dbinfo.Score
+	if scoreChange {
+		canUpdate = true
+	}
 	//If the content is the same, ignore it
-	if dbinfo.Title == req.Title && dbinfo.OriginalText == req.Content && !isChange {
+	if dbinfo.Title == req.Title && dbinfo.OriginalText == req.Content && !isChange && !canUpdate {
 		return
 	}
 
@@ -1021,7 +1044,7 @@ func (qs *QuestionService) UpdateQuestion(ctx context.Context, req *schema.Quest
 		//Direct modification
 		revisionDTO.Status = entity.RevisionReviewPassStatus
 		//update question to db
-		saveerr := qs.questionRepo.UpdateQuestion(ctx, question, []string{"title", "score", "original_text", "parsed_text", "updated_at", "post_update_time", "last_edit_user_id"})
+		saveerr := qs.questionRepo.UpdateQuestion(ctx, question, []string{"title", "score", "original_text", "parsed_text", "updated_at", "post_update_time", "last_edit_user_id", "covers", "cover_min_size"})
 		if saveerr != nil {
 			return questionInfo, saveerr
 		}
@@ -1408,6 +1431,21 @@ func (qs *QuestionService) SimilarQuestion(ctx context.Context, questionID strin
 	return result, int64(len(result)), nil
 }
 
+// 从 URL 中提取宽高信息
+func getDimensionsFromURL(imageURL string) (int, int, bool) {
+	u, err := url.Parse(imageURL)
+	if err != nil {
+		return 0, 0, false // 如果 URL 无法解析，返回默认值
+	}
+	query := u.Query()
+	width, err1 := strconv.Atoi(query.Get("width"))
+	height, err2 := strconv.Atoi(query.Get("height"))
+	if err1 == nil && err2 == nil {
+		return width, height, true
+	}
+	return 0, 0, false
+}
+
 // GetQuestionPage query questions page
 func (qs *QuestionService) GetQuestionPage(ctx context.Context, req *schema.QuestionPageReq) (
 	questions []*schema.QuestionPageResp, total int64, err error) {
@@ -1456,11 +1494,98 @@ func (qs *QuestionService) GetQuestionPage(ctx context.Context, req *schema.Ques
 	if err != nil {
 		return nil, 0, err
 	}
+
+	// Process covers for each question
+	for _, question := range questionList {
+		if question.Covers == "" || question.Covers == "[]" { // 如果 Covers 为空
+			if question.CoverMinSize == 0 {
+				// 如果 CoverMinSize 为 0，跳过封面设置
+				continue
+			}
+
+			// 从 ParsedText 中提取图片 URL
+			imageURLs := extractImageURLs(question.ParsedText)
+
+			// 根据 CoverMinSize 过滤图片
+			validCovers := []string{}
+			for _, imageURL := range imageURLs {
+				decodedURL := html.UnescapeString(imageURL)      // 解码 HTML 实体（如 &amp;）
+				decodedURL, err := url.QueryUnescape(decodedURL) // 解码 URL 转义字符
+				if err != nil {
+					decodedURL = imageURL // 如果解码失败，使用原始 URL
+				} else {
+					// 检查 URL 是否包含宽高信息
+					width, height, hasDimensions := getDimensionsFromURL(decodedURL)
+					if hasDimensions {
+						// 如果包含宽高信息，直接判断是否满足 CoverMinSize
+						if width*height >= question.CoverMinSize {
+							validCovers = append(validCovers, imageURL)
+						}
+						continue
+					}
+				}
+				width, height, err := getImageDimensions(imageURL)
+				if err != nil {
+					continue // 跳过无效图片
+				}
+				if width*height >= question.CoverMinSize {
+					validCovers = append(validCovers, imageURL)
+				}
+			}
+
+			// 将过滤后的图片存储到 CurrCovers
+			question.CurrCovers = validCovers
+
+			// 如果需要，将过滤后的图片数组序列化为 JSON 字符串并存储到 Covers
+			if len(validCovers) > 0 {
+				coversJSON, _ := json.Marshal(validCovers)
+				question.Covers = string(coversJSON)
+				qs.questionRepo.UpdateQuestion(ctx, question, []string{`covers`})
+			}
+		} else {
+			// 如果 Covers 不为空，解析 JSON 字符串为数组并存储到 CurrCovers
+			var covers []string
+			_ = json.Unmarshal([]byte(question.Covers), &covers)
+			question.CurrCovers = covers
+		}
+	}
+
 	questions, err = qs.questioncommon.FormatQuestionsPage(ctx, questionList, req.LoginUserID, req.OrderCond)
 	if err != nil {
 		return nil, 0, err
 	}
 	return questions, total, nil
+}
+
+// Helper function to extract image URLs from HTML
+func extractImageURLs(htmlText string) []string {
+	imageURLs := []string{}
+	// Use a regex to find all <img> tags and extract their src attributes
+	re := regexp.MustCompile(`<img[^>]+src="([^">]+)"`)
+	matches := re.FindAllStringSubmatch(htmlText, -1)
+	for _, match := range matches {
+		if len(match) > 1 {
+			imageURLs = append(imageURLs, match[1])
+		}
+	}
+	return imageURLs
+}
+
+// Helper function to get image dimensions
+func getImageDimensions(imageURL string) (int, int, error) {
+	// Make an HTTP request to fetch the image
+	resp, err := http.Get(imageURL)
+	if err != nil {
+		return 0, 0, err
+	}
+	defer resp.Body.Close()
+
+	// Decode the image to get its dimensions
+	img, _, err := image.DecodeConfig(resp.Body)
+	if err != nil {
+		return 0, 0, err
+	}
+	return img.Width, img.Height, nil
 }
 
 func (qs *QuestionService) AdminSetQuestionStatus(ctx context.Context, req *schema.AdminUpdateQuestionStatusReq) error {

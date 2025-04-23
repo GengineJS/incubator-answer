@@ -4,7 +4,15 @@ import { Modal } from '@/components';
 import { buyQuestion } from '@/services';
 
 // useTranslation('translation', { keyPrefix: 'question' });
-const handleOpenPayScore = (t, navigate, user, question, path = '') => {
+const handleOpenPayScore = (
+  t,
+  navigate,
+  user,
+  question,
+  path = '',
+  submit: any = null,
+  cancel: any = null,
+) => {
   const contentType = question.content_type;
   const isPayType = hasPayType(contentType);
   const integral = question.score;
@@ -50,7 +58,11 @@ const handleOpenPayScore = (t, navigate, user, question, path = '') => {
             `https://cloud.assetbun.com/buy?tab=2&buy=${integral - user.score}`,
             '_blank',
           );
+          if (submit) submit();
         }
+      },
+      onCancel: () => {
+        if (cancel) cancel();
       },
     });
   }

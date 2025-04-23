@@ -86,6 +86,8 @@ export interface QuestionParams extends ImgCodeReq {
   content: string;
   content_type: ContentType;
   score: number;
+  covers: string[];
+  cover_min_size: number;
   tags: Tag[];
 }
 

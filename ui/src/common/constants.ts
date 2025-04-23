@@ -750,6 +750,13 @@ export function isModerator(question, userInfo): boolean {
   return isAuthor || isAdmin || moderator;
 }
 
+export function isUserPay(question, userInfo): boolean {
+  return (
+    isModerator(question, userInfo) ||
+    question.buyer_user_ids.indexOf(userInfo.id) !== -1
+  );
+}
+
 export function isVIP(user): boolean {
   if (!user || !user.group_info) {
     return false;

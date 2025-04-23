@@ -27,6 +27,7 @@ import {
 } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
+import handleOpenPayScore from '@/components/Pay';
 import { getUrlQuestionType, isNeedResolveType } from '@/common/functions';
 import { Pagination, CustomSidebar } from '@/components';
 import { loggedUserInfoStore, toastStore } from '@/stores';
@@ -39,6 +40,7 @@ import type {
   UserAnswer,
 } from '@/common/interface';
 import { questionDetail, getAnswers } from '@/services';
+import { isUserPay } from '@/common/constants';
 
 import {
   Question,
@@ -56,6 +58,7 @@ import './index.scss';
 const Index = () => {
   const navigate = useNavigate();
   const { t } = useTranslation('translation');
+  const tq = useTranslation('translation', { keyPrefix: 'question' });
   const { qid = '', slugPermalink = '' } = useParams();
   /**
    * Note: Compatible with Permalink
@@ -258,6 +261,23 @@ const Index = () => {
     }
   }
   const contentType = getUrlQuestionType();
+  if (question && question.score && !isUserPay(question, userInfo)) {
+    const mainListUrl = `/questions${contentType ? `?content_type=${contentType}` : ''}`; // 构造主列表 URL
+    handleOpenPayScore(
+      tq.t,
+      navigate,
+      userInfo,
+      question,
+      '',
+      () => {
+        window.open(mainListUrl, '_self');
+      },
+      () => {
+        window.open(mainListUrl, '_self');
+      },
+    );
+    return null;
+  }
   return (
     <Row className="questionDetailPage pt-4 mb-5">
       <Col className="page-main flex-auto">

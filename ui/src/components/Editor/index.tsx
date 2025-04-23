@@ -73,6 +73,21 @@ interface Props extends EventRef {
   cacheKey;
 }
 
+// 防抖函数
+function debounce(func: (...args: any[]) => void, delay: number) {
+  let timer: NodeJS.Timeout;
+  return (...args: any[]) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+}
+
+// 防抖的 localStorage.setItem
+const debouncedSetItem = debounce((key: string, value: string) => {
+  localStorage.setItem(key, value);
+}, 1000); // 延迟 1 秒
 /* const preventDefaultEve = (eve) => {
   eve.preventDefault();
 }; */
@@ -271,9 +286,9 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
           // 监听编辑器内容发生变化时的事件
           input: (editorValue) => {
             if (onChange) {
+              debouncedSetItem(cacheKey, editorValue); // 使用防抖函数存储
               onChange(editorValue);
             }
-            // 你可以在这里执行保存内容或其他操作
           },
           // 监听编辑器获得焦点时的事件
           focus: () => {
@@ -286,6 +301,9 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
             vditorRef.current = vditor;
             if (cacheKey) {
               currStr = localStorage.getItem(cacheKey) || '';
+              if (currStr.trim() === '') {
+                currStr = currVal;
+              }
               if (onChange) {
                 onChange(currStr);
               }
@@ -294,6 +312,7 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
             if (isFirst) {
               isFirst = false;
               if (currStr) {
+                localStorage.setItem(cacheKey, currStr);
                 vditor.setValue(currStr);
                 return;
               }
@@ -317,5 +336,6 @@ const MDEditor: ForwardRefRenderFunction<EditorRef, Props> = (
     />
   );
 };
+
 export { htmlRender };
 export default forwardRef(MDEditor);
