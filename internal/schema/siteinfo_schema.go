@@ -57,6 +57,13 @@ type SiteInterfaceReq struct {
 	TimeZone string `validate:"required,gt=1,lte=128" form:"time_zone" json:"time_zone"`
 }
 
+// 定义 RecommendTags 类型
+type RecommendTags []map[string][]string
+type SiteRecommendNavReq struct {
+	IsShowUsers   bool          `validate:"omitempty" form:"show_users" json:"show_users"`
+	RecommendTags RecommendTags `validate:"omitempty" form:"recommend_tags" json:"recommend_tags"`
+}
+
 // SiteBrandingReq site branding request
 type SiteBrandingReq struct {
 	Logo       string `validate:"omitempty,gt=0,lte=512" form:"logo" json:"logo"`
@@ -193,6 +200,8 @@ type ThemeOption struct {
 	Value string `json:"value"`
 }
 
+type SiteRecommendNavResp SiteRecommendNavReq
+
 // SiteWriteResp site write response
 type SiteWriteResp SiteWriteReq
 
@@ -213,6 +222,7 @@ type SiteInfoResp struct {
 	SiteSeo       *SiteSeoResp           `json:"site_seo"`
 	SiteUsers     *SiteUsersResp         `json:"site_users"`
 	Write         *SiteWriteResp         `json:"site_write"`
+	RecommendNav  *SiteRecommendNavResp  `json:"recommend_nav"`
 	Version       string                 `json:"version"`
 	Revision      string                 `json:"revision"`
 	PageSize      int                    `json:"pageSize"`

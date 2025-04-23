@@ -56,6 +56,7 @@ type SiteInfoCommonService interface {
 	GetSiteTheme(ctx context.Context) (resp *schema.SiteThemeResp, err error)
 	GetSiteSeo(ctx context.Context) (resp *schema.SiteSeoResp, err error)
 	GetSiteInfoByType(ctx context.Context, siteType string, resp interface{}) (err error)
+	GetRecommendNav(ctx context.Context) (resp *schema.SiteRecommendNavResp, err error)
 }
 
 // NewSiteInfoCommonService new site info common service
@@ -79,6 +80,15 @@ func (s *siteInfoCommonService) GetSiteGeneral(ctx context.Context) (resp *schem
 func (s *siteInfoCommonService) GetSiteInterface(ctx context.Context) (resp *schema.SiteInterfaceResp, err error) {
 	resp = &schema.SiteInterfaceResp{}
 	if err = s.GetSiteInfoByType(ctx, constant.SiteTypeInterface, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetRecommendNav get site info recommend nav
+func (s *siteInfoCommonService) GetRecommendNav(ctx context.Context) (resp *schema.SiteRecommendNavResp, err error) {
+	resp = &schema.SiteRecommendNavResp{}
+	if err = s.GetSiteInfoByType(ctx, constant.RecommendNav, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil

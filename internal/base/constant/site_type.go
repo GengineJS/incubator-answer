@@ -31,4 +31,5 @@ const (
 	SiteTypeTheme         = "theme"
 	SiteTypePrivileges    = "privileges"
 	SiteTypeUsers         = "users"
+	RecommendNav          = "recommendNav"
 )

@@ -92,9 +92,9 @@ backend:
     rank_invite_someone_to_answer_label:
       other: 邀请回复
     rank_tag_add_label:
-      other: 创建新标签
+      other: 创建新专栏
     rank_tag_edit_label:
-      other: 编辑标签描述（需要审核）
+      other: 编辑专栏描述（需要审核）
     rank_question_edit_label:
       other: 编辑别人的问题（需要审核）
     rank_answer_edit_label:
@@ -108,11 +108,11 @@ backend:
     rank_answer_audit_label:
       other: 审核回复编辑
     rank_tag_audit_label:
-      other: 审核标签编辑
+      other: 审核专栏编辑
     rank_tag_edit_without_review_label:
-      other: 编辑标签描述无需审核
+      other: 编辑专栏描述无需审核
     rank_tag_synonym_label:
-      other: 管理标签同义词
+      other: 管理专栏同义词
     rank_subject_contribute_label:
       other: 发布任何主题时会获取的贡献值
     rank_subject_score_contribute_label:
@@ -346,21 +346,21 @@ backend:
         other: 报告未找到。
     tag:
       already_exist:
-        other: 标签已存在。
+        other: 专栏已存在。
       not_found:
-        other: 标签未找到。
+        other: 专栏未找到。
       recommend_tag_not_found:
-        other: 推荐标签不存在。
+        other: 推荐专栏不存在。
       recommend_tag_enter:
-        other: 请选择至少一个必选标签。
+        other: 请选择至少一个必选专栏。
       not_contain_synonym_tags:
-        other: 不应包含同义词标签。
+        other: 不应包含同义词专栏。
       cannot_update:
         other: 没有更新权限。
       is_used_cannot_delete:
-        other: 你不能删除这个正在使用的标签。
+        other: 你不能删除这个正在使用的专栏。
       cannot_set_synonym_as_itself:
-        other: 你不能将当前标签设为自己的同义词。
+        other: 你不能将当前专栏设为自己的同义词。
     smtp:
       config_from_name_cannot_be_email:
         other: 发件人名称不能是邮箱地址。
@@ -669,7 +669,7 @@ backend:
       title:
         other: "[{{.SiteName}}AI] 发布了新的{{.ContentType}}: {{.QuestionTitle}}"
       body:
-        other: "用户 {{.DisplayName}} 发布了新的{{.ContentType}}: <a href='{{.QuestionUrl}}'>{{.QuestionTitle}}</a><br><small> 标签类别: ({{.Tags}})</small><br><small><b>{{.Tip}}</b></small><br><p style='font-size:small;-webkit-text-size-adjust:none;color:#666;'>—<br>该邮件为系统自动发送, 请勿直接回复<br>了解<a href='https://ai.assetbun.com' rel='noopener' target='_blank'>点识成金<sup>AI</sup></a>与<a href='https://cloud.assetbun.com' rel='noopener' target='_blank'>资产包子云盘</a>或 <a href='{{.UnsubscribeUrl}}' rel='noopener' target='_blank'>取消订阅</a></p>"
+        other: "用户 {{.DisplayName}} 发布了新的{{.ContentType}}: <a href='{{.QuestionUrl}}'>{{.QuestionTitle}}</a><br><small> 专栏类别: ({{.Tags}})</small><br><small><b>{{.Tip}}</b></small><br><p style='font-size:small;-webkit-text-size-adjust:none;color:#666;'>—<br>该邮件为系统自动发送, 请勿直接回复<br>了解<a href='https://ai.assetbun.com' rel='noopener' target='_blank'>点识成金<sup>AI</sup></a>与<a href='https://cloud.assetbun.com' rel='noopener' target='_blank'>资产包子云盘</a>或 <a href='{{.UnsubscribeUrl}}' rel='noopener' target='_blank'>取消订阅</a></p>"
     pass_reset:
       title:
         other: "[{{.SiteName}}AI 与 资产包子云盘] 重置密码"
@@ -727,11 +727,11 @@ ui:
     bounty: 项目需求
     assetbun: 云盘资源
     aipic: 图片
-    tag: 标签
-    tags: 标签
-    tag_wiki: 标签维基
-    create_tag: 创建标签
-    edit_tag: 编辑标签
+    tag: 专栏
+    tags: 专栏
+    tag_wiki: 专栏维基
+    create_tag: 创建专栏
+    edit_tag: 编辑专栏
     ask_a_question: 提问题
     edit_question: 编辑问题
     edit_answer: 编辑回复
@@ -902,7 +902,7 @@ ui:
       not_a_url: URL 格式不正确。
       url_not_match: URL 来源与当前网站不匹配。
   tag_modal:
-    title: 创建新标签
+    title: 创建新专栏
     form:
       fields:
         display_name:
@@ -931,31 +931,31 @@ ui:
             简单描述更改原因（更正拼写、修复语法、改进格式）
     btn_cancel: 取消
     btn_submit: 提交
-    btn_post: 发布新标签
+    btn_post: 发布新专栏
   tag_info:
     created_at: 创建于
     edited_at: 编辑于
     history: 历史
     synonyms:
       title: 同义词
-      text: 以下标签将被重置到
-      empty: 此标签目前没有同义词。
+      text: 以下专栏将被重置到
+      empty: 此专栏目前没有同义词。
       btn_add: 添加同义词
       btn_edit: 编辑
       btn_save: 保存
-    synonyms_text: 以下标签将被重置到
+    synonyms_text: 以下专栏将被重置到
     delete:
-      title: 删除标签
+      title: 删除专栏
       tip_with_posts: >-
-        <p>我们不允许 <strong>删除带有帖子的标签</strong>。</p> <p>请先从帖子中移除此标签。</p>
+        <p>我们不允许 <strong>删除带有帖子的专栏</strong>。</p> <p>请先从帖子中移除此专栏。</p>
       tip_with_synonyms: >-
-        <p>我们不允许 <strong>删除带有同义词的标签</strong>。</p> <p>请先从此标签中删除同义词。</p>
+        <p>我们不允许 <strong>删除带有同义词的专栏</strong>。</p> <p>请先从此专栏中删除同义词。</p>
       tip: 确定要删除吗？
       close: 关闭
   edit_tag:
-    title: 编辑标签
-    default_reason: 编辑标签
-    default_first_reason: 添加标签
+    title: 编辑专栏
+    default_reason: 编辑专栏
+    default_first_reason: 添加专栏
     btn_save_edits: 保存更改
     btn_cancel: 取消
   dates:
@@ -1022,7 +1022,7 @@ ui:
     btn_save_edits: 保存更改
     btn_cancel: 取消
   tags:
-    title: 标签
+    title: 专栏
     sort_buttons:
       popular: 热门
       name: 名称
@@ -1030,8 +1030,8 @@ ui:
     button_follow: 关注
     button_following: 已关注
     tag_label: 个主题
-    search_placeholder: 通过标签名称过滤
-    no_desc: 此标签无描述。
+    search_placeholder: 通过专栏名称过滤
+    no_desc: 此专栏无描述。
     more: 更多
   ask:
     title: 新增问题
@@ -1079,9 +1079,9 @@ ui:
           msg:
             empty: 内容不能为空。
         tags:
-          label: 标签
+          label: 专栏
           msg:
-            empty: 必须选择一个标签
+            empty: 必须选择一个专栏
         answer:
           label: 回复内容
           msg:
@@ -1102,19 +1102,20 @@ ui:
     answer_question: 回复自己的问题
     post_question&answer: 提交问题和回复
   tag_selector:
-    add_btn: 添加标签
-    create_btn: 创建新标签
-    search_tag: 搜索标签
-    hint: "描述您的主题是关于什么，至少需要一个标签。"
-    no_result: 没有匹配的标签
-    tag_required_text: 必选标签（至少一个）
+    add_btn: 添加专栏
+    create_btn: 创建新专栏
+    search_tag: 搜索专栏
+    hint: "描述您的主题是关于什么，至少需要一个专栏。"
+    no_result: 没有匹配的专栏
+    tag_required_text: 必选专栏（至少一个）
   header:
     nav:
       question: 问题
       article: 文章
       assetbun: 云盘资源
       bounty: 项目需求
-      tag: 标签
+      recommend_tags: 周专栏推荐
+      tag: 专栏
       user: 用户
       profile: 用户主页
       setting: 账号设置
@@ -1316,17 +1317,17 @@ ui:
         label: 所有新发布的积分图片
         description: 获取所有新发布的积分图片通知。每周最多有50个积分图片。
       all_new_subject_for_following_tags:
-        title: 关注标签的新主题
-        label: 所有关注标签的新主题
-        description: 获取关注的标签下新主题通知。
+        title: 关注专栏的新主题
+        label: 所有关注专栏的新主题
+        description: 获取关注的专栏下新主题通知。
       all_new_none_score_subject_for_following_tags:
-        title: 关注标签的非积分新主题
-        label: 所有关注标签的非积分新主题
-        description: 获取关注的标签下非积分新主题通知。
+        title: 关注专栏的非积分新主题
+        label: 所有关注专栏的非积分新主题
+        description: 获取关注的专栏下非积分新主题通知。
       all_new_score_subject_for_following_tags:
-        title: 关注标签的积分新主题
-        label: 所有关注标签的积分新主题
-        description: 获取关注的标签下积分新主题通知。
+        title: 关注专栏的积分新主题
+        label: 所有关注专栏的积分新主题
+        description: 获取关注的专栏下积分新主题通知。
     account:
       heading: 账号
       change_email_btn: 更改邮箱
@@ -1545,7 +1546,7 @@ ui:
     system_setting: 跟随系统
     default: 默认
     reset: 重置
-    tag: 标签
+    tag: 专栏
     post_lowercase: 帖子
     filter: 筛选
     ignore: 忽略
@@ -1573,7 +1574,7 @@ ui:
       more: 更多
     tips:
       title: 高级搜索提示
-      tag: "<1>[tag]</1> 在指定标签中搜索"
+      tag: "<1>[tag]</1> 在指定专栏中搜索"
       user: "<1>user:username</1> 根据作者搜索"
       answer: "<1>answers:0</1> 搜索未回复的问题"
       score: "<1>score:3</1> 评分 3+ 的帖子"
@@ -1604,10 +1605,10 @@ ui:
     success_desc: 您已成功退订，并且将不会再收到我们的邮件。
     link: 更改设置
   question:
-    following_tags: 已关注的标签
+    following_tags: 已关注的专栏
     edit: 编辑
     save: 保存
-    follow_tag_tip: 关注标签来筛选你的问题列表。
+    follow_tag_tip: 关注专栏来筛选你的问题列表。
     hot_questions: 热门主题
     all_questions: 全部问题
     score_payment: 积分付款解锁内容
@@ -1643,7 +1644,7 @@ ui:
     answered: 回复于
     asked: 提交于
     closed: 已关闭
-    follow_a_tag: 关注一个标签
+    follow_a_tag: 关注一个专栏
     loading: 加载中...
     more: 更多
   personal:
@@ -1996,11 +1997,11 @@ ui:
       short_desc:
         label: 简短站点描述
         msg: 简短网站描述不能为空。
-        text: "简短的标语，作为网站主页的标题（Html 的 title 标签）。"
+        text: "简短的标语，作为网站主页的标题（Html 的 title 专栏）。"
       desc:
         label: 站点描述
         msg: 网站描述不能为空。
-        text: "使用一句话描述本站，作为网站的描述（Html 的 meta 标签）。"
+        text: "使用一句话描述本站，作为网站的描述（Html 的 meta 专栏）。"
       contact_email:
         label: 联系邮箱
         msg: 联系人邮箱不能为空。
@@ -2090,15 +2091,15 @@ ui:
         label: 每个用户对于每个问题只能有一个回复
         text: "用户可以使用编辑按钮优化已有的回复"
       recommend_tags:
-        label: 推荐标签
-        text: "请在上方输入标签固定链接，每行一个标签。"
+        label: 推荐专栏
+        text: "请在上方输入专栏固定链接，每行一个专栏。"
       required_tag:
-        title: 必需的标签
-        label: 根据需要设置推荐标签
-        text: "每个新问题必须至少有一个推荐标签。"
+        title: 必需的专栏
+        label: 根据需要设置推荐专栏
+        text: "每个新问题必须至少有一个推荐专栏。"
       reserved_tags:
-        label: 保留标签
-        text: "保留的标签只能由版主添加到一个帖子中。"
+        label: 保留专栏
+        text: "保留的专栏只能由版主添加到一个帖子中。"
     seo:
       page_title: 搜索引擎优化
       permalink:
@@ -2217,11 +2218,11 @@ ui:
     proposed: 提案
     question_edit: 问题编辑
     answer_edit: 回复编辑
-    tag_edit: '标签管理: 编辑标签'
+    tag_edit: '专栏管理: 编辑专栏'
     edit_summary: 编辑备注
     edit_question: 编辑问题
     edit_answer: 编辑回复
-    edit_tag: 编辑标签
+    edit_tag: 编辑专栏
     empty: 没有剩余的审核任务。
     approve_revision_tip: 您是否批准此修订？
     approve_flag_tip: 您是否批准此举报？

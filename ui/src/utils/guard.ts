@@ -30,6 +30,7 @@ import {
   loginToContinueStore,
   pageTagStore,
   writeSettingStore,
+  sideNavStore,
 } from '@/stores';
 import { RouteAlias } from '@/router/alias';
 import {
@@ -453,6 +454,7 @@ export const initAppSettingsStore = async () => {
     customizeStore.getState().update(appSettings.custom_css_html);
     themeSettingStore.getState().update(appSettings.theme);
     seoSettingStore.getState().update(appSettings.site_seo);
+    sideNavStore.getState().updateRecommend(appSettings.recommend_nav);
     writeSettingStore
       .getState()
       .update({ restrict_answer: appSettings.site_write.restrict_answer });

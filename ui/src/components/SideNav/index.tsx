@@ -35,8 +35,10 @@ const Index: FC = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { user: userInfo } = loggedUserInfoStore();
-  const { visible, can_revision, revision } = sideNavStore();
+  const { visible, can_revision, revision, show_users, recommend_tags } =
+    sideNavStore();
   const contentType = getUrlQuestionType();
+  const isEnglish = userInfo && userInfo.language === 'en_US';
   const handleNavClick = (e, path) => {
     e.preventDefault();
     closeNavbarIfOpen();
@@ -110,11 +112,29 @@ const Index: FC = () => {
             <Icon name="tags-fill" className="me-2" />
             <span>{t('header.nav.tag')}</span>
           </Nav.Link>
+          {show_users && (
+            <NavLink to="/users" className="nav-link">
+              <Icon name="people-fill" className="me-2" />
+              <span>{t('header.nav.user')}</span>
+            </NavLink>
+          )}
 
-          <NavLink to="/users" className="nav-link">
-            <Icon name="people-fill" className="me-2" />
-            <span>{t('header.nav.user')}</span>
-          </NavLink>
+          {recommend_tags && (
+            <>
+              <div className="py-2 px-3 mt-3 small fw-bold">
+                {t('header.nav.recommend_tags')}
+              </div>
+              {Object.entries(recommend_tags[0]).map(([key, value], index) => (
+                <NavLink
+                  key={`/tags/${key}`}
+                  to={`/tags/${key}`}
+                  className="nav-link">
+                  <Icon name={`${index + 1}-square-fill`} className="me-2" />
+                  <span>{(value as string[])[isEnglish ? 1 : 0] || key}</span>
+                </NavLink>
+              ))}
+            </>
+          )}
 
           {can_revision || userInfo?.role_id === 2 ? (
             <>

@@ -24,17 +24,27 @@ type reviewData = {
   revision: number;
 };
 
+type recommend = {
+  // key是链接，value[0]是中文描述，value[1]是英文
+  recommend_tags: any;
+  show_users: boolean;
+};
 interface ErrorCodeType {
   visible: boolean;
   can_revision: boolean;
+  show_users: boolean;
+  recommend_tags: any;
   revision: number;
   updateVisible: () => void;
+  updateRecommend: (recommend: recommend) => void;
   updateReview: (params: reviewData) => void;
 }
 
 const Index = create<ErrorCodeType>((set) => ({
   visible: false,
   can_revision: false,
+  show_users: false,
+  recommend_tags: null,
   revision: 0,
   updateVisible: () => {
     set((state) => {
@@ -44,6 +54,14 @@ const Index = create<ErrorCodeType>((set) => ({
   updateReview: (params: reviewData) => {
     set(() => {
       return { ...params };
+    });
+  },
+  updateRecommend: (params: recommend) => {
+    set(() => {
+      return {
+        show_users: params.show_users,
+        recommend_tags: params.recommend_tags,
+      };
     });
   },
 }));

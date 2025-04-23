@@ -480,6 +480,12 @@ export interface SiteSettings {
   version: string;
   revision: string;
   pageSize: number;
+  recommend_nav: RecommendNav;
+}
+
+export interface RecommendNav {
+  isShowUsers: boolean;
+  recommendTags: Map<string, string[]>;
 }
 
 export interface AdminSettingBranding {

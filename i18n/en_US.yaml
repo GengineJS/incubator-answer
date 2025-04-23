@@ -1115,6 +1115,7 @@ ui:
       assetbun: Resource
       bounty: Bounty
       tag: Tag
+      recommend_tags: Wkly Rec Cols
       user: User
       profile: User Profile
       setting: Account Settings
