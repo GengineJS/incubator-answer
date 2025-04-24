@@ -117,6 +117,21 @@ func (mr *MockSiteInfoCommonServiceMockRecorder) FormatListAvatar(ctx, userList 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FormatListAvatar", reflect.TypeOf((*MockSiteInfoCommonService)(nil).FormatListAvatar), ctx, userList)
 }
 
+// GetRecommendNav mocks base method.
+func (m *MockSiteInfoCommonService) GetRecommendNav(ctx context.Context) (*schema.SiteRecommendNavResp, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRecommendNav", ctx)
+	ret0, _ := ret[0].(*schema.SiteRecommendNavResp)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRecommendNav indicates an expected call of GetRecommendNav.
+func (mr *MockSiteInfoCommonServiceMockRecorder) GetRecommendNav(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRecommendNav", reflect.TypeOf((*MockSiteInfoCommonService)(nil).GetRecommendNav), ctx)
+}
+
 // GetSiteBranding mocks base method.
 func (m *MockSiteInfoCommonService) GetSiteBranding(ctx context.Context) (*schema.SiteBrandingResp, error) {
 	m.ctrl.T.Helper()
