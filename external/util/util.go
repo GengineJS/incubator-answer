@@ -79,6 +79,16 @@ func IsPngFile(filename string) bool {
 	}
 }
 
+func IsGifFile(filename string) bool {
+	ext := strings.ToLower(filepath.Ext(filename))
+	switch ext {
+	case ".gif":
+		return true
+	default:
+		return false
+	}
+}
+
 // IsVideoFile 根据文件名判断是否为视频
 func IsVideoFile(filename string) bool {
 	ext := strings.ToLower(filepath.Ext(filename))

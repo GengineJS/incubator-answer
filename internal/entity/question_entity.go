@@ -125,10 +125,9 @@ type Question struct {
 	AIAnswerReplied  bool      `xorm:"not null default false BOOL ai_answer_replied"`
 	AICommentReplied bool      `xorm:"not null default false BOOL ai_comment_replied"`
 	IsAI             bool      `xorm:"not null default false BOOL is_ai"`
-	Covers           string    `xorm:"not null JSON covers"` // 封面图
+	Covers           []string  `xorm:"not null JSON covers"` // 封面图
 	CoverMinSize     int       `xorm:"not null default 180000 INT(11) cover_min_size"`
 	BuyerUserIds     []string  `xorm:"-"` // 添加这个字段来存储购买者的用户ID列表
-	CurrCovers       []string  `xorm:"-"`
 }
 
 // TableName question table name

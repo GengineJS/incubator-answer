@@ -374,7 +374,7 @@ func (qs *QuestionCommon) FormatQuestionsPage(
 			UserID:           questionInfo.UserID,
 			Show:             questionInfo.Show,
 			ContentType:      questionInfo.ContentType,
-			Covers:           questionInfo.CurrCovers,
+			Covers:           questionInfo.Covers,
 		}
 		t.BuyerUserIds = make([]string, len(buyers))
 		for j, buyer := range buyers {
@@ -657,9 +657,7 @@ func (qs *QuestionCommon) ShowFormat(ctx context.Context, data *entity.Question)
 	info.CreateTime = data.CreatedAt.Unix()
 	info.UpdateTime = data.UpdatedAt.Unix()
 	info.PostUpdateTime = data.PostUpdateTime.Unix()
-	var covers []string
-	_ = json.Unmarshal([]byte(data.Covers), &covers)
-	info.Covers = covers
+	info.Covers = data.Covers
 	info.CoverMinSize = data.CoverMinSize
 	if data.PostUpdateTime.Unix() < 1 {
 		info.PostUpdateTime = 0

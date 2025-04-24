@@ -30,6 +30,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/apache/incubator-answer/external/util"
+
 	"github.com/apache/incubator-answer/internal/base/reason"
 	"github.com/apache/incubator-answer/internal/service/service_config"
 	"github.com/apache/incubator-answer/internal/service/siteinfo_common"
@@ -177,7 +179,6 @@ func (us *uploaderService) AvatarThumbFile(ctx *gin.Context, fileName string, si
 	return saveFilePath, nil
 }
 
-// 新增的buffer處理函數
 func (us *uploaderService) handleBufferUpload(
 	ctx *gin.Context,
 	buff *bytes.Buffer,
@@ -187,9 +188,9 @@ func (us *uploaderService) handleBufferUpload(
 	if err != nil {
 		return "", err
 	}
-
+	fileUid := uid.IDStr12()
 	// 构造完整存储路径
-	newFilename := fmt.Sprintf("%s.png", uid.IDStr12()) // 固定为png示例
+	newFilename := fmt.Sprintf("%s.png", fileUid) // 固定为png示例
 	fullPath := path.Join(us.serviceConfig.UploadPath, savePath, newFilename)
 
 	// 创建存储目录
@@ -202,18 +203,51 @@ func (us *uploaderService) handleBufferUpload(
 		return "", errors.InternalServer(reason.UnknownError).WithError(err)
 	}
 
+	// 生成缩略图
+	thumbFilename := fmt.Sprintf("thumb_%s.png", fileUid) // 缩略图文件名
+	thumbPath := path.Join(us.serviceConfig.UploadPath, savePath, thumbFilename)
+
+	// 使用 imaging 库生成缩略图
+	reader := bytes.NewReader(buff.Bytes())
+	img, err := imaging.Decode(reader)
+	if err != nil {
+		return "", errors.InternalServer(reason.UnknownError).WithError(err)
+	}
+
+	// 获取原始图片的宽高
+	originalWidth := img.Bounds().Dx()
+	originalHeight := img.Bounds().Dy()
+
+	// 动态计算缩略图的目标宽高
+	var targetWidth, targetHeight int
+	if originalWidth >= originalHeight {
+		targetWidth = 150
+		targetHeight = int(float64(originalHeight) * (float64(targetWidth) / float64(originalWidth)))
+	} else {
+		targetHeight = 150
+		targetWidth = int(float64(originalWidth) * (float64(targetHeight) / float64(originalHeight)))
+	}
+
+	// 调整缩略图大小，保持宽高比
+	thumbImage := imaging.Thumbnail(img, targetWidth, targetHeight, imaging.Lanczos)
+
+	// 保存缩略图
+	if err := imaging.Save(thumbImage, thumbPath); err != nil {
+		return "", errors.InternalServer(reason.UnknownError).WithError(err)
+	}
+
 	// 构造访问URL（与uploadFile保持格式一致）
 	return fmt.Sprintf("%s/%s/%s", siteGeneral.SiteUrl, "uploads/"+savePath, newFilename), nil
-
 }
 
 func (us *uploaderService) UploadPostFile(ctx *gin.Context) (
 	url string, err error) {
 	url, buff, err := us.tryToUploadByPlugin(ctx, plugin.UserPost)
+	fileName := ctx.PostForm("name")
 	if err != nil {
 		return "", err
 	}
-	if len(url) > 0 && buff == nil {
+	if len(url) > 0 && buff == nil && !util.IsGifFile(fileName) {
 		return url, nil
 	}
 
@@ -274,25 +308,76 @@ func (us *uploaderService) uploadFile(ctx *gin.Context, file *multipart.FileHead
 	if err != nil {
 		return "", err
 	}
+
+	// 保存上传的文件
 	filePath := path.Join(us.serviceConfig.UploadPath, fileSubPath)
 	if err := ctx.SaveUploadedFile(file, filePath); err != nil {
 		return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
 	}
 
+	// 打开文件
 	src, err := file.Open()
 	if err != nil {
 		return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
 	}
 	defer src.Close()
 
+	// 检查文件格式是否支持
 	if !checker.IsSupportedImageFile(filePath) {
 		return "", errors.BadRequest(reason.UploadFileUnsupportedFileFormat)
 	}
 
+	// 移除 EXIF 信息
 	if err := removeExif(filePath); err != nil {
 		log.Error(err)
 	}
 
+	// 生成缩略图
+	thumbFileName := fmt.Sprintf("thumb_%s", filepath.Base(fileSubPath))
+	thumbFilePath := path.Join(us.serviceConfig.UploadPath, filepath.Dir(fileSubPath), thumbFileName)
+	img, err := imaging.Open(filePath)
+	if err != nil {
+		return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
+	}
+	// 获取原始图片的宽高
+	originalWidth := img.Bounds().Dx()
+	originalHeight := img.Bounds().Dy()
+
+	// 动态计算缩略图的目标宽高
+	var targetWidth, targetHeight int
+	if originalWidth >= originalHeight {
+		targetWidth = 150
+		targetHeight = int(float64(originalHeight) * (float64(targetWidth) / float64(originalWidth)))
+	} else {
+		targetHeight = 150
+		targetWidth = int(float64(originalWidth) * (float64(targetHeight) / float64(originalHeight)))
+	}
+
+	// 检查文件扩展名
+	fileExt := strings.ToLower(filepath.Ext(filePath))
+	if fileExt == ".gif" {
+		// 如果是 GIF 文件，调用 resizeGifWithGift 函数生成缩略图
+		gifObj, err := util.Resize(filePath, targetWidth, targetHeight)
+		if err == nil {
+			err = util.Save(gifObj, thumbFilePath)
+		}
+		// err := resizeGif(filePath, thumbFilePath)
+		if err != nil {
+			return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
+		}
+	} else {
+		// 如果是其他格式，使用 imaging 库生成缩略图
+
+		// 调整缩略图大小，保持宽高比
+		thumbImage := imaging.Thumbnail(img, targetWidth, targetHeight, imaging.Lanczos)
+
+		// 保存缩略图
+		if err := imaging.Save(thumbImage, thumbFilePath); err != nil {
+			return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
+		}
+	}
+
+	// 构造访问 URL
 	url = fmt.Sprintf("%s/uploads/%s", siteGeneral.SiteUrl, fileSubPath)
 	return url, nil
 }

@@ -35,6 +35,7 @@ import (
 	"image"
 	"net/http"
 	"net/url"
+	"path"
 	"regexp"
 
 	"github.com/apache/incubator-answer/internal/base/constant"
@@ -94,6 +95,19 @@ type QuestionService struct {
 	newQuestionNotificationService   *notification.ExternalNotificationService
 	reviewService                    *review.ReviewService
 	configService                    *config.ConfigService
+}
+
+// compareSlices checks if two slices are equal.
+func compareSlices(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func NewQuestionService(
@@ -375,8 +389,7 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 	question.Pin = entity.QuestionUnPin
 	question.Show = questionShow
 	question.ContentType = int(req.ContentType)
-	coversJSON, _ := json.Marshal(req.Covers)
-	question.Covers = string(coversJSON)
+	question.Covers = req.Covers
 	question.CoverMinSize = req.CoverMinSize
 	// isPayType := false
 	if req.ContentType != entity.TypeArticle && req.ContentType != entity.TypeAssetBun && req.ContentType != entity.TypeAiPic {
@@ -935,10 +948,9 @@ func (qs *QuestionService) UpdateQuestion(ctx context.Context, req *schema.Quest
 	question.PostUpdateTime = now
 	question.UserID = dbinfo.UserID
 	question.LastEditUserID = req.UserID
-	coversJSON, _ := json.Marshal(req.Covers)
-	question.Covers = string(coversJSON)
+	question.Covers = req.Covers
 	question.CoverMinSize = req.CoverMinSize
-	if question.CoverMinSize != dbinfo.CoverMinSize || question.Covers != dbinfo.Covers {
+	if question.CoverMinSize != dbinfo.CoverMinSize || !compareSlices(question.Covers, dbinfo.Covers) {
 		canUpdate = true
 	}
 	// currScore := qs.assetbunRepo.GetScore(ctx, dbinfo.UserID)
@@ -1497,12 +1509,7 @@ func (qs *QuestionService) GetQuestionPage(ctx context.Context, req *schema.Ques
 
 	// Process covers for each question
 	for _, question := range questionList {
-		if question.Covers == "" || question.Covers == "[]" { // 如果 Covers 为空
-			if question.CoverMinSize == 0 {
-				// 如果 CoverMinSize 为 0，跳过封面设置
-				continue
-			}
-
+		if len(question.Covers) == 0 && question.CoverMinSize != 0 { // 如果 Covers 为空
 			// 从 ParsedText 中提取图片 URL
 			imageURLs := extractImageURLs(question.ParsedText)
 
@@ -1524,29 +1531,15 @@ func (qs *QuestionService) GetQuestionPage(ctx context.Context, req *schema.Ques
 						continue
 					}
 				}
-				width, height, err := getImageDimensions(imageURL)
-				if err != nil {
-					continue // 跳过无效图片
-				}
-				if width*height >= question.CoverMinSize {
-					validCovers = append(validCovers, imageURL)
-				}
 			}
-
-			// 将过滤后的图片存储到 CurrCovers
-			question.CurrCovers = validCovers
-
+			question.CoverMinSize = 0
 			// 如果需要，将过滤后的图片数组序列化为 JSON 字符串并存储到 Covers
 			if len(validCovers) > 0 {
-				coversJSON, _ := json.Marshal(validCovers)
-				question.Covers = string(coversJSON)
-				qs.questionRepo.UpdateQuestion(ctx, question, []string{`covers`})
+				question.Covers = validCovers
+				qs.questionRepo.UpdateQuestion(ctx, question, []string{`covers`, `cover_min_size`})
+			} else {
+				qs.questionRepo.UpdateQuestion(ctx, question, []string{`cover_min_size`})
 			}
-		} else {
-			// 如果 Covers 不为空，解析 JSON 字符串为数组并存储到 CurrCovers
-			var covers []string
-			_ = json.Unmarshal([]byte(question.Covers), &covers)
-			question.CurrCovers = covers
 		}
 	}
 
@@ -1560,12 +1553,23 @@ func (qs *QuestionService) GetQuestionPage(ctx context.Context, req *schema.Ques
 // Helper function to extract image URLs from HTML
 func extractImageURLs(htmlText string) []string {
 	imageURLs := []string{}
-	// Use a regex to find all <img> tags and extract their src attributes
+	// 使用正则表达式匹配 <img> 标签并提取 src 属性
 	re := regexp.MustCompile(`<img[^>]+src="([^">]+)"`)
 	matches := re.FindAllStringSubmatch(htmlText, -1)
 	for _, match := range matches {
 		if len(match) > 1 {
-			imageURLs = append(imageURLs, match[1])
+			imageURL := match[1]
+			// 检查图片是否来自 https://ai.assetbun.com
+			if strings.HasPrefix(imageURL, "https://ai.assetbun.com") {
+				// 将路径转换为缩略图路径
+				urlObj, err := url.Parse(imageURL)
+				if err == nil {
+					filename := path.Base(urlObj.Path)                            // 获取文件名
+					thumbFilename := fmt.Sprintf("thumb_%s", filename)            // 生成缩略图文件名
+					urlObj.Path = path.Join(path.Dir(urlObj.Path), thumbFilename) // 替换路径为缩略图路径
+					imageURLs = append(imageURLs, urlObj.String())
+				}
+			}
 		}
 	}
 	return imageURLs
@@ -1573,8 +1577,11 @@ func extractImageURLs(htmlText string) []string {
 
 // Helper function to get image dimensions
 func getImageDimensions(imageURL string) (int, int, error) {
+	client := http.Client{
+		Timeout: 5 * time.Second, // 设置超时时间
+	}
 	// Make an HTTP request to fetch the image
-	resp, err := http.Get(imageURL)
+	resp, err := client.Get(imageURL)
 	if err != nil {
 		return 0, 0, err
 	}

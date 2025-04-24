@@ -100,7 +100,7 @@ const Ask = () => {
       errorMsg: '',
     },
     cover_min_size: {
-      value: 180000,
+      value: 0,
       isInvalid: false,
       errorMsg: '',
     },
@@ -251,7 +251,7 @@ const Ask = () => {
     contentPlaceHolder = '请详细描述你的项目需求，项目周期及交付方式';
   }
   const [acceptedID, setAcceptedID] = useState('');
-  const [isCustomCover, setIsCustomCover] = useState(false); // 是否自定义封面
+  const [isCustomCover, setIsCustomCover] = useState(true); // 是否自定义封面
   const [imageUrls, setImageUrls] = useState<string[]>([]); // 提取的图片 URL
   useEffect(() => {
     if (!isEdit) {
@@ -500,8 +500,24 @@ const Ask = () => {
       return Array.from(content.matchAll(regex), (match) => match[1]);
     };
 
+    const filterAndTransformUrls = (urls: string[]) => {
+      // 只保留 https://ai.assetbun.com 下的图片，并生成 thumb 路径
+      return urls
+        .filter((url) => url.startsWith('https://ai.assetbun.com'))
+        .map((url) => {
+          const urlObj = new URL(url);
+          const filename = urlObj.pathname.split('/').pop(); // 获取文件名
+          const thumbFilename = `thumb_${filename}`; // 生成缩略图文件名
+          if (filename) {
+            urlObj.pathname = urlObj.pathname.replace(filename, thumbFilename); // 替换路径为缩略图路径
+          }
+          return urlObj.toString();
+        });
+    };
+
     const urls = extractImageUrls(formData.content.value);
-    setImageUrls(urls);
+    const thumbUrls = filterAndTransformUrls(urls); // 过滤并生成缩略图路径
+    setImageUrls(thumbUrls);
   }, [formData.content.value]);
 
   const handleCustomCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
