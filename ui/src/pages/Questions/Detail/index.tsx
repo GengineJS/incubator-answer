@@ -40,7 +40,7 @@ import type {
   UserAnswer,
 } from '@/common/interface';
 import { questionDetail, getAnswers } from '@/services';
-import { isUserPay } from '@/common/constants';
+import { hasPayType, isUserPay } from '@/common/constants';
 
 import {
   Question,
@@ -261,8 +261,13 @@ const Index = () => {
     }
   }
   const contentType = getUrlQuestionType();
-  if (question && question.score && !isUserPay(question, userInfo)) {
-    const mainListUrl = `/questions${contentType ? `?content_type=${contentType}` : ''}`; // 构造主列表 URL
+  if (
+    question &&
+    question.score &&
+    !hasPayType(question.content_type) &&
+    !isUserPay(question, userInfo)
+  ) {
+    const mainListUrl = `/questions${question.content_type ? `?content_type=${question.content_type}` : ''}`; // 构造主列表 URL
     handleOpenPayScore(
       tq.t,
       navigate,

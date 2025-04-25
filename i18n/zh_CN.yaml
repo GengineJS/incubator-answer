@@ -922,9 +922,9 @@ ui:
         revision:
           label: 编辑历史
         custom_cover:
-          label: 系统自动选取封面(宽x高大于430x430图片,要自定义封面则取消勾选)
+          label: 系统自选封面(宽x高大于430x430图片,不支持外部图片)
         select_cover:
-          label: 选择封面(如果没有封面，请在内容栏中上传图片)
+          label: 选择封面(如没封面，请在内容栏中上传图片)
         edit_summary:
           label: 编辑备注
           placeholder: >-
