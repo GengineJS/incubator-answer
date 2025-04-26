@@ -1496,7 +1496,7 @@ ui:
     platform_entry_tip: 声望：入驻所需声望值；权益：入驻后，兑换每1积分所需声望值
     default_option: 请选择可以入驻的等级
     not_enough_option: 当前声望不足无法入驻
-    contract_option: "{{title}} | 声望: {{redeem_rank_points}} | 权益: {{rank_to_point}}:1"
+    contract_option: "{{title}} | 声望: {{redeem_rank_points}} | 权益: {{rank_to_point}}:{{ratio}}"
     creator_level_selection: 创作者入驻等级选择
     exchange_val: 兑换积分值
     placeholder: 输入想兑换的积分值

@@ -1496,7 +1496,7 @@ ui:
     platform_entry_tip: Reputation:Required reputation value for entry; Rights:Required reputation for exchanging every 1 point after entry
     default_option: Please select a level that allows entry.
     not_enough_option: Current reputation is insufficient for entry.
-    contract_option: "{{title}} | Reputation: {{redeem_rank_points}} | Rights: {{rank_to_point}}:1"
+    contract_option: "{{title}} | Reputation: {{redeem_rank_points}} | Rights: {{rank_to_point}}:{{ratio}}"
     creator_level_selection: Creator Entry Level Selection
     exchange_val: Exchange point value
     placeholder: Enter the points you wish to exchange
