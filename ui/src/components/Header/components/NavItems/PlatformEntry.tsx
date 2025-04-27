@@ -128,22 +128,12 @@ export const PlatformEntryModal = ({ show, onHide, onEntry }) => {
                           option.redeem_rank_points,
                           5,
                         ),
-                        rank_to_point:
-                          option.rank_to_point > 1
-                            ? formatNumber(option.rank_to_point, 3, false)
-                            : formatNumber(
-                                1,
-                                3 -
-                                  (Math.floor(
-                                    1.0 / option.rank_to_point,
-                                  ).toString().length -
-                                    1),
-                                false,
-                              ),
-                        ratio:
-                          option.rank_to_point > 1
-                            ? '1'
-                            : Math.floor(1.0 / option.rank_to_point),
+                        rank_to_point: formatNumber(
+                          option.rank,
+                          3 - (option.point.toString().length - 1),
+                          false,
+                        ),
+                        ratio: option.point,
                       })}${contractedMap.current.has(option.title) ? t('entered') : ''}`,
                     }}
                   />

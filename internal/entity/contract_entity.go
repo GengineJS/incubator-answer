@@ -31,6 +31,8 @@ type ContractInfo struct {
 	CreatedAt        time.Time `json:"-" xorm:"created_at"`
 	UpdatedAt        time.Time `json:"-" xorm:"updated_at"`
 	DeletedAt        time.Time `json:"-" xorm:"deleted_at"`
+	Rank             int       `json:"rank" xorm:"'rank'"`   // 多少贡献换多少积分的贡献值部分
+	Point            int       `json:"point" xorm:"'point'"` // 多少贡献换多少积分的积分部分
 }
 
 // TableName contract_list table name

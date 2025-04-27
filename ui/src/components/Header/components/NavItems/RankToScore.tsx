@@ -25,7 +25,8 @@ export const RankToPointsModal = ({ show, onHide, onExchange }) => {
       const userRankVal = resp.rank;
       let rank_score_val = resp.rank_score;
       if (resp.contract) {
-        rank_score_val = resp.contract.contract_info.rank_to_point;
+        const { rank, point } = resp.contract.contract_info;
+        rank_score_val = rank / point;
       }
       currContract.current = resp.contract;
       setRankScore(rank_score_val);
@@ -36,6 +37,8 @@ export const RankToPointsModal = ({ show, onHide, onExchange }) => {
   // useEffect(() => {
   //
   // }, [rankScore, userRank]);
+  const changedRank = parseFloat((changedScore * rankScore).toFixed(2));
+  const changeRes = userRank - changedRank;
   const handleExchange = () => {
     onHide();
     if (changedScore > 0) {
@@ -46,14 +49,14 @@ export const RankToPointsModal = ({ show, onHide, onExchange }) => {
         content: t('content_confirm', {
           rank: userRank,
           currScore: changedScore,
-          remaining: userRank - changedScore * rankScore,
+          remaining: changeRes,
         }),
         cancelBtnVariant: 'link',
         confirmBtnVariant: 'danger',
         confirmText: t('confirm'),
         onConfirm: () => {
           updateUserExchange({
-            exchange_rank: changedScore * rankScore,
+            exchange_rank: changedRank,
             score: changedScore,
           })
             .then(() => {
@@ -114,7 +117,7 @@ export const RankToPointsModal = ({ show, onHide, onExchange }) => {
               {t('content', {
                 rank: userRank,
                 maxScore,
-                remaining: userRank - changedScore * rankScore,
+                remaining: changeRes,
               })}
             </Form.Text>
           </Form.Group>
