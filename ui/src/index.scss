@@ -427,5 +427,6 @@ pre {
 
 article > pre > code {
     overflow-y: hidden !important;
+    max-height: unset !important;
 }
 
