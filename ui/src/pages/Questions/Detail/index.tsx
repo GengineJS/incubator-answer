@@ -30,7 +30,7 @@ import { useTranslation } from 'react-i18next';
 import handleOpenPayScore from '@/components/Pay';
 import { getUrlQuestionType, isNeedResolveType } from '@/common/functions';
 import { Pagination, CustomSidebar } from '@/components';
-import { loggedUserInfoStore, toastStore } from '@/stores';
+import { loggedUserInfoStore, sideNavStore, toastStore } from '@/stores';
 import { scrollToElementTop, scrollToDocTop } from '@/utils';
 import { usePageTags, usePageUsers, useSkeletonControl } from '@/hooks';
 import type {
@@ -261,6 +261,12 @@ const Index = () => {
     }
   }
   const contentType = getUrlQuestionType();
+  const { login_detail } = sideNavStore();
+  useEffect(() => {
+    if (login_detail && !isLogged) {
+      navigate('/users/login', { replace: true });
+    }
+  }, [login_detail, isLogged, navigate]);
   if (
     question &&
     question.score &&
@@ -273,6 +279,7 @@ const Index = () => {
       navigate,
       userInfo,
       question,
+      login_detail,
       '',
       () => {
         window.open(mainListUrl, '_self');

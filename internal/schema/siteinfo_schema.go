@@ -61,6 +61,7 @@ type SiteInterfaceReq struct {
 type RecommendTags []map[string][]string
 type SiteRecommendNavReq struct {
 	IsShowUsers   bool          `validate:"omitempty" form:"show_users" json:"show_users"`
+	IsLoginDetail bool          `validate:"omitempty" form:"login_detail" json:"login_detail"`
 	RecommendTags RecommendTags `validate:"omitempty" form:"recommend_tags" json:"recommend_tags"`
 }
 

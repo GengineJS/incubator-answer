@@ -27,7 +27,7 @@ import { useSimilarQuestion } from '@/services';
 import { RelatedContentQuery } from '@/common/i18n';
 import IntegralLink from '@/components/IntegralLink';
 import handleOpenPayScore from '@/components/Pay';
-import { loggedUserInfoStore } from '@/stores';
+import { loggedUserInfoStore, sideNavStore } from '@/stores';
 import { getUrlQuestionType, isModerator } from '@/common/constants';
 
 interface Props {
@@ -41,6 +41,7 @@ const Index: FC<Props> = ({ id }) => {
   const { t: qt } = useTranslation('translation', { keyPrefix: 'question' });
   const navigate = useNavigate();
   const user = loggedUserInfoStore((state) => state.user);
+  const { login_detail } = sideNavStore();
   const { data, isLoading } = useSimilarQuestion({
     question_id: id,
     page_size: 5,
@@ -63,7 +64,7 @@ const Index: FC<Props> = ({ id }) => {
               as={Link}
               onClick={(event) => {
                 event.preventDefault();
-                handleOpenPayScore(qt, navigate, user, item);
+                handleOpenPayScore(qt, navigate, user, item, login_detail);
               }}
               to=".">
               <div className="link-dark">

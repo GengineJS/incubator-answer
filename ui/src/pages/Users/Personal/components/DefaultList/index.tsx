@@ -26,7 +26,7 @@ import { FormatTime, Tag, BaseUserCard, Counts } from '@/components';
 import { pathFactory } from '@/router/pathFactory';
 import { isModerator, QueryContentTypeFromStr } from '@/common/constants';
 import IntegralLink from '@/components/IntegralLink';
-import { loggedUserInfoStore } from '@/stores';
+import { loggedUserInfoStore, sideNavStore } from '@/stores';
 import handleOpenPayScore from '@/components/Pay';
 
 interface Props {
@@ -40,6 +40,7 @@ const Index: FC<Props> = ({ visible, tabName, data }) => {
   const { t: qt } = useTranslation('translation', { keyPrefix: 'question' });
   const userInfo = loggedUserInfoStore((state) => state.user);
   const navigate = useNavigate();
+  const { login_detail } = sideNavStore();
   if (!visible) {
     return null;
   }
@@ -69,6 +70,7 @@ const Index: FC<Props> = ({ visible, tabName, data }) => {
                     navigate,
                     userInfo,
                     item,
+                    login_detail,
                     pathFactory.questionLanding(
                       tabName === 'questions' ||
                         tabName === 'articles' ||

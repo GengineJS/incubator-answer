@@ -9,6 +9,7 @@ const handleOpenPayScore = (
   navigate,
   user,
   question,
+  login_detail,
   path = '',
   submit: any = null,
   cancel: any = null,
@@ -16,7 +17,8 @@ const handleOpenPayScore = (
   const contentType = question.content_type;
   const isPayType = hasPayType(contentType);
   const integral = question.score;
-  if (!isPayType && integral && !user.access_token) {
+  const isLogin = user && user.access_token;
+  if ((!isPayType && integral && !isLogin) || (login_detail && !isLogin)) {
     navigate('/users/login');
     return;
   }

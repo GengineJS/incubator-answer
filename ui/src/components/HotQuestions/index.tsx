@@ -28,7 +28,7 @@ import { ContentTypeStrQuery } from '@/common/i18n';
 import { getUrlQuestionType } from '@/common/functions';
 import IntegralLink from '@/components/IntegralLink';
 import { isModerator } from '@/common/constants';
-import { loggedUserInfoStore } from '@/stores';
+import { loggedUserInfoStore, sideNavStore } from '@/stores';
 import handleOpenPayScore from '@/components/Pay';
 
 const HotQuestions: FC = () => {
@@ -37,6 +37,7 @@ const HotQuestions: FC = () => {
   const userInfo = loggedUserInfoStore((state) => state.user);
   const contentType = getUrlQuestionType();
   const navigate = useNavigate();
+  const { login_detail } = sideNavStore();
   if (!questionRes?.list?.length) {
     return null;
   }
@@ -54,7 +55,7 @@ const HotQuestions: FC = () => {
               to="."
               onClick={(event) => {
                 event.preventDefault();
-                handleOpenPayScore(t, navigate, userInfo, li);
+                handleOpenPayScore(t, navigate, userInfo, li, login_detail);
               }}
               action>
               <div className="link-dark">

@@ -35,7 +35,7 @@ import type { SearchResItem } from '@/common/interface';
 import { escapeRemove } from '@/utils';
 import { isModerator } from '@/common/constants';
 import IntegralLink from '@/components/IntegralLink';
-import { loggedUserInfoStore } from '@/stores';
+import { loggedUserInfoStore, sideNavStore } from '@/stores';
 import handleOpenPayScore from '@/components/Pay';
 
 interface Props {
@@ -71,6 +71,7 @@ const Index: FC<Props> = ({ data }) => {
       ?.split(' ')
       ?.filter((v) => v !== '') || [];
   const user = loggedUserInfoStore((state) => state.user);
+  const { login_detail } = sideNavStore();
   return (
     <ListGroupItem className="py-3 px-0 border-start-0 border-end-0 bg-transparent">
       <div className="mb-2 clearfix">
@@ -82,7 +83,14 @@ const Index: FC<Props> = ({ data }) => {
         <Link
           onClick={(event) => {
             event.preventDefault();
-            handleOpenPayScore(t, navigate, user, data.object, itemUrl);
+            handleOpenPayScore(
+              t,
+              navigate,
+              user,
+              data.object,
+              login_detail,
+              itemUrl,
+            );
           }}
           className="h5 mb-0 link-dark text-break"
           to=".">

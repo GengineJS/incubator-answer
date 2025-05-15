@@ -728,7 +728,7 @@ export function getUrlQueryParam(key: string): string | null {
 
 export function getUrlQuestionType(key: string = 'content_type'): number {
   const param = getUrlQueryParam(key);
-  return param ? parseInt(param, 10) : ContentType.QUESTION;
+  return param ? parseInt(param, 10) : ContentType.ARTICLE;
 }
 
 // 由提出问题的人已经做出了付款操作类型的帖子，让别人付款查看的类型不属于该帖子

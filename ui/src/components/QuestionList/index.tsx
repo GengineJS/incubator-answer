@@ -41,7 +41,7 @@ import { ContentTypeStrQuery } from '@/common/i18n';
 import IntegralLink from '@/components/IntegralLink';
 import { isUserPay, LIST_VIEW_STORAGE_KEY } from '@/common/constants';
 import Storage from '@/utils/storage';
-import { loggedUserInfoStore } from '@/stores';
+import { loggedUserInfoStore, sideNavStore } from '@/stores';
 import handleOpenPayScore from '@/components/Pay';
 import { getAppSettings } from '@/services';
 
@@ -116,6 +116,7 @@ const QuestionList: FC<Props> = ({
   const [searchParams, setUrlSearchParams] = useSearchParams();
   const sortKeyType = 'order_type';
   const user = loggedUserInfoStore((state) => state.user);
+  const { login_detail } = sideNavStore();
   const handleParams = (orderType): string => {
     searchParams.delete('page');
     searchParams.set(sortKeyType, orderType);
@@ -223,7 +224,7 @@ const QuestionList: FC<Props> = ({
                   <NavLink
                     onClick={(event) => {
                       event.preventDefault();
-                      handleOpenPayScore(t, navigate, user, li);
+                      handleOpenPayScore(t, navigate, user, li, login_detail);
                     }}
                     className="link-dark d-block"
                     to=".">
@@ -242,7 +243,7 @@ const QuestionList: FC<Props> = ({
                     <div
                       onClick={(event) => {
                         event.preventDefault();
-                        handleOpenPayScore(t, navigate, user, li);
+                        handleOpenPayScore(t, navigate, user, li, login_detail);
                       }}
                       className="cover-carousel d-flex overflow-auto">
                       {li.covers.map((cover, idx) => (
@@ -269,7 +270,7 @@ const QuestionList: FC<Props> = ({
                       href="#"
                       onClick={(event) => {
                         event.preventDefault();
-                        handleOpenPayScore(t, navigate, user, li);
+                        handleOpenPayScore(t, navigate, user, li, login_detail);
                       }}
                       className="d-block small text-body">
                       <div

@@ -57,32 +57,29 @@ const Index: FC = () => {
       <div className="nav-wrap pt-4">
         <Nav variant="pills" className="flex-column">
           <NavLink
-            to={`/questions?content_type=${ContentType.QUESTION}`}
-            onClick={() => {
-              closeNavbarIfOpen();
-            }}
+            to={`/questions?content_type=${ContentType.ARTICLE}`}
+            onClick={closeNavbarIfOpen}
             className={({ isActive }) =>
-              (isActive && contentType === ContentType.QUESTION) ||
+              (isActive && contentType === ContentType.ARTICLE) ||
               pathname === '/'
+                ? 'nav-link active'
+                : 'nav-link'
+            }>
+            <Icon name="book-half" className="me-2" />
+            <span>{t('header.nav.article')}</span>
+          </NavLink>
+
+          <NavLink
+            to={`/questions?content_type=${ContentType.QUESTION}`}
+            onClick={closeNavbarIfOpen}
+            className={({ isActive }) =>
+              isActive && contentType === ContentType.QUESTION
                 ? 'nav-link active'
                 : 'nav-link'
             }>
             <Icon name="question-circle-fill" className="me-2" />
             <span>{t('header.nav.question')}</span>
           </NavLink>
-
-          <Nav.Link
-            href={`/questions?content_type=${ContentType.ARTICLE}`}
-            active={contentType === ContentType.ARTICLE}
-            onClick={(e) =>
-              handleNavClick(
-                e,
-                `/questions?content_type=${ContentType.ARTICLE}`,
-              )
-            }>
-            <Icon name="book-half" className="me-2" />
-            <span>{t('header.nav.article')}</span>
-          </Nav.Link>
           <Nav.Link
             href={`/questions?content_type=${ContentType.BOUNTY}`}
             active={contentType === ContentType.BOUNTY}

@@ -484,8 +484,9 @@ export interface SiteSettings {
 }
 
 export interface RecommendNav {
-  isShowUsers: boolean;
-  recommendTags: Map<string, string[]>;
+  show_users: boolean;
+  login_detail: boolean;
+  recommend_tags: Map<string, string[]>;
 }
 
 export interface AdminSettingBranding {
