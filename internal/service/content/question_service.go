@@ -30,8 +30,8 @@ import (
 
 	metacommon "github.com/apache/incubator-answer/internal/service/meta_common"
 
+	service_ab "github.com/apache/incubator-answer/internal/repo/assetbun"
 	"github.com/apache/incubator-answer/internal/service/assetbun"
-
 	"image"
 	"net/http"
 	"net/url"
@@ -445,10 +445,10 @@ func (qs *QuestionService) AddQuestion(ctx context.Context, req *schema.Question
 			log.Errorf("update user question count error %v", err)
 		}
 	}
-	// 只要是积分相关的内容都发邮件
-	if req.Score > 0 { // isPayType &&
-		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, req.UserID, question.ID, req.UserID, question.Title, constant.NotificationSubIntegral, 0, req.Score)
-	}
+	// 所有的内容都发邮件
+	// if req.Score > 0 { // isPayType &&
+	qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, req.UserID, question.ID, req.UserID, question.Title, constant.NotificationSubIntegral, 0, req.Score)
+	// }
 	qs.activityQueueService.Send(ctx, &schema.ActivityMsg{
 		UserID:           question.UserID,
 		ObjectID:         question.ID,
@@ -665,9 +665,11 @@ func (qs *QuestionService) RemoveQuestion(ctx context.Context, req *schema.Remov
 	// if err != nil {
 	// 	 log.Errorf("user DeleteQuestion rank rollback error %s", err.Error())
 	// }
-	qs.assetbunRepo.OffsetScore(ctx, questionInfo.UserID, questionInfo.Score)
-	if questionInfo.Score > 0 {
-		qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, questionInfo.UserID, questionInfo.ID, questionInfo.UserID, questionInfo.Title, constant.NotificationDeleteBackIntegral, 0, questionInfo.Score)
+	if questionInfo.ContentType == int(entity.TypeQuestion) || questionInfo.ContentType == int(entity.TypeBounty) {
+		if questionInfo.Score > 0 {
+			qs.assetbunRepo.OffsetScore(ctx, questionInfo.UserID, questionInfo.Score)
+			qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, questionInfo.UserID, questionInfo.ID, questionInfo.UserID, questionInfo.Title, constant.NotificationDeleteBackIntegral, 0, questionInfo.Score)
+		}
 	}
 	qs.activityQueueService.Send(ctx, &schema.ActivityMsg{
 		UserID:           questionInfo.UserID,
@@ -962,6 +964,8 @@ func (qs *QuestionService) UpdateQuestion(ctx context.Context, req *schema.Quest
 		} else if offsetScore < 0 {
 			qs.assetbunRepo.OperateScoreNotifySend(ctx, qs.notificationQueueService, dbinfo.UserID, question.ID, dbinfo.UserID, question.Title, constant.NotificationUpdateSubIntegral, 0, int(math.Abs(float64(offsetScore))))
 		}
+	} else if dbinfo.ContentType == int(entity.TypeAssetBun) {
+		service_ab.UpdateShareScoreByID(qs.questionRepo.GetData().DB, dbinfo.ShareID, req.Score)
 	}
 	question.Score = req.Score
 	oldTags, tagerr := qs.tagCommon.GetObjectEntityTag(ctx, question.ID)

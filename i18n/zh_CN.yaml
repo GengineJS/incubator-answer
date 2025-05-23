@@ -308,7 +308,7 @@ backend:
       disallow_vote:
         other: 你不能投票。
       disallow_vote_your_self:
-        other: 你不能为自己的帖子投票。
+        other: 你不能为自己的主题投票。
       not_found:
         other: 对象未找到。
       verification_failed:
@@ -321,9 +321,9 @@ backend:
         other: 新密码和旧密码相同。
     question:
       already_deleted:
-        other: 该帖子已被删除。
+        other: 该主题已被删除。
       under_review:
-        other: 您的帖子正在等待审核。它将在它获得批准后可见。
+        other: 您的主题正在等待审核。它将在它获得批准后可见。
       not_found:
         other: 问题未找到。
       cannot_deleted:
@@ -426,7 +426,7 @@ backend:
       name:
         other: 垃圾信息
       desc:
-        other: 这个帖子是一个广告，或是破坏性行为。它对当前的主题无帮助或无关。
+        other: 这个主题是一个广告，或是破坏性行为。它对当前的主题无帮助或无关。
     rude_or_abusive:
       name:
         other: 粗鲁或辱骂的
@@ -448,12 +448,12 @@ backend:
       name:
         other: 不再需要
       desc:
-        other: 该评论已过时，对话性质或与此帖子无关。
+        other: 该评论已过时，对话性质或与此主题无关。
     something:
       name:
         other: 其他原因
       desc:
-        other: 此帖子需要工作人员注意，因为是上述所列以外的其他理由。
+        other: 此主题需要工作人员注意，因为是上述所列以外的其他理由。
       placeholder:
         other: 让我们具体知道你关心的什么
     community_specific:
@@ -470,12 +470,12 @@ backend:
       name:
         other: 看起来没问题
       desc:
-        other: 这个帖子是好的，不是低质量。
+        other: 这个主题是好的，不是低质量。
     needs_edit:
       name:
         other: 需要编辑，我已做了修改。
       desc:
-        other: 改进和纠正你自己帖子中的问题。
+        other: 改进和纠正你自己主题中的问题。
     needs_close:
       name:
         other: 需要关闭
@@ -485,7 +485,7 @@ backend:
       name:
         other: 需要删除
       desc:
-        other: 该帖子将被删除。
+        other: 该主题将被删除。
   question:
     score: 积分
     all: 全部
@@ -509,7 +509,7 @@ backend:
         name:
           other: 其他原因
         desc:
-          other: 该帖子存在上面没有列出的另一个原因。
+          other: 该主题存在上面没有列出的另一个原因。
     operation_type:
       asked:
         other: 提交于
@@ -566,11 +566,11 @@ backend:
       ai_accepted_integral:
         other: "采纳了AI回复, 为您返还了+{{.Integral}}积分在"
       delete_back_integral:
-        other: "删除了帖子, 返还+{{.Integral}}积分在"
+        other: "删除了主题, 返还+{{.Integral}}积分在"
       update_sub_integral:
-        other: "更新了帖子的积分, 额外支付-{{.Integral}}积分在"
+        other: "更新了主题的积分, 额外支付-{{.Integral}}积分在"
       update_back_integral:
-        other: "更新了帖子的积分, 返还+{{.Integral}}积分在"
+        other: "更新了主题的积分, 返还+{{.Integral}}积分在"
       answer_the_question:
         other: 回复了问题
       update_answer:
@@ -657,7 +657,7 @@ backend:
         other: "<a href='{{.InviteUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}：<br>\n<blockquote>我想你可能知道答案。</blockquote><br>\n<a href='{{.InviteUrl}}'>在 {{.SiteName}}<sup>AI</sup> 上查看</a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
     new_comment:
       title:
-        other: "[{{.SiteName}}AI] {{.DisplayName}} 评论了你的帖子"
+        other: "[{{.SiteName}}AI] {{.DisplayName}} 评论了你的主题"
       body:
         other: "<a href='{{.CommentUrl}}'>{{.QuestionTitle}}</a><br><br>\n\n{{.DisplayName}}：<br>\n<blockquote>{{.CommentSummary}}</blockquote><br>\n<a href='{{.CommentUrl}}'>在 {{.SiteName}}<sup>AI</sup> 上查看</a><br><br>\n\n--<br>\n<small><a href='{{.UnsubscribeUrl}}'>取消订阅</a></small>"
     new_question:
@@ -702,9 +702,9 @@ backend:
       other: 编辑
   review:
     queued_post:
-      other: 排队的帖子
+      other: 排队的主题
     flagged_post:
-      other: 举报的帖子
+      other: 举报的主题
     suggested_post_edit:
       other: 建议的编辑
 # The following fields are used for interface presentation(Front-end)
@@ -736,7 +736,7 @@ ui:
     edit_question: 编辑问题
     edit_answer: 编辑回复
     search: 搜索
-    posts_containing: 帖子包含
+    posts_containing: 主题包含
     settings: 设置
     notifications: 通知
     login: 登录
@@ -767,7 +767,7 @@ ui:
     someone: 有人
     inbox_type:
       all: 全部
-      posts: 帖子
+      posts: 主题
       invites: 邀请
       votes: 点赞
       integrals: 积分
@@ -888,8 +888,8 @@ ui:
     msg:
       empty: 请选择一个原因。
   report_modal:
-    flag_title: 我举报这篇帖子的原因是...
-    close_title: 我关闭这篇帖子的原因是...
+    flag_title: 我举报这篇主题的原因是...
+    close_title: 我关闭这篇主题的原因是...
     review_question_title: 审查问题
     review_answer_title: 审查回复
     review_comment_title: 审查评论
@@ -947,7 +947,7 @@ ui:
     delete:
       title: 删除专栏
       tip_with_posts: >-
-        <p>我们不允许 <strong>删除带有帖子的专栏</strong>。</p> <p>请先从帖子中移除此专栏。</p>
+        <p>我们不允许 <strong>删除带有主题的专栏</strong>。</p> <p>请先从主题中移除此专栏。</p>
       tip_with_synonyms: >-
         <p>我们不允许 <strong>删除带有同义词的专栏</strong>。</p> <p>请先从此专栏中删除同义词。</p>
       tip: 确定要删除吗？
@@ -998,7 +998,7 @@ ui:
       对主题有新的疑问或提供更多关于该主题的信息，AI与参与者回复该主题时才能更精准。应避免在评论里回复主题。
     tip_answer: >-
       使用评论对参与者进行回复，如果要补充或者完善问题的内容，请在原问题或主题描述区域中更改。也可以使用AI回复参与者的问题。
-    tip_vote: 它给帖子添加了一些有用的内容
+    tip_vote: 它给主题添加了一些有用的内容
   edit_answer:
     title: 编辑回复
     default_reason: 编辑回复
@@ -1401,7 +1401,7 @@ ui:
     best_answer: 最佳回复
     accept_title: 是否采纳回复
     warn_accept: 采纳该回复会把当前积分给到该用户，并且后续无法取消采纳，是否采纳该回复?
-    not_accept: 花费积分的帖子对回复采纳后无法进行取消采纳的操作
+    not_accept: 花费积分的主题对回复采纳后无法进行取消采纳的操作
     resolve_tip: 此回复属于私密方案，内容已被锁定并隐藏。您当前无权查看
     resolve_type: 此回复为私密方案
     accept: 采纳
@@ -1461,28 +1461,28 @@ ui:
         li2_1: 请求帮助，寻求澄清，或答复其他答案。
     reopen:
       confirm_btn: 重新打开
-      title: 重新打开这个帖子
+      title: 重新打开这个主题
       content: 确定要重新打开吗？
     list:
       confirm_btn: 列表显示
-      title: 列表中显示这个帖子
-      content: 确定要列表中显示这个帖子吗？
+      title: 列表中显示这个主题
+      content: 确定要列表中显示这个主题吗？
     unlist:
       confirm_btn: 列表隐藏
-      title: 从列表中隐藏这个帖子
-      content: 确定要从列表中隐藏这个帖子吗？
+      title: 从列表中隐藏这个主题
+      content: 确定要从列表中隐藏这个主题吗？
     pin:
-      title: 置顶该帖子
-      content: 你确定要全局置顶吗？这个帖子将出现在所有帖子列表的顶部。
+      title: 置顶该主题
+      content: 你确定要全局置顶吗？这个主题将出现在所有主题列表的顶部。
       confirm_btn: 置顶
   delete:
     title: 删除
     question_score: >-
-      我们不建议 <strong>删除有回复的帖子</strong>。因为这样做会使得后来的读者无法从该帖子中获得帮助。</p><p>如果删除过多有回复的帖子，你的账号将会被禁止提问。你确定要删除吗？<strong>(删除后积分将返还至您的账户)</strong>
+      我们不建议 <strong>删除有回复的主题</strong>。因为这样做会使得后来的读者无法从该主题中获得帮助。</p><p>如果删除过多有回复的主题，你的账号将会被禁止发布任何内容。你确定要删除吗？<strong>(删除后积分将返还至您的账户)</strong>
     question: >-
-      我们不建议 <strong>删除有回复的帖子</strong>。因为这样做会使得后来的读者无法从该帖子中获得帮助。</p><p>如果删除过多有回复的帖子，你的账号将会被禁止提问。你确定要删除吗？
+      我们不建议 <strong>删除有回复的主题</strong>。因为这样做会使得后来的读者无法从该主题中获得帮助。</p><p>如果删除过多有回复的主题，你的账号将会被禁止发布任何内容。你确定要删除吗？
     answer_accepted: >-
-      <p>我们不建议<strong>删除被采纳的回复</strong>。因为这样做会使得后来的读者无法从该帖子中获得帮助。</p>如果删除过多被采纳的回复，你的账号将会被禁止回复任何提问。你确定要删除吗？
+      <p>我们不建议<strong>删除被采纳的回复</strong>。因为这样做会使得后来的读者无法从该主题中获得帮助。</p>如果删除过多被采纳的回复，你的账号将会被禁止回复任何内容。你确定要删除吗？
     other: 你确定要删除？
     other_score: 你确定要删除？<strong>(删除后积分将返还至您的账户)</strong>
     answer_other: 你确定要删除？
@@ -1547,7 +1547,7 @@ ui:
     default: 默认
     reset: 重置
     tag: 专栏
-    post_lowercase: 帖子
+    post_lowercase: 主题
     filter: 筛选
     ignore: 忽略
     submit: 提交
@@ -1577,7 +1577,7 @@ ui:
       tag: "<1>[tag]</1> 在指定专栏中搜索"
       user: "<1>user:username</1> 根据作者搜索"
       answer: "<1>answers:0</1> 搜索未回复的问题"
-      score: "<1>score:3</1> 评分 3+ 的帖子"
+      score: "<1>score:3</1> 评分 3+ 的主题"
       question: "<1>is:question</1> 搜索问题"
       is_answer: "<1>is:answer</1> 搜索回复"
     empty: 找不到任何相关的内容。<br /> 请尝试其他关键字，或者减少查找内容的长度。
@@ -1588,7 +1588,7 @@ ui:
     copied: 已复制
     facebook: 分享到 Facebook
     twitter: 分享到 Twitter
-  cannot_vote_for_self: 你不能给自己的帖子投票。
+  cannot_vote_for_self: 你不能给自己的主题投票。
   modal_confirm:
     title: 发生错误...
   account_result:
@@ -1612,7 +1612,7 @@ ui:
     hot_questions: 热门主题
     all_questions: 全部问题
     score_payment: 积分付款解锁内容
-    is_score_payment: 该帖子需要积分付款才可解锁，是否解锁?(如积分不足会自动跳转至积分充值界面)
+    is_score_payment: 该主题需要积分付款才可解锁，是否解锁?(如积分不足会自动跳转至积分充值界面)
     unlock: 解锁
     qustions: 问题
     articles: 文章
@@ -2099,7 +2099,7 @@ ui:
         text: "每个新问题必须至少有一个推荐专栏。"
       reserved_tags:
         label: 保留专栏
-        text: "保留的专栏只能由版主添加到一个帖子中。"
+        text: "保留的专栏只能由版主添加到一个主题中。"
     seo:
       page_title: 搜索引擎优化
       permalink:
@@ -2226,20 +2226,20 @@ ui:
     empty: 没有剩余的审核任务。
     approve_revision_tip: 您是否批准此修订？
     approve_flag_tip: 您是否批准此举报？
-    approve_post_tip: 您是否批准此帖子？
+    approve_post_tip: 您是否批准此主题？
     approve_user_tip: 您是否批准此修订？
     suggest_edits: 建议的编辑
-    flag_post: 举报帖子
+    flag_post: 举报主题
     flag_user: 举报用户
-    queued_post: 排队的帖子
+    queued_post: 排队的主题
     queued_user: 排队用户
     filter_label: 类型
     reputation: 声望值
-    flag_post_type: 举报这个帖子的类型是 {{ type }}
+    flag_post_type: 举报这个主题的类型是 {{ type }}
     flag_user_type: 举报这个用户的类型是 {{ type }}
-    edit_post: 编辑帖子
+    edit_post: 编辑主题
     list_post: 文章列表
-    unlist_post: 隐藏的帖子
+    unlist_post: 隐藏的主题
   timeline:
     undeleted: 取消删除
     deleted: 删除
@@ -2284,15 +2284,15 @@ ui:
   draft:
     discard_confirm: 您确定要丢弃您的草稿吗？
   messages:
-    post_deleted: 该帖子已被删除。
-    post_pin: 该帖子已被置顶。
-    post_unpin: 该帖子已被取消置顶。
-    post_hide_list: 此帖子已经从列表中隐藏。
-    post_show_list: 该帖子已显示到列表中。
-    post_reopen: 这个帖子已被重新打开.
-    post_list: 这个帖子已经被显示
-    post_unlist: 这个帖子已经被隐藏
-    post_pending: 您的帖子正在等待审核。它将在它获得批准后可见。
+    post_deleted: 该主题已被删除。
+    post_pin: 该主题已被置顶。
+    post_unpin: 该主题已被取消置顶。
+    post_hide_list: 此主题已经从列表中隐藏。
+    post_show_list: 该主题已显示到列表中。
+    post_reopen: 这个主题已被重新打开.
+    post_list: 这个主题已经被显示
+    post_unlist: 这个主题已经被隐藏
+    post_pending: 您的主题正在等待审核。它将在它获得批准后可见。
 
 plugin:
   github_connector:

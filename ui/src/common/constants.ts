@@ -710,7 +710,7 @@ export const assetBunLoginUrl = [
   'http://localhost/users/login?page_type=1',
   'https://ai.assetbun.com/users/login?page_type=1',
 ];
-export const PayContentType = [
+export const ContentTypeCanOpen = [
   ContentType.QUESTION,
   ContentType.BOUNTY,
   ContentType.ASSETBUN,
@@ -731,10 +731,10 @@ export function getUrlQuestionType(key: string = 'content_type'): number {
   return param ? parseInt(param, 10) : ContentType.ARTICLE;
 }
 
-// 由提出问题的人已经做出了付款操作类型的帖子，让别人付款查看的类型不属于该帖子
-export function hasPayType(ct: number = -1): boolean {
+// 由提出问题的人已经做出了付款操作类型的帖子，让别人付款查看的类型不属于该帖子,由于云盘资源比较特殊，所以这里特殊处理
+export function hasPayCanOpenType(ct: number = -1): boolean {
   const contentType = ct === -1 ? getUrlQuestionType() : ct;
-  return PayContentType.indexOf(contentType) !== -1;
+  return ContentTypeCanOpen.indexOf(contentType) !== -1;
 }
 
 export function isModerator(question, userInfo): boolean {

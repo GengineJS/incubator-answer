@@ -4,7 +4,7 @@ import {
   ContentType,
   getUrlQueryParam,
   getUrlQuestionType,
-  hasPayType,
+  hasPayCanOpenType,
   IframeMsgType,
   isModerator,
   NeedResolveType,
@@ -17,7 +17,7 @@ import {
 
 export { getUrlQueryParam, getUrlQuestionType };
 export function needQuestionToLoginOrUp(question, userInfo): void {
-  if (!hasPayType(question.content_type) && question.score) {
+  if (!hasPayCanOpenType(question.content_type) && question.score) {
     // 没有登录
     if (!userInfo.access_token) {
       window.location.href = '/users/login';

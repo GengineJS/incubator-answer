@@ -39,7 +39,7 @@ import {
 import { tryNormalLogged } from '@/utils/guard';
 import { floppyNavigation } from '@/utils';
 import { toastStore } from '@/stores';
-import { getUrlQuestionType, PayContentType } from '@/common/constants';
+import { getUrlQuestionType, NeedResolveType } from '@/common/constants';
 
 interface IProps {
   type: 'answer' | 'question';
@@ -72,7 +72,7 @@ const Index: FC<IProps> = ({
   const refreshQuestion = () => {
     callback?.('default');
   };
-  const isPayType = PayContentType.indexOf(contentType) !== -1;
+  const isPayType = NeedResolveType.indexOf(contentType) !== -1;
   // 是否返还积分?
   const isBackScore = score && isPayType && !isAccepted;
   const notDel = !(score && isPayType && isAccepted);

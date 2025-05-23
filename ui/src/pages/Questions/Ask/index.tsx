@@ -34,7 +34,7 @@ import {
   ContentType,
   DRAFT_QUESTION_STORAGE_KEY,
   ExternalPayContentType,
-  hasPayType,
+  hasPayCanOpenType,
 } from '@/common/constants';
 import {
   saveQuestion,
@@ -238,7 +238,7 @@ const Ask = () => {
   const contentType = getUrlQuestionType();
   const { data: revisions = [] } = useQueryRevisions(qid);
   const { score } = loggedUserInfoStore((state) => state.user);
-  const isPayType = hasPayType();
+  const isPayType = hasPayCanOpenType();
   const [currIntegral, setCurrIntegral] = useState(
     contentType === ContentType.QUESTION || contentType === ContentType.BOUNTY
       ? score

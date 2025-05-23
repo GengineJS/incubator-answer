@@ -1,4 +1,4 @@
-import { hasPayType, isModerator } from '@/common/constants';
+import { hasPayCanOpenType, isModerator } from '@/common/constants';
 import { pathFactory } from '@/router/pathFactory';
 import { Modal } from '@/components';
 import { buyQuestion } from '@/services';
@@ -15,7 +15,7 @@ const handleOpenPayScore = (
   cancel: any = null,
 ) => {
   const contentType = question.content_type;
-  const isPayType = hasPayType(contentType);
+  const isPayType = hasPayCanOpenType(contentType);
   const integral = question.score;
   const isLogin = user && user.access_token;
   if ((!isPayType && integral && !isLogin) || (login_detail && !isLogin)) {

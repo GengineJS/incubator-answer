@@ -4,6 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
+	"strconv"
+	"time"
+
 	"github.com/apache/incubator-answer/internal/base/constant"
 	"github.com/apache/incubator-answer/internal/base/data"
 	"github.com/apache/incubator-answer/internal/base/reason"
@@ -16,9 +20,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/segmentfault/pacman/errors"
 	"github.com/speps/go-hashids"
-	"math"
-	"strconv"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -385,6 +386,12 @@ func SyncQuestionABTypeTags(engine *xorm.Engine) {
 	engine.Where("slug_name = ?", "assetbun").Get(&tag)
 	tag.QuestionCount = idx
 	engine.Where("slug_name = ?", "assetbun").Update(tag)
+}
+
+func UpdateShareScoreByID(engine *xorm.Engine, id string, newScore int) error {
+	share := &assetbun.Shares{Score: newScore}
+	_, err := engine.ID(id).Cols("score").Update(share)
+	return err
 }
 
 func SyncShares(ctx context.Context, engine *xorm.Engine) {

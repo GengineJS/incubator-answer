@@ -40,7 +40,7 @@ import type {
   UserAnswer,
 } from '@/common/interface';
 import { questionDetail, getAnswers } from '@/services';
-import { hasPayType, isUserPay } from '@/common/constants';
+import { hasPayCanOpenType, isUserPay } from '@/common/constants';
 
 import {
   Question,
@@ -270,7 +270,7 @@ const Index = () => {
   if (
     question &&
     question.score &&
-    !hasPayType(question.content_type) &&
+    !hasPayCanOpenType(question.content_type) &&
     !isUserPay(question, userInfo)
   ) {
     const mainListUrl = `/questions${question.content_type ? `?content_type=${question.content_type}` : ''}`; // 构造主列表 URL

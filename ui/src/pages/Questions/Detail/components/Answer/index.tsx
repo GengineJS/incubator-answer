@@ -37,7 +37,7 @@ import { scrollToElementTop, bgFadeOut } from '@/utils';
 import { AnswerItem } from '@/common/interface';
 import { acceptanceAnswer } from '@/services';
 import { useRenderHtmlPlugin } from '@/utils/pluginKit';
-import { PayContentType } from '@/common/constants';
+import { NeedResolveType } from '@/common/constants';
 import { getUrlQuestionType, removeLastNewline } from '@/common/functions';
 import MathJaxArticle from '@/components/MathJaxArticle';
 import { loggedUserInfoStore } from '@/stores';
@@ -70,7 +70,7 @@ const Index: FC<Props> = ({
   canAccept = false,
 }) => {
   const contentType = getUrlQuestionType();
-  const isPayType = PayContentType.indexOf(contentType) !== -1;
+  const isPayType = NeedResolveType.indexOf(contentType) !== -1;
   const isScoreContent = score && isPayType;
   const hasAccepted = acceptedId !== '0' && isScoreContent;
   if (hasAccepted) {

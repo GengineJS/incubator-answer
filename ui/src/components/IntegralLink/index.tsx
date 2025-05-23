@@ -1,5 +1,5 @@
 import { Icon } from '@/components';
-import { hasPayType } from '@/common/constants';
+import { hasPayCanOpenType } from '@/common/constants';
 // import { loggedUserInfoStore } from '@/stores';
 
 const IntegralLink = ({ score, t, contentType, isPay = false }) => {
@@ -13,7 +13,7 @@ const IntegralLink = ({ score, t, contentType, isPay = false }) => {
     e.preventDefault();
     window.open(`https://cloud.assetbun.com/buy?tab=2&buy=${score}`, '_blank');
   };
-  const isPayType = hasPayType(contentType);
+  const isPayType = hasPayCanOpenType(contentType);
   return (
     <a
       className="badge-tag rounded-5 ms-2"
