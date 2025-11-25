@@ -1132,7 +1132,7 @@ ui:
       placeholder: 搜索
   footer:
     build_on: >-
-      Copyright © 2024.深圳市大瞳世界科技有限公司 粤ICP备2023062274号-2  <br />人工智能助力知识分享 © {{cc}}AI x 资产包子云盘
+      Copyright © 2024.深圳市大瞳世界科技有限公司 <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备2023062274号-2</a> <br />人工智能助力知识分享 © {{cc}}AI x 资产包子云盘
   upload_img:
     name: 更改
     loading: 加载中...
