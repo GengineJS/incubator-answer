@@ -1132,7 +1132,7 @@ ui:
       placeholder: Search
   footer:
     build_on: >-
-      Copyright © 2024. Shenzhen Datong World Technology Co. Ltd. <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备2023062274号-2</a> <br />AI-powered knowledge sharing © {{cc}}AI x Asset Bun Cloud Drive
+      Copyright © 2017 Shenzhen Datong World Technology Co., Ltd. <0>Guangdong ICP Filing No. 2023062274-2</0><1/>AI-Powered Knowledge Sharing © {{cc}}AI x AssetBun Cloud Drive
   upload_img:
     name: Change
     loading: Loading...

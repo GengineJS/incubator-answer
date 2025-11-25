@@ -33,15 +33,20 @@ const Index = () => {
     <footer className="bg-light">
       <Container className="py-3">
         <p className="text-center mb-0 small text-secondary">
-          <Trans i18nKey="footer.build_on" values={{ cc }}>
-            Copyright © 2024.深圳市大瞳世界科技有限公司
-            {/* eslint-disable-next-line react/jsx-no-target-blank */}
-            <a href="https://beian.miit.gov.cn/" target="_blank">
-              粤ICP备2023062274号-2
-            </a>
-            <br />
-            人工智能助力知识分享. © {{ fullYear }} 点识成金AI 与 资产包子云盘
-          </Trans>
+          <Trans
+            i18nKey="footer.build_on"
+            values={{ cc }}
+            components={[
+              // 仅此一处修改
+              // eslint-disable-next-line jsx-a11y/anchor-has-content
+              <a
+                href="https://beian.miit.gov.cn/"
+                target="_blank"
+                rel="noopener noreferrer"
+              />,
+              <br />,
+            ]}
+          />
         </p>
       </Container>
     </footer>
